@@ -1,0 +1,18 @@
+-This site is great for FFMPEG for windows
+(Download x32 static version - currently only one that supports vp8)
+http://ffmpeg.arrozcru.org/
+	GIVE ADMIN RIGHTS TO FFMPEG!!
+
+how to make movies from a list of images
+http://electron.mit.edu/~gsteele/ffmpeg/
+
+usefull stuff
+http://howto-pages.org/ffmpeg/
+
+sample command used
+ffmpeg -r 50 -i %04d.jpg -vcodec
+libx264 -s 628x376 -fpre "weatherproject.ffpreset" -crf 18 output.avi
+
+weatherproject.ffpreset must be placed in the same folder as ffmpeg.exe
+weather.serverside.FFMPEG.MovieMaker.CreateVideo() method must
+know where this is!!

@@ -1,0 +1,205 @@
+package weather.clientside.gui.administrator;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Comparator;
+import java.util.Vector;
+import javax.swing.JTable;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+import weather.AdministratorControlSystem;
+import weather.clientside.utilities.MyDefaultTableModel;
+import weather.common.data.diary.DailyDiaryWebLinks;
+import weather.common.dbms.DBMSDailyDiaryWebLinkManager;
+import weather.common.dbms.DBMSSystemManager;
+import weather.common.gui.component.BUDialog;
+
+/**
+ * The <code>ListDailyDiaryWebLinks</code> class creates a form that lists
+ * the available daily diary web links.
+ * @author Alinson Antony(2012).
+ */
+public class ListDailyDiaryWebLinks extends BUDialog {
+    private DBMSDailyDiaryWebLinkManager webLinkManager;
+    private DBMSSystemManager dbms;
+    private final int columnNumber=0;
+    private final int  columnName=1;
+    private final int columnURL=2;
+    private final int TABLE_LENGTH = 3;
+    private TableRowSorter<TableModel> sorter;
+    private MyDefaultTableModel model;
+    /**
+     * Constructor.
+     * @param adminService Control system unique to the administrator.
+     */
+    public ListDailyDiaryWebLinks(AdministratorControlSystem adminService) {
+        super(adminService);
+        this.dbms = adminService.getGeneralService().getDBMSSystem();
+        webLinkManager = dbms.getDailyDiaryWebLinkManager();
+
+        initComponents();
+        dailyDiaryLink.setRowSelectionAllowed(true);
+        dailyDiaryLink.setAutoResizeMode(5);
+        dailyDiaryLink.addMouseListener(doubleClick);
+        updateTable();
+        //creates the sorter for the table
+        sorter = new TableRowSorter<TableModel>(dailyDiaryLink.getModel());
+        sorter.setComparator(columnNumber, comparatorInt);
+        sorter.setComparator(columnURL, comparatorString);
+        sorter.setComparator(columnName, comparatorString);
+        dailyDiaryLink.setRowSorter(sorter);
+
+        super.postInitialize(true);
+    }
+    /**
+     * Updates table listings.
+     */
+    private void updateTable() {
+        int row = -1;
+        Vector<DailyDiaryWebLinks> webLinks = webLinkManager.getLinks();
+        
+        //creates the model for the table
+        model = new MyDefaultTableModel(0, 0);
+        model.setColumnCount(TABLE_LENGTH);
+        model.setRowCount(webLinks.size());
+        dailyDiaryLink.setModel(model);
+        
+        //sets the headers for each column
+        dailyDiaryLink.getColumnModel().getColumn(columnNumber).setHeaderValue("Web Link Number");
+        dailyDiaryLink.getColumnModel().getColumn(columnName).setHeaderValue("Web Link Name");
+        dailyDiaryLink.getColumnModel().getColumn(columnURL).setHeaderValue("Web Link URL");
+        
+        //fills the table with data
+        for(int i = 0; i < webLinks.size(); i++)
+        {
+             row++;
+             dailyDiaryLink.setValueAt(" " + webLinks.get(i).getLinkNumber(), row, 0);
+             dailyDiaryLink.getColumnModel().getColumn(columnName).setPreferredWidth(50);
+             dailyDiaryLink.setValueAt(" " + webLinks.get(i).getName(), row, 1);
+             dailyDiaryLink.getColumnModel().getColumn(columnName).setPreferredWidth(250);
+             dailyDiaryLink.setValueAt(" " + webLinks.get(i).getURLString(), row, 2);
+             dailyDiaryLink.getColumnModel().getColumn(columnURL).setPreferredWidth(350);
+         };
+        dailyDiaryLink.updateUI();
+
+    }
+    
+    MouseAdapter doubleClick = new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if(e.getClickCount() == 2) {
+                JTable target = (JTable)e.getSource();
+                new EditDailyDiaryWebLinks(adminService, (String)target.getValueAt(target.getSelectedRow(), 1),
+                        (String)target.getValueAt(target.getSelectedRow(), 2),(String)target.getValueAt(target.getSelectedRow(), 0));
+                updateTable();
+            }
+        }
+    };
+    
+    /**
+     * Allows the first column to be sorted by the numeric value, not as Strings
+     */
+    Comparator<String> comparatorInt = new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                Double d1 = Double.parseDouble(o1);
+                Double d2 = Double.parseDouble(o2);
+                return d1.compareTo(d2);
+            }
+    };
+    
+    /**
+     * Allows the second and third column to be sorted as Strings
+     */
+    Comparator<String> comparatorString = new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+    };
+   
+ 
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jScrollPane1 = new javax.swing.JScrollPane();
+        dailyDiaryLink = new javax.swing.JTable();
+        btnClose = new javax.swing.JButton();
+        doubleClickLabel = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Weather Viewer - Daily Diary Web Links List");
+
+        dailyDiaryLink.setAutoCreateRowSorter(true);
+        dailyDiaryLink.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        dailyDiaryLink.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
+        jScrollPane1.setViewportView(dailyDiaryLink);
+
+        btnClose.setText("Close");
+        btnClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCloseActionPerformed(evt);
+            }
+        });
+
+        doubleClickLabel.setFont(new java.awt.Font("Tahoma", 2, 10)); // NOI18N
+        doubleClickLabel.setText("Double click on the web link to edit it.");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(doubleClickLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 517, Short.MAX_VALUE)
+                        .addComponent(btnClose)
+                        .addGap(15, 15, 15))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1)
+                        .addContainerGap())))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnClose)
+                    .addComponent(doubleClickLabel))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseActionPerformed
+        dispose();
+    }//GEN-LAST:event_btnCloseActionPerformed
+
+   
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnClose;
+    private javax.swing.JTable dailyDiaryLink;
+    private javax.swing.JLabel doubleClickLabel;
+    private javax.swing.JScrollPane jScrollPane1;
+    // End of variables declaration//GEN-END:variables
+
+   
+}

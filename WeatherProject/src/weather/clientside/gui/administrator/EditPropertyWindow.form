@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <Properties>
+    <Property name="title" type="java.lang.String" value="Weather Viewer - Edit Property"/>
+    <Property name="resizable" type="boolean" value="false"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="24" pref="24" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="propertyDisplayNameLabel" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="propertyNameLabel" min="-2" max="-2" attributes="0"/>
+                                  <Component id="propertyTypeDisplayNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="propertyTypeLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="isEditableLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="previousChangeLabel" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="1" attributes="0">
+                                          <Component id="propertyValueTextField" min="-2" pref="252" max="-2" attributes="0"/>
+                                          <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                                              <Component id="propertyDisplayNameTextField" alignment="0" pref="200" max="32767" attributes="0"/>
+                                              <Component id="propertyNameTextField" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="propertyIDTextField" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="propertyTypeDisplayNameTextField" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="propertyTypeTextField" alignment="0" max="32767" attributes="0"/>
+                                          </Group>
+                                      </Group>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="typeDisplayNameErrorLabel" min="-2" max="-2" attributes="0"/>
+                                          <Component id="displayNameErrorLabel" min="-2" max="-2" attributes="0"/>
+                                          <Component id="propertyValueWarningLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                                      <Component id="isEditableTextField" alignment="0" pref="200" max="32767" attributes="0"/>
+                                      <Component id="lastChangeTextField" alignment="0" max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                          </Group>
+                          <Component id="propertyIDLabel" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="defaultWarningLabel" min="-2" max="-2" attributes="0"/>
+                          <Component id="notesLabel" min="-2" max="-2" attributes="0"/>
+                          <Component id="propertyValueLabel" min="-2" max="-2" attributes="0"/>
+                          <Component id="jScrollPane1" alignment="0" min="-2" pref="692" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="saveButton" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="removePropertyButton" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="defaultButton" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="editButton" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="closeButton" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace min="0" pref="10" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="propertyIDLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="propertyIDTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="propertyTypeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="propertyTypeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="propertyTypeDisplayNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="propertyTypeDisplayNameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="typeDisplayNameErrorLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="propertyNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="propertyNameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="propertyDisplayNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="propertyDisplayNameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="displayNameErrorLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="propertyValueLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="propertyValueTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="propertyValueWarningLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lastChangeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="previousChangeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="isEditableTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="isEditableLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="notesLabel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="jScrollPane1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="saveButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="removePropertyButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="editButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="closeButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="defaultButton" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Component id="defaultWarningLabel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JLabel" name="propertyTypeLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Property Type"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="propertyTypeTextField">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="propertyNameLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Property Name"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="propertyNameTextField">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="propertyValueLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Property Value"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="propertyValueTextField">
+    </Component>
+    <Component class="javax.swing.JButton" name="saveButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Update Changes"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="removePropertyButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Remove Property"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="removePropertyButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="closeButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Close"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="closeButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="propertyIDLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Property ID"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="propertyIDTextField">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="propertyValueWarningLabel">
+      <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="33" green="33" red="fb" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="* Property Value Required"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="propertyTypeDisplayNameLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Property Type Display Name"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="propertyTypeDisplayNameTextField">
+    </Component>
+    <Component class="javax.swing.JLabel" name="propertyDisplayNameLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Property Display Name"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="propertyDisplayNameTextField">
+    </Component>
+    <Component class="javax.swing.JLabel" name="typeDisplayNameErrorLabel">
+      <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="33" green="33" red="fb" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="* Property Type Display Name Requird"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="displayNameErrorLabel">
+      <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="33" green="33" red="fb" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="* Property Display Name Requird"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="isEditableLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Is this Editable"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="isEditableTextField">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="notesLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Description of This Property"/>
+      </Properties>
+    </Component>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JTextArea" name="notesTextArea">
+          <Properties>
+            <Property name="columns" type="int" value="20"/>
+            <Property name="rows" type="int" value="5"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JButton" name="editButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="I have access to edit "/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JTextField" name="lastChangeTextField">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="previousChangeLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Previous Chnage"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="defaultButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Set to Default"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="defaultButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="defaultWarningLabel">
+      <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="33" green="33" red="fb" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Press Update Changes to save the changes."/>
+      </Properties>
+    </Component>
+  </SubComponents>
+</Form>
