@@ -14,7 +14,7 @@ All changes should be committed through git to avoid the horrible issues of subv
 
 First you must clone the repository.
 
-`git clone https://LouisJenkinsCS-Backup@bitbucket.org/LouisJenkinsCS-Backup/waterquality.git`
+`git clone https://github.com/LouisJenkinsCS/WeatherProject.git`
 
 ### How to add work you've done
 
