@@ -1,4 +1,0 @@
-//users2.sql
-//usersTest3.sql
-//weblinks.sql
-default_generic_no_data_picture.sql
