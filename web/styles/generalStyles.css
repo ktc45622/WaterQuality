@@ -1,0 +1,688 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+
+*/
+/* 
+    Created on : Feb 20, 2015, 1:07:59 PM
+    Author     : drl92822
+*/
+h3{
+    color:white;
+    position:relative;
+    line-height: 50px;
+}
+
+#tools_selection_container{    
+    font-family: "Ariel", Helvetica, san-serif;
+    font-weight: bold;
+    color: black;
+    margin-left: 20%;
+    margin-top: 5%;
+}
+
+#tools_container{
+    margin-top: 10%;
+    width: 400px;
+    height: 100%;
+}
+
+#change_password_container{    
+    font-family: "Ariel", Helvetica, san-serif;
+    font-weight: bold;
+    color: black;
+    margin-left: 20%;
+}
+
+.title_bar_container{
+    width: 100%;
+    text-align: center;
+    height: 50px;
+    background-color: #5A0000;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-left: 0px;
+    margin-bottom: 0px;
+     -webkit-box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+}
+.content_title_bar{
+    background-color: #5A0000;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    text-align: center;
+    height:25px;
+}
+
+.title{
+    color:white;
+    margin-left:15px;
+    margin-bottom: 10px;
+    line-height: 25px;
+    font-family: "Ariel", Helvetica, san-serif;
+    font-weight: bold;
+
+}
+
+#HeaderText
+{
+    display: inline;
+    font-family: "Ariel", Helvetica, san-serif;
+    font-weight: bold;    
+    line-height: 50px;
+    color: white;  
+    font-size: 20px;
+    width: 100%;
+    margin-top: 0px;
+    text-align: center;
+    margin-bottom: 0px;
+}
+
+#HeaderWithAccountText
+{
+    display: inline;
+    font-family: "Ariel", Helvetica, san-serif;
+    font-weight: bold;    
+    line-height: 50px;
+    color: white;  
+    font-size: 20px;
+    width: 100%;
+    margin-top: 0px;
+    margin-left: 23%;
+    text-align: center;
+    margin-bottom: 0px;
+}
+
+#backPhoto
+{
+    left: 0px;
+    top: 0px;
+    position: fixed;
+    z-index: -1;
+    opacity: 0.75;
+    width: 100%;    
+    height: 100%;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.link_no_hover:hover{
+    cursor:default;
+}
+
+.dropdown_text{
+    font-size: 14px;
+}
+
+#drop-nav{
+    z-index: 9;
+    margin-right: 40px;
+}
+
+.dropdown_shadow{
+         -webkit-box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+}
+.content_container{
+    vertical-align: middle;
+    margin-left: auto;
+    margin-right: auto;
+    border: 2px solid;
+    border-radius: 25px; 
+    background-color: #FFCC99;
+    -webkit-box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+ 
+}
+
+.system_messages_t{
+    width:100%;
+    margin-top: 4.5%;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-weight: bold;
+    font-size: 12px 
+    /*background-color: #fffaf0;*/
+}
+
+#message_red_t{
+    background-color: #fffaf0;
+    color:red;
+}
+
+button,input[type = "submit"] {
+    background: #5a0000;
+    background-image: -webkit-linear-gradient(top, #5a0000, #8c0e0e);
+    background-image: -moz-linear-gradient(top, #5a0000, #8c0e0e);
+    background-image: -ms-linear-gradient(top, #5a0000, #8c0e0e);
+    background-image: -o-linear-gradient(top, #5a0000, #8c0e0e);
+    background-image: linear-gradient(to bottom, #5a0000, #8c0e0e);
+    -webkit-border-radius: 28;
+    -moz-border-radius: 28;
+    border-radius: 28px;
+    font-family: Arial;
+    color: #ffffff;
+    padding: 5px 20px 5px 20px;
+    border:2px solid #5A0000;
+
+}
+
+button:hover,input[type = "submit"]:hover {
+    /*background: #fc3c3c;*/
+    background-image: -webkit-linear-gradient(top, #fc3c3c, #5a0000);
+    background-image: -moz-linear-gradient(top, #fc3c3c, #5a0000);
+    background-image: -ms-linear-gradient(top, #fc3c3c, #5a0000);
+    background-image: -o-linear-gradient(top, #fc3c3c, #5a0000);
+    background-image: linear-gradient(to bottom, #fc3c3c, #5a0000);
+}
+
+th {
+    border: 1px solid darkgray;
+    cursor: pointer;
+    padding: 5px;
+    z-index: -9999;
+}
+table{
+    background:none;
+}
+
+tr:nth-child(even){
+    background: #eeeeee;
+}
+
+.table_content{
+    position:relative;
+    text-align:center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 75%;
+}
+
+#table_titles{
+    border-collapse: collapse;	
+    padding-top: 5px;
+    padding-bottom: 4px;
+    background-color: gray;
+    color: white;
+}
+
+#table_data{
+    border-collapse: collapse;	
+    background-color: gainsboro;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    position: relative;
+}
+
+#execute_button{
+    margin-top: .5em;
+    width: 250px;
+    margin-left: -1%;
+}
+
+#make_choice_button {
+    margin-left: 5%;
+    margin-right: 5%;
+    float: right;
+}
+
+#control_button{
+    width: 225px;
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: 22%;
+}
+
+#addGECourse_control_button{
+    width: 150px;
+    text-align: center 
+    /*
+     margin-top: 15px;
+     margin-bottom: 15px;
+     margin-left: 22%;
+    */
+}
+
+/*button.control_button{
+        width: 225px;
+    text-align: center;
+    font-size: 20px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: 22%;
+}*/
+
+
+
+#control_management_container{
+    margin-top: 10%;
+    width: 400px;
+    max-height:100%;
+}
+
+#small_container{
+    margin-top: 10%;
+    width: 400px;
+    height: 100%;
+}
+
+#reset_container{
+    margin-top: 10%;
+    width: 400px;
+    height: 215px;
+}
+
+#user_manager_container{
+     margin-top: 10%;
+    width: 400px;
+    height: 300px;
+}
+#login_form{
+    font-family: "Ariel", Helvetica, san-serif;
+    font-weight: bold;
+    color: black;
+    margin-left: 35px;
+    margin-top: 10px;
+    max-height: 100%;
+}
+
+
+input[type="text"]  {  /* An attribute selector */
+    width: 15em; /*space for user to type */
+    margin-left: 0.5em;    
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+}
+
+#loginPassword
+{
+    width: 15em; /*space for user to type */
+    margin-left: 9px;    
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+}
+
+input[type = "submit"].submit_button{
+    margin-top: 1em;
+    margin-left: 25%;
+    width: 150px;
+}
+
+#login_text_container{
+    display:inline-block;
+}
+
+#huskyIcon
+{
+    display: inline;
+    float: left;
+}
+
+#image_message_container{
+    display: inline;
+    float: right;
+    width: 300px;
+    height: 30px;
+    padding-top: 10px;
+    padding-bottom: 25px;
+    text-wrap: normal;
+}
+
+#changePasswordMessage
+{
+    width: 100%;
+    height: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-wrap: normal;
+    font-family: "Ariel", Helvetica, san-serif;
+    font-weight: bold;
+    text-align: center;
+    font-size: 14pt;
+    color: red;
+}
+
+#forgetMessage
+{
+    width: 100%;
+    height: 30px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    text-wrap: normal;
+    font-family: "Ariel", Helvetica, san-serif;
+    font-weight: bold;
+    text-align: center;
+    font-size: 14pt;
+    color: red;    
+}
+
+#semester_filter {
+    alignment-adjust: central;
+    margin-left: 40%;
+    float: left;
+}
+
+#forgot_password_link{
+    margin-left:70%;
+    font-size: 10px;
+    color:#888888;
+}
+
+.table_container{
+    margin-top:2%;
+    max-height:350px;
+    overflow-y: hidden;
+    position: relative;
+    height: 350px;
+    background-color: #DCDCDC;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.modify_table{
+    margin-top:2%;
+    max-height:250px;
+}
+#control_page_container{
+    margin-top: 10%;
+    width: 400px;
+    height: 300px;
+}
+
+
+.btn {
+
+	cursor: pointer;
+	display: inline-block;
+	margin: 15px 30px;
+	outline: none;
+	position: relative;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	transition: all 0.3s;
+}
+
+.btn:after {
+	content: '';
+	position: absolute;
+	z-index: -1;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	transition: all 0.3s;
+        display: inline-block;
+}
+.icon-add:before {
+	content: url(../images/plusSign.png); 
+        vertical-align:middle;
+}
+.icon-remove:before {
+	content: url(../images/xSign.png); 
+        vertical-align:middle;
+}
+.icon-search:before {
+	content: url(../images/searchicon.png); 
+        vertical-align:middle;
+}
+
+.icon-arrow-right:before {
+	content: url(../images/arrowRight.png); 
+        vertical-align:middle;
+}
+.icon-arrow-left:before {
+	content: url(../images/arrowLeft.png); 
+        vertical-align:middle;
+}
+.icon-menu:before {
+	content: url(../images/menuicon.png); 
+        vertical-align:middle;
+}
+.icon-edit:before {
+	content: url(../images/editIcon.png); 
+        vertical-align:middle;
+}
+.icon-update:before {
+	content: url(../images/update.png); 
+        vertical-align:middle;
+}
+.icon-submit:before {
+	content: url(../images/submitIcon.png); 
+        vertical-align:middle;
+}
+.icon-save:before {
+	content: url(../images/SaveIcon.png); 
+        vertical-align:middle;
+}
+ /*Button 4*/ 
+.btn-4 {
+        padding-right: 35px;
+        padding-top: 10px;
+	color: #fff;
+	overflow: hidden;
+}
+
+
+.btn-4:before {
+	position: relative;
+	height: 100%;
+	font-size: 125%;
+        display: inline-block;
+	color: #fff;
+	-webkit-transition: all .3s;
+	-moz-transition: all .3s;
+	transition: all .3s;
+}
+
+.btn-4:active:before {
+	color: #17954c;
+}
+
+ /*Button 4a*/ 
+.btn-4a:before {
+	left: 155%;
+	top: 0;
+}
+
+.btn-4a:hover:before {
+	left: 75%;
+        display: inline-block;
+}
+ /*Button 4b*/ 
+.btn-4b:before {
+	left: -50%;
+	top: 0;
+}
+
+.btn-4b:hover:before {
+	left: -5%;
+}
+ /*Button 4c*/ 
+.btn-4c:before {
+	left: 170%;
+	top: 0;
+}
+
+.btn-4c:hover:before {
+	left: 100%;
+        display: inline-block;
+}
+/*button 4d*/
+.btn-4d:before {
+	left: -90%;
+	top: 0;
+}
+
+.btn-4d:hover:before {
+	left: -10%;
+}
+
+.submenu { display: none; }
+.menu>li:hover>.submenu { display: block; }
+
+
+/*button 4c*/
+.btn-4e:before {
+	left: -80%;
+	top: 0;
+}
+
+.btn-4e:hover:before {
+	left: -10%;
+}
+
+ /*Button 4c*/ 
+.btn-4f:before {
+	left: 170%;
+	top: 0;
+}
+
+.btn-4f:hover:before {
+	left: 85%;
+        display: inline-block;
+}
+
+.btn-4g:before {
+	left: 170%;
+	top: 0;
+}
+
+.btn-4g:hover:before {
+	left: 80%;
+        display: inline-block;
+}
+
+/*IN CASE OF FORMAT ERROS, COMMENT OUT THE FOLLOWING: */
+.headerUL {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+    display: inline;
+}
+
+.headerUL .headerIL {
+    font-family: "Ariel", Helvetica, san-serif;
+    font-size: 16px;
+    font-weight: bold;
+    /*color:white;  */  
+    line-height: 50px;
+    display: block;
+    float: right;
+    text-decoration: none;
+    position: relative;
+}
+.headerIL .headerUL {
+    display: none;
+}
+.headerUL .headerIL .headerA {
+    display: block;
+    background: #5A0000;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    text-decoration: none;
+    white-space: nowrap;
+    color: white;
+}
+.headerUL .headerIL .headerA:hover {
+    background: #AA0000;
+}
+.headerIL:hover .headerUL {
+    display: block;
+    position: absolute;
+    cursor: pointer;
+}
+.headerIL:hover .headerIL {
+    float: none;
+    cursor: pointer;
+}
+.headerIL:hover .headerA {
+    background: #8A0000;
+    cursor: pointer;
+}
+/*END WARNING*/
+.load_container{
+    position: relative;    
+    left: -50%;
+    border: 2px solid;
+    border-radius: 25px; 
+    background-color: #FFCC99;
+    -webkit-box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+}
+
+.loadCenter
+{
+    position: absolute;    
+    left: 50%;
+    top: 20%;
+}
+
+/*
+Stylings for the Change Password Screen
+*/
+#resetPasswordChange{
+   
+    margin-left: -5%;
+}
+#reset_content_container{
+    margin-top: 10%;
+    width: 400px;
+    height: 225px;
+}
+
+
+#resetPasswordCancel{
+
+    margin-right: -15%;
+}
+
+/*
+    Styling for account information pages.
+*/
+#accountInformationTitle {
+    width: 80%;
+    height: 50px;
+    padding-bottom: 15px;
+    text-wrap: normal;
+    font-family: "Ariel", Helvetica, san-serif;
+    font-weight: bold;
+    text-align: center;
+    font-size: 12pt;
+}
+
+#changeUsernameTitle {
+    width: 100%;
+    height: 50px;
+    padding-top: 5px;
+    text-wrap: normal;
+    font-family: "Ariel", Helvetica, san-serif;
+    font-weight: bold;
+    text-align: center;
+    font-size: 12pt;
+}
+
+#changeUsernameInput {
+    width: 100%;
+}
+
+/* styles for addGECourses */
+.addGECourse_container {
+    margin-left: 25%;
+    vertical-align: middle;
+}
