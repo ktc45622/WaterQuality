@@ -35,7 +35,7 @@
                 <button type="submit" id="resetSubmit" value="Submit" class ="btn btn-4 btn-4d icon-submit" 
                         name="submit">Submit</button>
                 <button type="button" id="resetGoBack" class ="btn btn-4 btn-4d icon-arrow-left" name="goback" 
-                        onclick="location.href='/SampleWebApplication/';">Cancel</button>
+                        onclick="location.href='/WaterQuality/';">Cancel</button>
                 </div>
             </form>
         </section>
