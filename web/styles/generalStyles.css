@@ -376,7 +376,12 @@ input[type = "submit"].submit_button{
 }
 
 #forgot_password_link{
-    margin-left:70%;
+    margin-left:40%;
+    font-size: 10px;
+    color:#888888;
+}
+
+#guest_user_link{
     font-size: 10px;
     color:#888888;
 }

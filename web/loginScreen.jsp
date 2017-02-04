@@ -38,6 +38,7 @@
                     <input type="hidden" name="control" value="login">
                     Username: <input type = "text" name="username"  placeholder="Enter Username" value="${username}"/> <br>
                     Password: <input id="loginPassword" type="password" name="password"  placeholder="Enter Password"/><br>
+                    <a href="/WaterQuality/" id="guest_user_link">Continue as Guest</a>
                     <a href="ForgotPassword.jsp" id ="forgot_password_link">Forgot Password</a> <br>
                 </div>
 
