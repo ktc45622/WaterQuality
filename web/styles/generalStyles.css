@@ -279,6 +279,18 @@ tr:nth-child(even){
     height: 100%;
 }
 
+#dashboard_container{
+    margin-top: 10%;
+    width: 1000px;
+    height: 100%;
+}
+
+#dashboard_data_container{
+    margin-top: 10%;
+    width: 400px;
+    height: 100%;
+}
+
 #reset_container{
     margin-top: 10%;
     width: 400px;
