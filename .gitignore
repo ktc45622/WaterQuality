@@ -12,6 +12,8 @@ nbdist/
 ### Java ###
 *.class
 
+*.properties
+
 # BlueJ files
 *.ctxt
 
