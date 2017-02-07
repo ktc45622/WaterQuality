@@ -691,3 +691,18 @@ Stylings for the Change Password Screen
     margin-left: 25%;
     vertical-align: middle;
 }
+
+/**
+ *added for admin page
+ *@author Dan
+ */
+
+#admin_container{
+    margin-top: 10%;
+    width: 700px;
+    height: 400px;
+}
+
+#date_box{
+    width: 50px;
+}
