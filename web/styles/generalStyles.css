@@ -710,6 +710,7 @@ Stylings for the Change Password Screen
     vertical-align: middle;
 }
 
+
 /* Style the list */
 ul.tab {
     list-style-type: none;
@@ -746,4 +747,18 @@ ul.tab li a:focus, .active {background-color: #ccc;}
     padding: 6px 12px;
     border: 1px solid #ccc;
     border-top: none;
+}
+/**
+ *added for admin page
+ *@author Dan
+ */
+
+#admin_container{
+    margin-top: 10%;
+    width: 700px;
+    height: 400px;
+}
+
+#date_box{
+    width: 50px;
 }
