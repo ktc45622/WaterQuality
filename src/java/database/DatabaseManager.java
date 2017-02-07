@@ -10,138 +10,126 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author Tyler Mutzek
  */
-@WebServlet(name = "DatabaseManager", urlPatterns = {"/DatabaseManager"})
-public class DatabaseManager extends HttpServlet {
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
+public class DatabaseManager {
+
+    public void createDataValueTable()    
     {
         Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
-        HttpSession session = request.getSession();
-        String url = "/index.html";
-        try
+        try(Connection conn = sql.getConnection();)
         {
-            Connection conn = sql.getConnection();
-            String action = request.getParameter("action");
-            
-            if (action == null) 
-            {
-                action = "Menu";
-            }
-            else if(action == "ManualInput")
-            {
-                String insertSQL = "INSERT INTO WaterData vales(?,?,?,?,?,?)";
-                int entryID;// = get next auto increment number
-                String name = request.getParameter("name");
-                String units = request.getParameter("units");
-                String sensor = "Manual Entry";
-                LocalDateTime time; // = request.getParameter()
-                float value = request.getParameter("value");
-                
-                PreparedStatement p = conn.prepareStatement(insertSQL);
-                p.setString(1, entryID);
-                p.setString(2, name);
-                p.setString(3, units);
-                p.setString(4, sensor);
-                p.setString(5, time);
-                p.setString(6, value);
-                p.executeUpdate();
-                p.close();
-                
-                url = "/JSPs/ManualEntry2.jsp";
-            }
-            else if(action == "DisplayGraph")
-            {
-                String query = "Select * from WaterData Where name = ?"
-                        + " AND time >= ? AND time <= ? AND sensor = ?";
-                PreparedStatement p = conn.prepareStatement(query);
-                p.setString(1, request.getParameter("name"));
-                p.setString(2, request.getParameter("lowerTime"));
-                p.setString(3, request.getParameter("upperTime"));
-                p.setString(4, request.getParameter("sensor"));
-                ResultSet rs = p.executeQuery();
-                
-                ArrayList<DataValue> graphData = new ArrayList<>();
-                int entryID;
-                String name;
-                String units;
-                String sensor;
-                LocalDateTime time;
-                float value;
-                while(!rs.isAfterLast())
-                {
-                    entryID = rs.getInt(1);
-                    name = rs.getString(2);
-                    units = rs.getString(3);
-                    sensor = rs.getString(4);
-                    //time = rs.getTime(5);
-                    value = rs.getFloat(6);
-                    DataValue dV = new DataValue(entryID,name,units,sensor,time,value);
-                    graphData.add(dV);
-                    
-                    rs.next();
-                }
-                rs.close();
-                p.close();
-                
-                session.setAttribute("GraphData", graphData);
-            }
-            
+            Statement s = conn.createStatement();
+            String createTable = "Create Table DataValues("
+                    + "entryID number primary key AUTO_INCREMENT,"
+                    + "name varchar,"
+                    + "units varchar,"
+                    + "sensor varchar"
+                    + "time Timestamp"
+                    + "value number"
+                    + ");";
+            s.executeQuery(createTable);
+            s.close();
         }
         catch (Exception ex)//SQLException ex 
         {
-            System.out.println("Error processing request: " + request.getParameter("action"));
+            System.out.println("Error processing request: Create Data Value Table");
+        }
+        
+    }
+    
+    public void manualInput(String name, String units, Timestamp time, float value)
+    {
+        Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
+        try(Connection conn = sql.getConnection();)
+        {
+            String insertSQL = "INSERT INTO WaterData vales(?,?,?,?,?,?)";
+            String sensor = "Manual Entry";
+                
+            PreparedStatement p = conn.prepareStatement(insertSQL);
+            p.setString(1, name);
+            p.setString(2, units);
+            p.setString(3, sensor);
+            p.setString(4, time+"");
+            p.setString(5, value+"");
+            p.executeUpdate();
+            p.close();
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            System.out.println("Error processing request: Manual Data Insertion");
         }
     }
     
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException 
+    public ArrayList<DataValue> getGraphData(String name, Timestamp lower, Timestamp upper, String sensor)
     {
-        processRequest(request, response);
+        ArrayList<DataValue> graphData = new ArrayList<>();
+        Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
+        try(Connection conn = sql.getConnection();)
+        {
+            String query = "Select * from WaterData Where name = ?"
+                + " AND time >= ? AND time <= ? AND sensor = ?";
+            PreparedStatement p = conn.prepareStatement(query);
+            p.setString(1, name);
+            p.setString(2, lower+"");
+            p.setString(3, upper+"");
+            p.setString(4, sensor);
+            ResultSet rs = p.executeQuery();
+                
+            
+            int entryID;
+            String units;
+            Timestamp time;
+            float value;
+            while(!rs.isAfterLast())
+            {
+                entryID = rs.getInt(1);
+                name = rs.getString(2);
+                units = rs.getString(3);
+                sensor = rs.getString(4);
+                time = rs.getTimestamp(5);
+                value = rs.getFloat(6);
+                DataValue dV = new DataValue(entryID,name,units,sensor,time,value);
+                graphData.add(dV);
+                    
+                rs.next();
+            }
+            rs.close();
+            p.close();
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            System.out.println("Error processing request: Retrieve Graph Data");
+        }
+        return graphData;
     }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException 
+    
+    public void sensorDataInput(String name, String units, String sensor, Timestamp time, float value)
     {
-        processRequest(request, response);
+        Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
+        try(Connection conn = sql.getConnection();)
+        {
+            String insertSQL = "INSERT INTO WaterData vales(?,?,?,?,?,?)";
+                
+            PreparedStatement p = conn.prepareStatement(insertSQL);
+            p.setString(1, name);
+            p.setString(2, units);
+            p.setString(3, sensor);
+            p.setString(4, time+"");
+            p.setString(5, value+"");
+            p.executeUpdate();
+            p.close();
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            System.out.println("Error processing request: Sensor Data Insertion");
+        }
     }
+            
 }

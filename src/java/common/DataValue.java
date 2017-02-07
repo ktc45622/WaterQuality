@@ -5,9 +5,7 @@
 package beans;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.sql.Timestamp;
 /**
  *
  * @author Tyler Mutzek
@@ -18,14 +16,14 @@ public class DataValue implements Serializable
     private String name;//name of this data type (e.g. temperature, pressure)
     private String units;//units this data value is in (e.g. celcius)
     private String sensor;//name distinguishing this sensor from others
-    private LocalDateTime time;//time the data value was recorded
+    private Timestamp time;//time the data value was recorded
     private float value;//the value the sensor detected
     
     public DataValue()
     {
         
     }
-    public DataValue(int entryID, String name, String units, String sensor, LocalDateTime time, float value)
+    public DataValue(int entryID, String name, String units, String sensor, Timestamp time, float value)
     {
         this.entryID = entryID;
         this.name = name;
@@ -35,28 +33,28 @@ public class DataValue implements Serializable
         this.value = value;
     }
     /**
-     * @return the id
+     * @return the entryID
      */
     public int getEntryID() {
         return entryID;
     }
 
     /**
-     * @param id the id to set
+     * @param entryID the id to set
      */
     public void setEntryID(int entryID) {
         this.entryID = entryID;
     }
 
     /**
-     * @return the unit
+     * @return the units
      */
     public String getUnits() {
         return units;
     }
 
     /**
-     * @param unit the unit to set
+     * @param units the unit to set
      */
     public void setUnits(String units) {
         this.units = units;
@@ -77,14 +75,14 @@ public class DataValue implements Serializable
     }
 
     /**
-     * @return the node_name
+     * @return the sensor
      */
     public String getSensor() {
         return sensor;
     }
 
     /**
-     * @param node_name the node_name to set
+     * @param sensor the node_name to set
      */
     public void setSensor(String sensor) {
         this.sensor = sensor;
@@ -93,14 +91,14 @@ public class DataValue implements Serializable
     /**
      * @return the time
      */
-    public LocalDateTime getTime() {
+    public Timestamp getTime() {
         return time;
     }
 
     /**
      * @param time the time to set
      */
-    public void setTime(LocalDateTime time) {
+    public void setTime(Timestamp time) {
         this.time = time;
     }
 
