@@ -49,23 +49,14 @@ public class DataReceiver {
                 .map(str -> (JSONObject) new JSONParser().parse(str));
     }
     
-    public static Observable<Pair<String, Float>> test(Instant start, Instant end) {
-        String url = "https://ienvironet.com/api/data/" + start.getEpochSecond() + ":" + end.getEpochSecond() + "/0A178632?auth_token=avfzf6dn7xgv48qnpdhqzvlkz5ke7184";
+    public static Observable<Pair<String, Double>> test(Instant start, Instant end) {
+        String url = "https://ienvironet.com/api/data/" + start.getEpochSecond() + ":" + end.getEpochSecond() + "/637737849.json?auth_token=avfzf6dn7xgv48qnpdhqzvlkz5ke7184";
         System.out.println("Getting data from " + url);
         return getData(url)
                 .map((JSONObject obj) -> (JSONArray) obj.get("data"))
                 .flatMap(Observable::fromIterable)
                 .doOnNext(obj -> System.out.println("Data Received: " + obj))
-                .filter(obj -> ((JSONObject) obj).get("name").equals("Temperature"))
-                .sorted((o1, o2) -> {
-                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss.SSSSSX");
-                    try {
-                        return format.parse((String) ((JSONObject) o1).get("timestamp")).compareTo(format.parse((String) ((JSONObject) o2).get("timestamp")));
-                    } catch (ParseException ex) {
-                        throw new RuntimeException("Unable to parse timestamp!");
-                    }
-                })
-                .map(obj -> Pair.with((String)((JSONObject) obj).get("timestamp"), (Float) ((JSONObject) obj).get("value")));
+                .map(obj -> Pair.with((String)((JSONObject) obj).get("timestamp"), (Double) ((JSONObject) obj).get("value")));
                 
     }
     
