@@ -3,6 +3,7 @@ package servlets;
 
 
 
+import async.DataReceiver;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import javax.servlet.ServletException;
@@ -34,6 +35,7 @@ public class ControlServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        DataReceiver.init();
         HttpSession session = request.getSession(true);//Create a new session if one does not exists
         final Object lock = session.getId().intern();//To synchronize the session variable
         database.UserManager um = database.Database.getDatabaseManagement().getUserManager();
