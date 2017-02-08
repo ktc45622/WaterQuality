@@ -1,11 +1,12 @@
 /*
  * Includes various database managing 
  */
-package waterquality;
+package database;
 
+import common.DataValue;
 import java.io.IOException;
-import beans.DataValue;
-import database.Web_MYSQL_Helper;
+import common.User;
+import common.UserRole;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import security.SecurityCode;
 
 /**
  *
@@ -44,13 +46,43 @@ public class DatabaseManager {
         
     }
     
-    public void manualInput(String name, String units, Timestamp time, float value)
+    public void createUserTable()
     {
         Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
         try(Connection conn = sql.getConnection();)
         {
-            String insertSQL = "INSERT INTO WaterData vales(?,?,?,?,?,?)";
-            String sensor = "Manual Entry";
+            Statement s = conn.createStatement();
+            String createTable = "Create Table Users("
+                    + "userNumber number primary key AUTO_INCREMENT,"
+                    + "loginName varchar,"
+                    + "password varchar,"
+                    + "salt varchar"
+                    + "lastName varchar"
+                    + "firstName varchar"
+                    + "emailAddress varchar"
+                    + "userRole varchar"
+                    + "lastLogin Timestamp"
+                    + "lastAttemptedLogin Timestamp"
+                    + "loginCount number"
+                    + "attemptedLoginCount number"
+                    + "locked boolean"
+                    + ");";
+            s.executeQuery(createTable);
+            s.close();
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            System.out.println("Error processing request: Create Data Value Table");
+        }
+    }
+    
+    public void manualInput(String name, String units, Timestamp time, float value, User u)
+    {
+        Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
+        try(Connection conn = sql.getConnection();)
+        {
+            String insertSQL = "INSERT INTO WaterData values(?,?,?,?,?,?)";
+            String sensor = u.getFirstName()+u.getLastName();
                 
             PreparedStatement p = conn.prepareStatement(insertSQL);
             p.setString(1, name);
@@ -64,6 +96,42 @@ public class DatabaseManager {
         catch (Exception ex)//SQLException ex 
         {
             System.out.println("Error processing request: Manual Data Insertion");
+        }
+    }
+    
+    public void manualDeletion(int entryID)
+    {
+        Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
+        try(Connection conn = sql.getConnection();)
+        {
+            String deleteSQL = "Delete from WaterData where entryID = ?";
+                
+            PreparedStatement p = conn.prepareStatement(deleteSQL);
+            p.setString(1, entryID+"");
+            p.executeUpdate();
+            p.close();
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            System.out.println("Error processing request: Manual Data Deletion");
+        }
+    }
+    
+    public void deleteUser(int userID)
+    {
+        Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
+        try(Connection conn = sql.getConnection();)
+        {
+            String deleteSQL = "Delete from Users where entryID = ?";
+                
+            PreparedStatement p = conn.prepareStatement(deleteSQL);
+            p.setString(1, userID+"");
+            p.executeUpdate();
+            p.close();
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            System.out.println("Error processing request: Manual Data Deletion");
         }
     }
     
@@ -115,7 +183,7 @@ public class DatabaseManager {
         Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
         try(Connection conn = sql.getConnection();)
         {
-            String insertSQL = "INSERT INTO WaterData vales(?,?,?,?,?,?)";
+            String insertSQL = "INSERT INTO WaterData values(?,?,?,?,?,?)";
                 
             PreparedStatement p = conn.prepareStatement(insertSQL);
             p.setString(1, name);
@@ -131,5 +199,36 @@ public class DatabaseManager {
             System.out.println("Error processing request: Sensor Data Insertion");
         }
     }
+    
+    public void addNewUser(String username, String password, String firstName,
+            String lastName, String email, UserRole userRole, boolean locked)
+    {
+        Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
+        try(Connection conn = sql.getConnection();)
+        {
+            String insertSQL = "INSERT INTO AdminList values(?,?,?,?,?,?,?,?,?,?,?,?)";
+            String salt = "Brandon";
+            password = SecurityCode.encryptSHA256(password + salt);
             
+            PreparedStatement p = conn.prepareStatement(insertSQL);
+            p.setString(1, username);
+            p.setString(2, password);
+            p.setString(3, salt);
+            p.setString(4, firstName);
+            p.setString(5, lastName);
+            p.setString(6, email);
+            p.setString(7, userRole.getRoleName());
+            p.setString(8, new Timestamp(1483246800000L).toString());//last login time
+            p.setString(9, new Timestamp(1483246800000L).toString());//last attempted login time
+            p.setString(10, 0+"");//login count
+            p.setString(11, 0+"");//login attempted count
+            p.setString(12, locked+"");
+            p.executeUpdate();
+            p.close();
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            System.out.println("Error processing request: Add new user");
+        }
+    }
 }

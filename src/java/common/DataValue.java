@@ -2,7 +2,7 @@
  * A modular java bean for storage for handling any kind of data value
  *
  */
-package beans;
+package common;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
