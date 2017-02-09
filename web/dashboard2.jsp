@@ -29,9 +29,10 @@
                 </div> 
             </header>     
             <ul class="tab">
-                <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Graph')"
+                <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Graph'); hide();"
                        id="defaultOpen">Graph</a></li>
-                <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Table')">Table</a></li>
+                <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Table'); hide();">
+                        Table</a></li>
             </ul>
                 <div id="Graph" class="tabcontent">
                     <img id="graphPic" src="images/graph.png">
@@ -47,22 +48,26 @@
                     Data Type
                 </div> 
             </header> 
-                <form>
-                    <input type="checkbox" id="data" value="data">Data<br>
-                    <input type="checkbox" id="data" value="data">Data<br>
-                    <input type="checkbox" id="data" value="data">Data<br>
-                    <input type="checkbox" id="data" value="data">Data<br>
-                    <input type="checkbox" id="data" value="data">Data<br>
-                    <input type="checkbox" id="data" value="data">Data<br>
-                    <input type="checkbox" id="data" value="data">Data<br>
-                    <input type="checkbox" id="data" value="data">Data<br>
+                <form id="data_type_form">
+                    <div class="" id="select_all_toggle"><input type="checkbox" onclick="toggle(this);" 
+                           id="select_all_data" value="select_all_data">Select all</div><br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
                     <br>
+                    <input type="submit" id="data_type_submit">
                 </form>
             </aside><br> 
             
         </section>   
-        <script>
+        <script type="text/javascript">
             document.getElementById("defaultOpen").click();
+            
             function openTab(evt, tabName) {
                 var i, tabcontent, tablinks;
                 tabcontent = document.getElementsByClassName("tabcontent");
@@ -75,6 +80,22 @@
                 }
                 document.getElementById(tabName).style.display = "block";
                 evt.currentTarget.className += " active";
+            }
+            
+            function toggle(source) {
+                var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (checkboxes[i] != source)
+                        checkboxes[i].checked = source.checked;
+                }
+            }
+            
+            function hide(){
+                var item=document.getElementById("select_all_toggle");
+                if(item.className=='hide')
+                    item.className='unhide';
+                else
+                    item.className='hide';
             }
         </script>
     </body>
