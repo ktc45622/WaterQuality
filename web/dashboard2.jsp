@@ -44,8 +44,7 @@
                 <div id="Graph" class="tabcontent">
                     <canvas id="myChart" width=25% height=20%></canvas>
                 </div>
-                <div id="Table" class="tabcontent">
-                    <img id="tablePic" src="images/table.jpg">
+                <div id="Table" class="tabcontent" style="height:400px;overflow:auto;">
                 </div>
             </section>
             
@@ -97,6 +96,16 @@
                     "});" + 
                     "</script>"
             );
+        
+        out.append("<script>"
+                + "var table = document.getElementById('Table').innerHTML = "
+                + "\"<table border='1'><tr><th>Timestamp</th><th>Value</th></tr>");
+        out.append(data
+                .stream()
+                .map(p -> "<tr><td>" + p.getValue0() + "</td><td>" + p.getValue1() + "</td></tr>")
+                .collect(Collectors.joining())
+        );
+        out.append("</table>\"</script>");
         %>
         
             <script>
