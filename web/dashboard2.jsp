@@ -35,10 +35,10 @@
                         Table</a></li>
             </ul>
                 <div id="Graph" class="tabcontent">
-                    <img id="graphPic" src="images/graph.png">
+                    
                 </div>
                 <div id="Table" class="tabcontent">
-                    <img id="tablePic" src="images/table.jpg">
+
                 </div>
             </section>
             
