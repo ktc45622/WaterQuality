@@ -1,15 +1,9 @@
-<%-- 
-    Document   : dashboard
-    Created on : Feb 6, 2017, 3:14:50 PM
-    Author     : Kevin
---%>
-
 <!DOCTYPE html>
 <html>
     <head>
          <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="styles/generalStyles.css" type="text/css">
+        <link rel="stylesheet" href="styles/dash2.css" type="text/css">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <noscript>
             <meta http-equiv="refresh" content="0; URL=/html/javascriptDisabled.html">
@@ -21,54 +15,59 @@
         <header class="title_bar_container"> 
             <div id="HeaderText">Water Quality</div>
         </header>
-        <section class = "content_container" id = "dashboard_container">
+        <section class = "content_container1" id = "dashboard_container">
             <header class = "content_title_bar" id="login_header"> 
                 <div class = "title" >
                     Dashboard
                 </div> 
             </header>
             
-            <section class = "content_container" id = "graph_container">
+            <section class = "content_container2" id = "graph_container">
             <header class = "content_title_bar" id="login_header"> 
                 <div class = "title" >
                     Graph
                 </div> 
             </header>     
             <ul class="tab">
-                <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Graph')"
+                <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Graph'); hide();"
                        id="defaultOpen">Graph</a></li>
-                <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Table')">Table</a></li>
+                <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Table'); hide();">
+                        Table</a></li>
             </ul>
                 <div id="Graph" class="tabcontent">
-                    <img id="graphPic" src="images/graph.png">
+                    
                 </div>
                 <div id="Table" class="tabcontent">
-                    <img id="tablePic" src="images/table.jpg">
+                    
                 </div>
             </section>
             
-            <aside class = "content_container" id = "dashboard_data_container">
+            <aside class = "content_container2" id = "dashboard_data_container">
             <header class = "content_title_bar" id="login_header"> 
                 <div class = "title" >
                     Data Type
                 </div> 
             </header> 
-                <form>
-                    <input type="checkbox" id="data" value="data">Data<br>
-                    <input type="checkbox" id="data" value="data">Data<br>
-                    <input type="checkbox" id="data" value="data">Data<br>
-                    <input type="checkbox" id="data" value="data">Data<br>
-                    <input type="checkbox" id="data" value="data">Data<br>
-                    <input type="checkbox" id="data" value="data">Data<br>
-                    <input type="checkbox" id="data" value="data">Data<br>
-                    <input type="checkbox" id="data" value="data">Data<br>
+                <form id="data_type_form">
+                    <div class="" id="select_all_toggle"><input type="checkbox" onclick="toggle(this);" 
+                           id="select_all_data" value="select_all_data">Select all</div><br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
+                    <input type="checkbox" class="data" id="data" value="data">Data<br>
                     <br>
+                    <input type="submit" id="data_type_submit">
                 </form>
             </aside><br> 
             
         </section>   
-        <script>
+        <script type="text/javascript">
             document.getElementById("defaultOpen").click();
+            
             function openTab(evt, tabName) {
                 var i, tabcontent, tablinks;
                 tabcontent = document.getElementsByClassName("tabcontent");
@@ -81,6 +80,22 @@
                 }
                 document.getElementById(tabName).style.display = "block";
                 evt.currentTarget.className += " active";
+            }
+            
+            function toggle(source) {
+                var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (checkboxes[i] != source)
+                        checkboxes[i].checked = source.checked;
+                }
+            }
+            
+            function hide(){
+                var item=document.getElementById("select_all_toggle");
+                if(item.className=='hide')
+                    item.className='unhide';
+                else
+                    item.className='hide';
             }
         </script>
     </body>
