@@ -172,5 +172,18 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 }
 
 .unhide{
-    
+    display:inline-block;
+}
+
+input[type="submit"]{
+    border-radius: 5px;
+    border: 0;
+    width: 100px;
+    height:25px;
+    background: #266B6B;
+    margin-left: 100px;
+}
+
+button:hover,input[type = "submit"]:hover {
+    background: #5CB05C;
 }

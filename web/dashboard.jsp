@@ -59,20 +59,20 @@
                 <form id="data_type_form">
                     <div class="" id="select_all_toggle"><input type="checkbox" onclick="toggle(this);" 
                            id="select_all_data" value="select_all_data">Select all</div><br>
-                    <input type="checkbox" class="data" id="data" value="data">Data<br>
-                    <input type="checkbox" class="data" id="data" value="data">Data<br>
-                    <input type="checkbox" class="data" id="data" value="data">Data<br>
-                    <input type="checkbox" class="data" id="data" value="data">Data<br>
-                    <input type="checkbox" class="data" id="data" value="data">Data<br>
-                    <input type="checkbox" class="data" id="data" value="data">Data<br>
-                    <input type="checkbox" class="data" id="data" value="data">Data<br>
-                    <input type="checkbox" class="data" id="data" value="data">Data<br>
+                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data1')" class="data" id="data1" value="data1">Data<br>
+                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data2')" class="data" id="data2" value="data2">Data<br>
+                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data3')" class="data" id="data3" value="data3">Data<br>
+                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data4')" class="data" id="data4" value="data4">Data<br>
+                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data5')" class="data" id="data5" value="data5">Data<br>
+                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data6')" class="data" id="data6" value="data6">Data<br>
+                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data7')" class="data" id="data7" value="data7">Data<br>
+                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data8')" class="data" id="data8" value="data8">Data<br>
                     <br>
-                    <input type="submit" id="data_type_submit">
+                    <div id="data_submit_holder"><input type="submit" id="data_type_submit"></div>
                 </form>
             </aside><br> 
             
-        </section>   
+        </section> 
         
         <%
         List<Pair<String, Double>> data = new ArrayList<>();
@@ -132,7 +132,7 @@
         
         <script type="text/javascript">
             document.getElementById("defaultOpen").click();
-            
+            var current;
             function openTab(evt, tabName) {
                 var i, tabcontent, tablinks;
                 tabcontent = document.getElementsByClassName("tabcontent");
@@ -145,6 +145,10 @@
                 }
                 document.getElementById(tabName).style.display = "block";
                 evt.currentTarget.className += " active";
+                
+                toggle(this);
+                checkedBoxes=0;
+                current=tabName;
             }
             
             function toggle(source) {
@@ -161,6 +165,20 @@
                     item.className='unhide';
                 else
                     item.className='hide';
+            }
+            
+            var checkedBoxes=0;
+            function fullCheck(id){
+                var item=document.getElementById(id);
+                if(item.checked==true){
+                    if(checkedBoxes<3)
+                        checkedBoxes++;
+                    else{
+                        item.checked=false;
+                    }
+                }
+                else
+                    checkedBoxes--;
             }
         </script>
     </body>
