@@ -70,7 +70,24 @@
                     <br>
                     <div id="data_submit_holder"><input type="submit" id="data_type_submit"></div>
                 </form>
-            </aside><br> 
+            </aside><br>
+            
+            //The data description box is defined here. Sample text is shown
+            //to provide an indication of the text-wrapping.
+            //This will need to pull text from a file which Brandon already
+            //typed and had Dr. Rier edit.
+            <aside class = "content_container2" id = "dashboard_data_description">
+                <header class = "content_title_bar" id = "login_header">
+                    <div class = "title">
+                        Description
+                    </div>
+                </header>
+                <a>This is where the description of the data will go! This will need to be pulled from a text file. 
+                    This is where the description of the data will go! This will need to be pulled from a text file. 
+                This is where the description of the data will go! This will need to be pulled from a text file. 
+                This is where the description of the data will go! This will need to be pulled from a text file. 
+                This is where the description of the data will go! This will need to be pulled from a text file. </a>
+            </aside>
             
         </section> 
         
