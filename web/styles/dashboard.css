@@ -121,12 +121,23 @@ and open the template in the editor.
 #dashboard_data_container{
     float:right;
     margin-top:5%;
+    margin-right:1%;
     width: 300px;
+}
+
+#dashboard_data_description{
+    float:left;
+    margin-top:5%;
+    margin-left:1%;
+    margin-right:1%;
+    width:97%;
+    text-align: center;
 }
 
 #graph_container{
     float:left;
     margin-top: 5%;
+    margin-left: 1%;
     width: 600px;
 }
 
