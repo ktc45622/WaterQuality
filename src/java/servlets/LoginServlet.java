@@ -168,7 +168,7 @@ public class LoginServlet extends HttpServlet {
                         // Returns the user back to the login screen.
                         request.getServletContext()
                                 .getRequestDispatcher(errorURL)
-                                .forward(request, response);
+                                .forward(request, response); 
                     }
 
                     // If your attempted Login count reaches its limit
@@ -260,8 +260,7 @@ public class LoginServlet extends HttpServlet {
         request.getServletContext()
                         .getRequestDispatcher("/loginScreen.jsp")
                         .forward(request, response);
-        System.out.println("Date: " + DataReceiver.test(Instant.now().minus(Period.ofWeeks(1)), Instant.now()).blockingFirst());
-//        processRequest(request, response);
+        processRequest(request, response);
     }
 
     /**
