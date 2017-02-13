@@ -98,7 +98,7 @@ public class LoginServlet extends HttpServlet {
 
         // Creates and assigns a <class>UserManager</class> from the 
         // DatabaseManagement class.
-           database.UserManager um = database.Database.getDatabaseManagement().getUserManager();
+           database.DatabaseManager um = new database.DatabaseManager();
         
             String username = request.getParameter("username");
             String password = request.getParameter("password");
@@ -130,7 +130,7 @@ public class LoginServlet extends HttpServlet {
             User potentialUser = um.getUserByLoginName(username);
             if (potentialUser != null && !potentialUser.isLocked()) {
                 if (potentialUser.getAttemptedLoginCount() < loginAttempts) {
-                    User user = um.validateUser(username, security.Encryption.hashString(password + salt));
+                    User user = um.validateUser(username, security.SecurityCode.encryptSHA256(password + salt));
                     if (user != null) { //Password was valid for this user
                         //Thread Safe
                         synchronized(lock){
@@ -153,11 +153,11 @@ public class LoginServlet extends HttpServlet {
                                 potentialUser.setLastAttemptedLoginTime(Timestamp.valueOf(LocalDateTime.now()));
                             }
                             potentialUser.setAttemptedLoginCount(potentialUser.getAttemptedLoginCount() + 1);
-                            um.updateUser(potentialUser);
+                            um.updateUserLogin(potentialUser);
                         } else {
                             potentialUser.setLastAttemptedLoginTime(Timestamp.valueOf(LocalDateTime.now()));
                             potentialUser.setAttemptedLoginCount(1);
-                            um.updateUser(potentialUser);
+                            um.updateUserLogin(potentialUser);
                         }
 
                         request.setAttribute("errorMessage", "Invalid password.");
@@ -174,7 +174,7 @@ public class LoginServlet extends HttpServlet {
                     request.setAttribute("errorMessage", "You have been Locked out. Please contact system administrator for access.");
                     potentialUser.setLocked(true);
                     potentialUser.setAttemptedLoginCount(0);
-                    um.updateUser(potentialUser);
+                    um.updateUserLogin(potentialUser);
                     emailUser(potentialUser, ipAddress);
 
                     // Returns the user back to the login screen.
