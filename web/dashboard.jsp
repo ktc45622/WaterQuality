@@ -76,44 +76,8 @@
         </section> 
         
         <%
-        List<Pair<String, Double>> data = new ArrayList<>();
-        DataReceiver.test(Instant.now().minus(Period.ofWeeks(4)), Instant.now())
-                .blockingSubscribe(data::add);
-        
-        String timeStr = data
-                .stream()
-                .map(p -> "\"" +  p.getValue0() + "\"")
-                .collect(Collectors.joining(","));
-        String dataStr = data
-                .stream()
-                .map(p -> "" + p.getValue1())
-                .collect(Collectors.joining(","));
-        
-        out.append("<script>" +
-                    "var ctx = document.getElementById('myChart').getContext('2d');\n" + 
-                   "var myChart = new Chart(ctx, {\n" +
-                    "  type: 'line',\n" +
-                    "  data: {\n" +
-                    "    labels: [" + timeStr + "],\n" +
-                    "    datasets: [{\n" +
-                    "      label: 'Generated Data',\n" +
-                    "      data: [" + dataStr + "],\n" +
-                    "      backgroundColor: 'transparent', borderColor: 'orange'\n" +
-                    "    }]\n" +
-                    "  }\n" +
-                    "});" + 
-                    "</script>"
-            );
-        
-        out.append("<script>"
-                + "var table = document.getElementById('Table').innerHTML = "
-                + "\"<table border='1'><tr><th>Timestamp</th><th>Value</th></tr>");
-        out.append(data
-                .stream()
-                .map(p -> "<tr><td>" + p.getValue0() + "</td><td>" + p.getValue1() + "</td></tr>")
-                .collect(Collectors.joining())
-        );
-        out.append("</table>\"</script>");
+        Pair<String, String> data = DataReceiver.generateGraph();
+        out.append(data.getValue0()).append(data.getValue1());
         %>
         
             <script>

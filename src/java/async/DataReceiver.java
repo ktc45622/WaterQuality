@@ -15,6 +15,10 @@ import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.javatuples.Pair;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,6 +30,49 @@ import org.json.simple.parser.JSONParser;
  */
 public class DataReceiver {
     private static final String JSON_URL = "https://ienvironet.com/api/data/last/0A178632?auth_token=avfzf6dn7xgv48qnpdhqzvlkz5ke7184";
+    
+    public static Pair<String, String> generateGraph() {
+        List<Pair<String, Double>> data = new ArrayList<>();
+        DataReceiver.test(Instant.now().minus(Period.ofWeeks(4)), Instant.now())
+                .blockingSubscribe(data::add);
+        
+        String timeStr = data
+                .stream()
+                .map(p -> "\"" +  p.getValue0() + "\"")
+                .collect(Collectors.joining(","));
+        String dataStr = data
+                .stream()
+                .map(p -> "" + p.getValue1())
+                .collect(Collectors.joining(","));
+        
+        StringBuilder out = new StringBuilder();
+        String chart = 
+            "<script>" +
+            "var ctx = document.getElementById('myChart').getContext('2d');\n" + 
+            "var myChart = new Chart(ctx, {\n" +
+             "  type: 'line',\n" +
+             "  data: {\n" +
+             "    labels: [" + timeStr + "],\n" +
+             "    datasets: [{\n" +
+             "      label: 'Generated Data',\n" +
+             "      data: [" + dataStr + "],\n" +
+             "      backgroundColor: 'transparent', borderColor: 'orange'\n" +
+             "    }]\n" +
+             "  }\n" +
+             "});" + 
+             "</script>";
+        
+        String table = "<script>"
+                + "var table = document.getElementById('Table').innerHTML = "
+                + "\"<table border='1'><tr><th>Timestamp</th><th>Value</th></tr>";
+        table += data
+                .stream()
+                .map(p -> "<tr><td>" + p.getValue0() + "</td><td>" + p.getValue1() + "</td></tr>")
+                .collect(Collectors.joining());
+        table += "</table>\"</script>";
+        
+        return Pair.with(chart, table);
+    }
     
     private static Observable<JSONObject> getData(String url) {
         return Observable.just(url)
