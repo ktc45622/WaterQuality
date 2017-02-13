@@ -14,13 +14,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import org.json.simple.JSONObject;
 import security.SecurityCode;
 
 /**
  *
  * @author Tyler Mutzek
  */
-public class DatabaseManager {
+public class DatabaseManager 
+{
 
     public void createDataValueTable()    
     {
@@ -79,59 +81,143 @@ public class DatabaseManager {
     public void manualInput(String name, String units, Timestamp time, float value, User u)
     {
         Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
-        try(Connection conn = sql.getConnection();)
+        Connection conn = sql.getConnection();
+        PreparedStatement p = null;
+        try
         {
+            conn.setAutoCommit(false);
             String insertSQL = "INSERT INTO WaterData values(?,?,?,?,?,?)";
             String sensor = u.getFirstName()+u.getLastName();
                 
-            PreparedStatement p = conn.prepareStatement(insertSQL);
+            p = conn.prepareStatement(insertSQL);
             p.setString(1, name);
             p.setString(2, units);
             p.setString(3, sensor);
             p.setString(4, time+"");
             p.setString(5, value+"");
             p.executeUpdate();
-            p.close();
+            conn.commit();
         }
         catch (Exception ex)//SQLException ex 
         {
             System.out.println("Error processing request: Manual Data Insertion");
+            if(conn!=null)
+            {
+                try
+                {
+                    System.out.println("Transaction is being rolled back");
+                    conn.rollback();
+                }
+                catch(SQLException excep)
+                {
+                    System.out.println("Rollback unsuccessful: " + excep);
+                }
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(p != null)
+                    p.close();
+                conn.close();
+            }
+            catch(SQLException excep)
+            {
+                System.out.println("Error closing statement or connection");
+            }
         }
     }
     
     public void manualDeletion(int entryID)
     {
         Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
-        try(Connection conn = sql.getConnection();)
+        Connection conn = sql.getConnection();
+        PreparedStatement p = null;
+        try
         {
+            conn.setAutoCommit(false);
             String deleteSQL = "Delete from WaterData where entryID = ?";
                 
-            PreparedStatement p = conn.prepareStatement(deleteSQL);
+            p = conn.prepareStatement(deleteSQL);
             p.setString(1, entryID+"");
             p.executeUpdate();
-            p.close();
+            conn.commit();
         }
         catch (Exception ex)//SQLException ex 
         {
             System.out.println("Error processing request: Manual Data Deletion");
+            if(conn!=null)
+            {
+                try
+                {
+                    System.out.println("Transaction is being rolled back");
+                    conn.rollback();
+                }
+                catch(SQLException excep)
+                {
+                    System.out.println("Rollback unsuccessful: " + excep);
+                }
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(p != null)
+                    p.close();
+                conn.close();
+            }
+            catch(SQLException excep)
+            {
+                System.out.println("Error closing statement or connection");
+            }
         }
     }
     
     public void deleteUser(int userID)
     {
         Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
-        try(Connection conn = sql.getConnection();)
+        Connection conn = sql.getConnection();
+        PreparedStatement p = null;
+        try
         {
+            conn.setAutoCommit(false);
             String deleteSQL = "Delete from Users where entryID = ?";
                 
-            PreparedStatement p = conn.prepareStatement(deleteSQL);
+            p = conn.prepareStatement(deleteSQL);
             p.setString(1, userID+"");
             p.executeUpdate();
-            p.close();
+            conn.commit();
         }
         catch (Exception ex)//SQLException ex 
         {
-            System.out.println("Error processing request: Manual Data Deletion");
+            System.out.println("Error processing request: Manual User Deletion");
+            if(conn!=null)
+            {
+                try
+                {
+                    System.out.println("Transaction is being rolled back");
+                    conn.rollback();
+                }
+                catch(SQLException excep)
+                {
+                    System.out.println("Rollback unsuccessful: " + excep);
+                }
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(p != null)
+                    p.close();
+                conn.close();
+            }
+            catch(SQLException excep)
+            {
+                System.out.println("Error closing statement or connection");
+            }
         }
     }
     
@@ -181,36 +267,67 @@ public class DatabaseManager {
     public void sensorDataInput(String name, String units, String sensor, Timestamp time, float value)
     {
         Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
-        try(Connection conn = sql.getConnection();)
+        Connection conn = sql.getConnection();
+        PreparedStatement p = null;
+        try
         {
+            conn.setAutoCommit(false);
             String insertSQL = "INSERT INTO WaterData values(?,?,?,?,?,?)";
                 
-            PreparedStatement p = conn.prepareStatement(insertSQL);
+            p = conn.prepareStatement(insertSQL);
             p.setString(1, name);
             p.setString(2, units);
             p.setString(3, sensor);
             p.setString(4, time+"");
             p.setString(5, value+"");
             p.executeUpdate();
-            p.close();
+            conn.commit();
         }
         catch (Exception ex)//SQLException ex 
         {
             System.out.println("Error processing request: Sensor Data Insertion");
+            if(conn!=null)
+            {
+                try
+                {
+                    System.out.println("Transaction is being rolled back");
+                    conn.rollback();
+                }
+                catch(SQLException excep)
+                {
+                    System.out.println("Rollback unsuccessful: " + excep);
+                }
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(p != null)
+                    p.close();
+                conn.close();
+            }
+            catch(SQLException excep)
+            {
+                System.out.println("Error closing statement or connection");
+            }
         }
     }
     
     public void addNewUser(String username, String password, String firstName,
-            String lastName, String email, UserRole userRole, boolean locked)
+            String lastName, String email, UserRole userRole)
     {
         Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
-        try(Connection conn = sql.getConnection();)
+        Connection conn = sql.getConnection();
+        PreparedStatement p = null;
+        try
         {
+            conn.setAutoCommit(false);
             String insertSQL = "INSERT INTO AdminList values(?,?,?,?,?,?,?,?,?,?,?,?)";
             String salt = "Brandon";
             password = SecurityCode.encryptSHA256(password + salt);
             
-            PreparedStatement p = conn.prepareStatement(insertSQL);
+            p = conn.prepareStatement(insertSQL);
             p.setString(1, username);
             p.setString(2, password);
             p.setString(3, salt);
@@ -222,13 +339,133 @@ public class DatabaseManager {
             p.setString(9, new Timestamp(1483246800000L).toString());//last attempted login time
             p.setString(10, 0+"");//login count
             p.setString(11, 0+"");//login attempted count
-            p.setString(12, locked+"");
+            p.setString(12, false+"");
             p.executeUpdate();
-            p.close();
+            conn.commit();
         }
         catch (Exception ex)//SQLException ex 
         {
             System.out.println("Error processing request: Add new user");
+            if(conn!=null)
+            {
+                try
+                {
+                    System.out.println("Transaction is being rolled back");
+                    conn.rollback();
+                }
+                catch(SQLException excep)
+                {
+                    System.out.println("Rollback unsuccessful: " + excep);
+                }
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(p != null)
+                    p.close();
+                conn.close();
+            }
+            catch(SQLException excep)
+            {
+                System.out.println("Error closing statement or connection");
+            }
+        }
+    }
+    
+    public void lockUser(int userID)
+    {
+        Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
+        Connection conn = sql.getConnection();
+        PreparedStatement p = null;
+        try
+        {
+            conn.setAutoCommit(false);
+            String modifySQL = "UPDATE Users"
+                    + "SET locked = true"
+                    + "WHERE userNumber = ?;";
+          
+            
+            p = conn.prepareStatement(modifySQL);
+            p.setString(1, userID+"");
+            p.executeUpdate();
+            conn.commit();
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            System.out.println("Error processing request: Lock User #" + userID);
+            if(conn!=null)
+            {
+                try
+                {
+                    System.out.println("Transaction is being rolled back");
+                    conn.rollback();
+                }
+                catch(SQLException excep)
+                {
+                    System.out.println("Rollback unsuccessful: " + excep);
+                }
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(p != null)
+                    p.close();
+                conn.close();
+            }
+            catch(SQLException excep)
+            {
+                System.out.println("Error closing statement or connection");
+            }
+        }
+    }
+    
+    public void insertJSON(JSONObject j)
+    {
+        Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
+        Connection conn = sql.getConnection();
+        PreparedStatement p = null;
+        try
+        {
+            conn.setAutoCommit(false);
+            String insertSQL = "INSERT INTO WaterData JSON ?";
+            
+            p = conn.prepareStatement(insertSQL);
+            p.setString(1, j.toJSONString());
+            p.executeUpdate();
+            conn.commit();
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            System.out.println("Error processing request: JSON Insertion");
+            if(conn!=null)
+            {
+                try
+                {
+                    System.out.println("Transaction is being rolled back");
+                    conn.rollback();
+                }
+                catch(SQLException excep)
+                {
+                    System.out.println("Rollback unsuccessful: " + excep);
+                }
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(p != null)
+                    p.close();
+                conn.close();
+            }
+            catch(SQLException excep)
+            {
+                System.out.println("Error closing statement or connection");
+            }
         }
     }
     
