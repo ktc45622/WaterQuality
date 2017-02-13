@@ -2,6 +2,7 @@ package servlets;
 
 import common.User;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -143,18 +144,18 @@ public class LoginServlet extends HttpServlet {
                     else {
 
                         if (potentialUser.getLastAttemptedLoginTime() == null) {
-                            potentialUser.setLastAttemptedLoginTime(LocalDateTime.now());
+                            potentialUser.setLastAttemptedLoginTime(Timestamp.valueOf(LocalDateTime.now()));
                         }
                         // If the current time is less than 15 mins after the first time they tried to log in,
                         // increment their login count bringing them closer to the number from property file
-                        if (LocalDateTime.now().isBefore(potentialUser.getLastAttemptedLoginTime().plusMinutes(15))) {
+                        if (Timestamp.valueOf(LocalDateTime.now()).before(Timestamp.valueOf(LocalDateTime.now().plusMinutes(15)) ) ) {
                             if (potentialUser.getAttemptedLoginCount() == 0) {
-                                potentialUser.setLastAttemptedLoginTime(LocalDateTime.now());
+                                potentialUser.setLastAttemptedLoginTime(Timestamp.valueOf(LocalDateTime.now()));
                             }
                             potentialUser.setAttemptedLoginCount(potentialUser.getAttemptedLoginCount() + 1);
                             um.updateUser(potentialUser);
                         } else {
-                            potentialUser.setLastAttemptedLoginTime(LocalDateTime.now());
+                            potentialUser.setLastAttemptedLoginTime(Timestamp.valueOf(LocalDateTime.now()));
                             potentialUser.setAttemptedLoginCount(1);
                             um.updateUser(potentialUser);
                         }

@@ -4,6 +4,7 @@ package servlets;
 
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -49,9 +50,9 @@ public class ControlServlet extends HttpServlet {
             user.setLoginCount(user.getLoginCount()+1);
             LocalDateTime now = LocalDateTime.now();
 
-            user.setLastLoginTime(now);
+            user.setLastLoginTime(Timestamp.valueOf(LocalDateTime.now()));
             user.setAttemptedLoginCount(0);
-            user.setLastAttemptedLoginTime(now);
+            user.setLastAttemptedLoginTime(Timestamp.valueOf(LocalDateTime.now()));
             um.updateUser(user);
         
             // Always lock a session variable to be thread safe.
