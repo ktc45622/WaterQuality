@@ -27,9 +27,10 @@ public class DatabaseManager
     public void createDataValueTable()    
     {
         Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
+        Statement s = null;
         try(Connection conn = sql.getConnection();)
         {
-            Statement s = conn.createStatement();
+            s = conn.createStatement();
             String createTable = "Create Table DataValues("
                     + "entryID number primary key AUTO_INCREMENT,"
                     + "name varchar,"
@@ -39,21 +40,29 @@ public class DatabaseManager
                     + "value number"
                     + ");";
             s.executeQuery(createTable);
-            s.close();
         }
         catch (Exception ex)//SQLException ex 
         {
             System.out.println("Error processing request: Create Data Value Table");
         }
-        
+        finally
+        {
+            try
+            {
+                if(s != null)
+                    s.close();
+            }
+            catch(SQLException e){System.out.println("Error closing statement");}
+        }
     }
     
     public void createUserTable()
     {
         Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
+        Statement s = null;
         try(Connection conn = sql.getConnection();)
         {
-            Statement s = conn.createStatement();
+            s = conn.createStatement();
             String createTable = "Create Table Users("
                     + "userNumber number primary key AUTO_INCREMENT,"
                     + "loginName varchar,"
@@ -70,11 +79,19 @@ public class DatabaseManager
                     + "locked boolean"
                     + ");";
             s.executeQuery(createTable);
-            s.close();
         }
         catch (Exception ex)//SQLException ex 
         {
             System.out.println("Error processing request: Create Data Value Table");
+        }
+        finally
+        {
+            try
+            {
+                if(s != null)
+                    s.close();
+            }
+            catch(SQLException e){System.out.println("Error closing statement");}
         }
     }
     
@@ -120,7 +137,8 @@ public class DatabaseManager
             {
                 if(p != null)
                     p.close();
-                conn.close();
+                if(conn != null)
+                    conn.close();
             }
             catch(SQLException excep)
             {
@@ -166,7 +184,8 @@ public class DatabaseManager
             {
                 if(p != null)
                     p.close();
-                conn.close();
+                if(conn != null)
+                    conn.close();
             }
             catch(SQLException excep)
             {
@@ -212,7 +231,8 @@ public class DatabaseManager
             {
                 if(p != null)
                     p.close();
-                conn.close();
+                if(conn != null)
+                    conn.close();
             }
             catch(SQLException excep)
             {
@@ -225,16 +245,18 @@ public class DatabaseManager
     {
         ArrayList<DataValue> graphData = new ArrayList<>();
         Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
+        PreparedStatement p = null;
+        ResultSet rs = null;
         try(Connection conn = sql.getConnection();)
         {
             String query = "Select * from WaterData Where name = ?"
                 + " AND time >= ? AND time <= ? AND sensor = ?";
-            PreparedStatement p = conn.prepareStatement(query);
+            p = conn.prepareStatement(query);
             p.setString(1, name);
             p.setString(2, lower+"");
             p.setString(3, upper+"");
             p.setString(4, sensor);
-            ResultSet rs = p.executeQuery();
+            rs = p.executeQuery();
                 
             
             int entryID;
@@ -254,12 +276,22 @@ public class DatabaseManager
                     
                 rs.next();
             }
-            rs.close();
-            p.close();
         }
         catch (Exception ex)//SQLException ex 
         {
             System.out.println("Error processing request: Retrieve Graph Data");
+        }
+        finally
+        {
+            try
+            {
+                if(p != null)
+                    p.close();
+                if(rs != null)
+                    rs.close();
+            }
+            catch(SQLException excep)
+            {System.out.println("Error closing statement or result set");}
         }
         return graphData;
     }
@@ -305,7 +337,8 @@ public class DatabaseManager
             {
                 if(p != null)
                     p.close();
-                conn.close();
+                if(conn != null)
+                    conn.close();
             }
             catch(SQLException excep)
             {
@@ -365,7 +398,8 @@ public class DatabaseManager
             {
                 if(p != null)
                     p.close();
-                conn.close();
+                if(conn != null)
+                    conn.close();
             }
             catch(SQLException excep)
             {
@@ -414,7 +448,8 @@ public class DatabaseManager
             {
                 if(p != null)
                     p.close();
-                conn.close();
+                if(conn != null)
+                    conn.close();
             }
             catch(SQLException excep)
             {
@@ -460,7 +495,8 @@ public class DatabaseManager
             {
                 if(p != null)
                     p.close();
-                conn.close();
+                if(conn != null)
+                    conn.close();
             }
             catch(SQLException excep)
             {
@@ -498,15 +534,20 @@ public class DatabaseManager
                 rs.getBoolean("locked")
                 );
         }
-        catch(SQLException e)
+        catch(Exception e)
         {
             System.out.println("Error retrieving user by login name");
         }
         finally
         {
             try
-            {p.close(); rs.close();}
-            catch(Exception excep)
+            {
+                if(p != null)
+                    p.close(); 
+                if(rs != null)
+                    rs.close();
+            }
+            catch(SQLException excep)
             {System.out.println("Error closing statement or result set");}
         }
         
@@ -543,15 +584,20 @@ public class DatabaseManager
                 rs.getBoolean("locked")
                 );
         }
-        catch(SQLException e)
+        catch(Exception e)
         {
             System.out.println("Error retrieving user by login name");
         }
         finally
         {
             try
-            {p.close(); rs.close();}
-            catch(Exception excep)
+            {
+                if(p != null)
+                    p.close();
+                if(rs != null)
+                    rs.close();
+            }
+            catch(SQLException excep)
             {System.out.println("Error closing statement or result set");}
         }
         
@@ -560,8 +606,6 @@ public class DatabaseManager
 
     public void updateUserLogin(User potentialUser) 
     {
-        User u = null;
-        
         Web_MYSQL_Helper sql = new Web_MYSQL_Helper();
         Connection conn = sql.getConnection();
         PreparedStatement p = null;
@@ -580,13 +624,18 @@ public class DatabaseManager
             p.setString(3, potentialUser.getLoginCount()+"");
             p.setString(4, potentialUser.getAttemptedLoginCount()+"");
             p.setString(5, potentialUser.getLoginName());
-            ResultSet rs = p.executeQuery();
-            
+            p.executeQuery();
+            conn.commit();
         }
-        catch(SQLException e)
+        catch(Exception e)
         {
             System.out.println("Error retrieving user by login name");
-            try{conn.rollback();}
+            if(conn != null)
+                try
+                {
+                    System.out.println("Transaction is being rolled back");
+                    conn.rollback();
+                }
             catch(SQLException excep)
             {System.out.println("Rollback unsuccessful");}
         }
@@ -594,8 +643,10 @@ public class DatabaseManager
         {
             try
             {
-                p.close();
-                conn.close();
+                if(p != null)
+                    p.close();
+                if(conn != null)
+                    conn.close();
             }
             catch(Exception excep)
             {
@@ -625,7 +676,12 @@ public class DatabaseManager
         finally
         {
             try
-            {p.close(); rs.close();}
+            {
+                if(p != null)
+                    p.close();
+                if(rs != null)
+                    rs.close();
+            }
             catch(Exception excep)
             {System.out.println("Error closing statement or result set");}
         }
