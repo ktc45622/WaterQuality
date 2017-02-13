@@ -121,6 +121,7 @@ and open the template in the editor.
 #dashboard_data_container{
     float:right;
     margin-top:5%;
+    margin-right:10px;
     width: 300px;
     position:relative;
 }
@@ -128,6 +129,7 @@ and open the template in the editor.
 #graph_container{
     float:left;
     margin-top: 5%;
+    margin-left:10px;
     width: 600px;
     position:relative;
 }
@@ -135,6 +137,8 @@ and open the template in the editor.
 #dashboard_data_description{
     display:inline-block;
     margin-top:10px;
+    margin-left:10px;
+    width:600px;
 }
 
 /* Style the list */
