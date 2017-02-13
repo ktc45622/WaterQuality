@@ -39,7 +39,6 @@
                         Table</a></li>
             </ul>
                 <div id="Graph" class="tabcontent">
-
                     <canvas id="myChart" width=25% height=20%></canvas>
                 </div>
                 <div id="Table" class="tabcontent" style="height:400px;overflow:auto;">                    
@@ -181,6 +180,11 @@
                     checkedBoxes--;
             }
             
+            /**
+             * The <code>toggle</code> function checks or unchecks
+             * all of the checkboxes in the given <code>source</code> 
+             * @param {type} source
+             */
             function toggle(source) {
                 var checkboxes = document.querySelectorAll('input[type="checkbox"]');
                 for (var i = 0; i < checkboxes.length; i++) {
@@ -189,12 +193,38 @@
                 }
             }
             
+            /**
+             * The <code>hide</code> function hides the
+             * <code>select_all_toggle</code> checkbox when the Graph tab
+             * is selected and reveals the checkbox when the table
+             * tab is selected
+             */
             function hide(){
                 var item=document.getElementById("select_all_toggle");
                 if(item.className=='hide')
                     item.className='unhide';
                 else
                     item.className='hide';
+            }
+            
+            var checkedBoxes=0;
+            /**
+             * The <code>fullCheck</code> function limits the number of data
+             * checkboxes checked at a time to 3 by unchecking <coe>id</code>
+             * if <code>checkedBoxes</code> equals 3
+             * @param {type} id the current data type the user is trying to check
+             */
+            function fullCheck(id){
+                var item=document.getElementById(id);
+                if(item.checked==true){
+                    if(checkedBoxes<3)
+                        checkedBoxes++;
+                    else{
+                        item.checked=false;
+                    }
+                }
+                else
+                    checkedBoxes--;
             }
         </script>
     </body>
