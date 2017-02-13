@@ -121,13 +121,24 @@ and open the template in the editor.
 #dashboard_data_container{
     float:right;
     margin-top:5%;
+    margin-right:10px;
     width: 300px;
+    position:relative;
 }
 
 #graph_container{
     float:left;
     margin-top: 5%;
+    margin-left:10px;
     width: 600px;
+    position:relative;
+}
+
+#dashboard_data_description{
+    display:inline-block;
+    margin-top:10px;
+    margin-left:10px;
+    width:600px;
 }
 
 /* Style the list */
@@ -154,6 +165,7 @@ ul.tab li a {
     text-decoration: none;
     transition: 0.3s;
     font-size: 15px;
+    color:white;
 }
 
 /* Change background color of links on hover */
