@@ -132,12 +132,14 @@ and open the template in the editor.
 
 /* Style the list */
 ul.tab {
+    height:25px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
     list-style-type: none;
     margin-top:0;
     padding: 0;
     overflow: hidden;
-    border: 1px solid #ccc;
-    background-color: #f1f1f1;
+    background-color: #266B6B;
 }
 
 /* Float the list items side by side */
@@ -148,17 +150,17 @@ ul.tab li a {
     display: inline-block;
     color: black;
     text-align: center;
-    padding: 14px 16px;
+    padding: 5px 16px;
     text-decoration: none;
     transition: 0.3s;
-    font-size: 17px;
+    font-size: 15px;
 }
 
 /* Change background color of links on hover */
-ul.tab li a:hover {background-color: #ddd;}
+ul.tab li a:hover {background-color: #5CB05C;}
 
 /* Create an active/current tablink class */
-ul.tab li a:focus, .active {background-color: #ccc;}
+ul.tab li a:focus, .active {background-color: #8CCE8C;}
 
 /* Style the tab content */
 .tabcontent {
@@ -186,4 +188,8 @@ input[type="submit"]{
 
 button:hover,input[type = "submit"]:hover {
     background: #5CB05C;
+}
+
+.data_type_submit{
+    display:none;
 }
