@@ -1,9 +1,12 @@
 package servlets;
 
+import async.DataReceiver;
 import common.User;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.servlet.ServletConfig;
@@ -69,7 +72,7 @@ public class LoginServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
         HttpSession session = request.getSession(true); // Create a new session if one does not exists
 
         // Always resets the session attributes with a new login to avoid problems.
@@ -255,7 +258,11 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.getServletContext()
+                        .getRequestDispatcher("/loginScreen.jsp")
+                        .forward(request, response);
+        System.out.println("Date: " + DataReceiver.test(Instant.now().minus(Period.ofWeeks(1)), Instant.now()).blockingFirst());
+//        processRequest(request, response);
     }
 
     /**
