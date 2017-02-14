@@ -49,23 +49,27 @@
             <header class = "content_title_bar" id="login_header"> 
                 <div class = "title" >
                     Data Type
-                </div> 
+                </div>
             </header> 
                 <%--The <code>data_type_form</code> allows the user to select
                     the desired data to be outputed into either a table or
                     a graph
                 --%>
-                <form id="data_type_form">
+                <form id="data_type_form" action="ControlServlet" method = "POST">
                     <div class="" id="select_all_toggle"><input type="checkbox" onclick="toggle(this);" 
                            id="select_all_data" value="select_all_data">Select all</div><br>
-                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data1')" class="data" id="data1" value="data1">Data<br>
+                    
+                    ${DummyData}
+                    <input type="submit" name="Get Data" value="Get Data" />
+                    <input type="hidden" name="control" value ="getData">
+<!--                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data1')" class="data" id="data1" value="data1">Data<br>
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data2')" class="data" id="data2" value="data2">Data<br>
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data3')" class="data" id="data3" value="data3">Data<br>
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data4')" class="data" id="data4" value="data4">Data<br>
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data5')" class="data" id="data5" value="data5">Data<br>
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data6')" class="data" id="data6" value="data6">Data<br>
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data7')" class="data" id="data7" value="data7">Data<br>
-                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data8')" class="data" id="data8" value="data8">Data<br>
+                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data8')" class="data" id="data8" value="data8">Data<br>-->
                     <br>
                     <div class="data_type_submit" id="Graph_submit" ><input type="submit" ></div>
                     <div class="data_type_submit" id="Table_submit" ><input type="submit" ></div>
@@ -82,7 +86,8 @@
                         Description
                     </div>
                 </header>
-                <p>This is where the description of the data will go! This will need to be pulled from a text file. 
+                <!--datadesc is supposed to act the same as DummyData, it's the placeholder for the information from ControlServlet-->
+                <p>${datadesc}This is where the description of the data will go! This will need to be pulled from a text file. 
                    This is where the description of the data will go! This will need to be pulled from a text file. 
                    This is where the description of the data will go! This will need to be pulled from a text file. 
                    This is where the description of the data will go! This will need to be pulled from a text file. 
@@ -91,6 +96,22 @@
             
         </section> 
         
+                   
+        <script>
+            <!--handleClick is defined as the onclick function in ControlServlet-->
+            function handleClick(cb)
+            {
+            <!--I used the form above as a sort of template for this form...
+            it's really shouldn't return anything yet besides the hard coded test string (see ControlServlet)-->
+                <form id="click_data_receiver" action="ControlServlet" method="POST">
+                       <input type="hidden" name="control" value="getDesc"></form>
+                if(cb.checked())
+                <!--I attempted to hardcode a value, just to see something happen in the description box-->
+                    datadesc = (this.value() + " clicked");
+            }
+        </script>
+                   
+                   
         <%
         Pair<String, String> data = DataReceiver.generateGraph();
         out.append(data.getValue0()).append(data.getValue1());
