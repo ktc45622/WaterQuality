@@ -71,6 +71,10 @@
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data7')" class="data" id="data7" value="data7">Data<br>
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data8')" class="data" id="data8" value="data8">Data<br>-->
                     <br>
+
+                    <div class="data_type_submit" id="Graph_submit"><input type="submit" value="Graph" onclick="graphSubmit()"></div>
+                    <div class="data_type_submit" id="Table_submit"><input type="submit" value="Table"></div>
+
                 </form>
                     
                     <form id="submit_query" action="ControlServlet" value="Submit Query">
@@ -132,12 +136,23 @@
             
             function handleClick(cb)
             {
-                window.alert("Checkbox Clicked...");
-                post("ControlServlet", {key: 'control', control: 'getDesc'});
-                window.alert("POST sent...");
-//                document.getElementById("tmp").innerHTML = "<form id=\"click_data_receiver\" action=\"ControlServlet\" method=\"POST\"> <input type=\"hidden\" name=\"control\" value=\"getDesc\"></form>"
-//                if(cb.checked())
-//                    datadesc = (this.value() + " clicked");
+//                post("ControlServlet", {key: 'control', control: 'getDesc'});
+
+                if(current=='Graph')
+                    fullCheck(cb.id);
+            }
+            
+            function graphSubmit(){
+                var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                var data = "{ data: [";
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if(checkboxes[i].checked==true) {
+                        data += checkboxes[i].id + ",";
+                    }
+                }
+                data += "] }";
+                
+                post("ControlServlet", {key: 'control', control: 'getDesc', value: data});
             }
         </script>
                    
