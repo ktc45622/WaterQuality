@@ -71,9 +71,13 @@
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data7')" class="data" id="data7" value="data7">Data<br>
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data8')" class="data" id="data8" value="data8">Data<br>-->
                     <br>
-                    <div class="data_type_submit" id="Graph_submit" ><input type="submit" ></div>
-                    <div class="data_type_submit" id="Table_submit" ><input type="submit" ></div>
                 </form>
+                    
+                    <form id="submit_query" action="ControlServlet" value="Submit Query">
+                        <input type="hidden" name="control" value="submitQuery">
+                         <div class="data_type_submit" id="Graph_submit" action=""><input type="submit" ></div>
+                        <div class="data_type_submit" id="Table_submit" ><input type="submit" ></div>
+                    </form>
             </aside><br>
             
             <!--The data description box is defined here. Sample text is shown-->
@@ -86,15 +90,58 @@
                         Description
                     </div>
                 </header>
-                <p>This is where the description of the data will go! This will need to be pulled from a text file. 
+                
+                <p id="tmp"> </p>
+                <!--datadesc is supposed to act the same as DummyData, it's the placeholder for the information from ControlServlet-->
+                <p>${datadesc}This is where the description of the data will go! This will need to be pulled from a text file. 
                    This is where the description of the data will go! This will need to be pulled from a text file. 
                    This is where the description of the data will go! This will need to be pulled from a text file. 
                    This is where the description of the data will go! This will need to be pulled from a text file. 
                    This is where the description of the data will go! This will need to be pulled from a text file. </p>
             </section>
+                   
+                   
             
         </section> 
         
+                   
+        <script>
+            function post(path, params, method) {
+                method = method || "post"; // Set method to post by default if not specified.
+
+                // The rest of this code assumes you are not using a library.
+                // It can be made less wordy if you use one.
+                var form = document.createElement("form");
+                form.setAttribute("method", method);
+                form.setAttribute("action", path);
+
+                for(var key in params) {
+                    if(params.hasOwnProperty(key)) {
+                        var hiddenField = document.createElement("input");
+                        hiddenField.setAttribute("type", "hidden");
+                        hiddenField.setAttribute("name", key);
+                        hiddenField.setAttribute("value", params[key]);
+
+                        form.appendChild(hiddenField);
+                     }
+                }
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+            
+            function handleClick(cb)
+            {
+                window.alert("Checkbox Clicked...");
+                post("ControlServlet", {key: 'control', control: 'getDesc'});
+                window.alert("POST sent...");
+//                document.getElementById("tmp").innerHTML = "<form id=\"click_data_receiver\" action=\"ControlServlet\" method=\"POST\"> <input type=\"hidden\" name=\"control\" value=\"getDesc\"></form>"
+//                if(cb.checked())
+//                    datadesc = (this.value() + " clicked");
+            }
+        </script>
+                   
+                   
         <%
         Pair<String, String> data = DataReceiver.generateGraph();
         out.append(data.getValue0()).append(data.getValue1());
