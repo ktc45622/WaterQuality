@@ -56,6 +56,7 @@ public class ControlServlet extends HttpServlet {
                     .map((JSONObject obj) -> (JSONArray) obj.get("data"))
                     .flatMap(Observable::fromIterable)
                     .map(obj -> (String) ((JSONObject) obj).get("name"))
+                    .distinct()
                     //I changed the onclick function to handleClick(this) to pass the checkbox element to the function,
                     //and replaced the id with the name given in the JSON object (at least, I think I did. I tried to. lol)
                     .map(name -> "<input type=\"checkbox\" onclick=\"handleClick(this)\" class=\"data\" id=\"" + name + "\" value=\"data\">" + name + "<br>\n")
