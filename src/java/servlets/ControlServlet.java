@@ -49,16 +49,28 @@ public class ControlServlet extends HttpServlet {
         common.User user = (common.User) session.getAttribute("user");
         String action = request.getParameter("control");
         
+        if (action.trim().startsWith("queryData: [")) {
+            log(action);
+            return;
+        }
+        
         if (action.trim().equalsIgnoreCase("getData")) {
             StringBuilder data = new StringBuilder();
+            
             DataReceiver
+                    // Obtains the data pulled from server of last 24 hours as a JSONObject
                     .getData(DataReceiver.JSON_URL)
+                    // The JSON sent contains the data inside of a JSONArray
                     .map((JSONObject obj) -> (JSONArray) obj.get("data"))
+                    // Take each element from the JSONArray and emit as their own JSONObject
+                    // I.E: Given an array = [1, 2, 3] which is a single item,
+                    // it will emit the items 1, 2, and 3 individually. 
                     .flatMap(Observable::fromIterable)
+                    // Obtain the name and unit of the parameter as a Pair<String, String>
                     .map(obj -> Pair.with((String) ((JSONObject) obj).get("name"), (String) ((JSONObject) obj).get("unit")))
+                    // Format as a String
                     .map(p -> ((Pair) p).getValue0() + " (" + ((Pair) p).getValue1() + ")")
-                    //I changed the onclick function to handleClick(this) to pass the checkbox element to the function,
-                    //and replaced the id with the name given in the JSON object (at least, I think I did. I tried to. lol)
+                    // Create the equivalent checkboxes.
                     .map(str -> "<input type=\"checkbox\" onclick=\"handleClick(this)\" class=\"data\" id=\"" + str  + "\" value=\"data\">" + str + "<br>\n")
                     .blockingSubscribe(data::append);
                    
