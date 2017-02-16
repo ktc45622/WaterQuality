@@ -34,9 +34,9 @@
             <section class = "content_container2" id = "graph_container">    
             <ul class="tab">
                 <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Graph'); hide();"
-                       id="defaultOpen">Graph</a></li>
-                <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Table'); hide();">
-                        Table</a></li>
+                       id="GraphTab">Graph</a></li>
+                <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Table'); hide();"
+                       id="TableTab">Table</a></li>
             </ul>
                 <div id="Graph" class="tabcontent">
                     <canvas id="myChart" width=25% height=20%></canvas>
@@ -71,15 +71,13 @@
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data7')" class="data" id="data7" value="data7">Data<br>
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data8')" class="data" id="data8" value="data8">Data<br>-->
                     <br>
-
-                    <div class="data_type_submit" id="Graph_submit"><input type="submit" value="Graph" onclick="graphSubmit()"></div>
-                    <div class="data_type_submit" id="Table_submit"><input type="submit" value="Table"></div>
+                   
 
                 </form>
                     
                     <form id="submit_query" action="ControlServlet" value="Submit Query">
                         <input type="hidden" name="control" value="submitQuery">
-                         <div class="data_type_submit" id="Graph_submit" action=""><input type="submit" ></div>
+                         <div class="data_type_submit" id="Graph_submit" onclick="graphSubmit()"><input type="submit" ></div>
                         <div class="data_type_submit" id="Table_submit" ><input type="submit" ></div>
                     </form>
             </aside><br>
@@ -107,7 +105,7 @@
                    
             
         </section> 
-        
+    
                    
         <script>
             function post(path, params, method) {
@@ -136,10 +134,14 @@
             
             function handleClick(cb)
             {
-//                post("ControlServlet", {key: 'control', control: 'getDesc'});
-
-                if(current=='Graph')
-                    fullCheck(cb.id);
+                
+            if(current=='Graph')
+                fullCheck(cb.id);
+                    datadesc = (this.value() + " clicked");
+                    
+//                document.getElementById("tmp").innerHTML = "<form id=\"click_data_receiver\" action=\"ControlServlet\" method=\"POST\"> <input type=\"hidden\" name=\"control\" value=\"getDesc\"></form>"
+//                if(cb.checked())
+//                    datadesc = (this.value() + " clicked");
             }
             
             function graphSubmit(){
@@ -147,12 +149,12 @@
                 var data = "{ data: [";
                 for (var i = 0; i < checkboxes.length; i++) {
                     if(checkboxes[i].checked==true) {
-                        data += checkboxes[i].id + ",";
+                        data += checkbox[i].id.toString();
                     }
                 }
                 data += "] }";
                 
-                post("ControlServlet", {key: 'control', control: 'getDesc', value: data});
+                post("ControlServlet", {key: 'control', control: 'getData ' + data});
             }
         </script>
                    
@@ -178,7 +180,7 @@
             </script>
         
         <script type="text/javascript">
-            document.getElementById("defaultOpen").click();
+            document.getElementById("GraphTab").click();
             var current;
             /**
              * The <code>openTab</code> function activates a certain event

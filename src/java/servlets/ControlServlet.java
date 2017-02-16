@@ -49,12 +49,7 @@ public class ControlServlet extends HttpServlet {
         common.User user = (common.User) session.getAttribute("user");
         String action = request.getParameter("control");
         
-        if (action.trim().startsWith("queryData: [")) {
-            log(action);
-            return;
-        }
-        
-        if (action.trim().equalsIgnoreCase("getData")) {
+        if (action == null) {
             StringBuilder data = new StringBuilder();
             
             DataReceiver
@@ -71,7 +66,7 @@ public class ControlServlet extends HttpServlet {
                     // Format as a String
                     .map(p -> ((Pair) p).getValue0() + " (" + ((Pair) p).getValue1() + ")")
                     // Create the equivalent checkboxes.
-                    .map(str -> "<input type=\"checkbox\" onclick=\"handleClick(this)\" class=\"data\" id=\"" + str  + "\" value=\"data\">" + str + "<br>\n")
+                    .map(str -> "<input type=\"checkbox\" name=\"" + str + "\" onclick=\"handleClick(this)\" class=\"data\" id=\"" + str + "\" value=\"data\">" + str + "<br>\n")
                     .blockingSubscribe(data::append);
                    
             request.setAttribute("DummyData", data.toString());
@@ -81,6 +76,17 @@ public class ControlServlet extends HttpServlet {
                 .forward(request, response);
             return;
         }
+        
+        log("Action is: " + action);
+        
+        if (action.trim().equalsIgnoreCase("getData")) {
+            request.getParameterMap().forEach((k, v) -> System.out.println("Key: " + k + ", Value: " + v));
+            log(action);
+            System.out.println("Got Action: " + action);
+            return;
+        }
+        
+        
         
         //I modeled this after the above case ^^
         if(action.trim().equalsIgnoreCase("getDesc"))
@@ -96,7 +102,6 @@ public class ControlServlet extends HttpServlet {
             return;
         }
         
-        log("action is "+action) ;       
         // Fix the login data for the user
         if(action.trim().equalsIgnoreCase("login")){
             //all this code should be in the login servlet
