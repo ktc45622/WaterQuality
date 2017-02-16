@@ -39,6 +39,7 @@
                        id="TableTab">Table</a></li>
             </ul>
                 <div id="Graph" class="tabcontent">
+                    ${DummyGraph}
                     <canvas id="myChart" width=25% height=20%></canvas>
                 </div>
                 <div id="Table" class="tabcontent" style="height:400px;overflow:auto;">                    
@@ -144,11 +145,13 @@
             }
             
             function graphSubmit(){
+                var sentData = [];
                 var checkboxes = document.querySelectorAll('input[type="checkbox"]');
                 for (var i = 0; i < checkboxes.length; i++) {
                     if(checkboxes[i].checked==true)
-                    document.write(checkboxes[i].id);
+                        sentData.push(checkboxes[i].id);
                 }
+                post("ControlServlet", {key: 'control', control: 'queryData: [' + sentData.toString() + ']'});
             }
         </script>
                    

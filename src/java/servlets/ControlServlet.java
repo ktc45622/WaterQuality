@@ -70,6 +70,15 @@ public class ControlServlet extends HttpServlet {
             return;
         }
         
+        if (action.trim().equalsIgnoreCase("submitQuery")) { 
+            StringBuilder graph = new StringBuilder();
+            
+            request.setAttribute("DummyGraph", graph.toString()); 
+            request.getServletContext().getRequestDispatcher("/dashboard.jsp")
+                    .forward(request, response); 
+            return; 
+        }
+        
         //I modeled this after the above case ^^
         if(action.trim().equalsIgnoreCase("getDesc"))
         {
