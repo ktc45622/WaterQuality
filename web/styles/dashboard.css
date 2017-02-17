@@ -166,6 +166,7 @@ ul.tab li a {
     transition: 0.3s;
     font-size: 15px;
     color:white;
+    font-family: "Ariel", Helvetica, san-serif;
 }
 
 /* Change background color of links on hover */
