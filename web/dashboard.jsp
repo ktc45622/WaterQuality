@@ -134,7 +134,7 @@
             function handleClick(cb)
             {
             if(current=='Graph')
-                fullCheck(cb.id);
+                fullCheck(cb.id);//Making sure only 3 are checked for graph tab
                     datadesc = (this.value() + " clicked");
                 window.alert("Checkbox Clicked...");
                 post("ControlServlet", {key: 'control', control: 'getDesc'});
@@ -142,16 +142,6 @@
 //                document.getElementById("tmp").innerHTML = "<form id=\"click_data_receiver\" action=\"ControlServlet\" method=\"POST\"> <input type=\"hidden\" name=\"control\" value=\"getDesc\"></form>"
 //                if(cb.checked())
 //                    datadesc = (this.value() + " clicked");
-            }
-            
-            function graphSubmit(){
-                var sentData = [];
-                var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                for (var i = 0; i < checkboxes.length; i++) {
-                    if(checkboxes[i].checked==true)
-                        sentData.push(checkboxes[i].id);
-                }
-                post("ControlServlet", {key: 'control', control: 'queryData: [' + sentData.toString() + ']'});
             }
         </script>
                    
@@ -236,7 +226,7 @@
              */
             function hide(){
                 var item=document.getElementById("select_all_toggle");
-                if(item.className=='hide')
+                if(current=='Table')
                     item.className='unhide';
                 else
                     item.className='hide';
@@ -273,40 +263,6 @@
                     if (checkboxes[i] != source)
                         checkboxes[i].checked = source.checked;
                 }
-            }
-            
-            /**
-             * The <code>hide</code> function hides the
-             * <code>select_all_toggle</code> checkbox when the Graph tab
-             * is selected and reveals the checkbox when the table
-             * tab is selected
-             */
-            function hide(){
-                var item=document.getElementById("select_all_toggle");
-                if(item.className=='hide')
-                    item.className='unhide';
-                else
-                    item.className='hide';
-            }
-            
-            var checkedBoxes=0;
-            /**
-             * The <code>fullCheck</code> function limits the number of data
-             * checkboxes checked at a time to 3 by unchecking <coe>id</code>
-             * if <code>checkedBoxes</code> equals 3
-             * @param {type} id the current data type the user is trying to check
-             */
-            function fullCheck(id){
-                var item=document.getElementById(id);
-                if(item.checked==true){
-                    if(checkedBoxes<3)
-                        checkedBoxes++;
-                    else{
-                        item.checked=false;
-                    }
-                }
-                else
-                    checkedBoxes--;
             }
         </script>
     </body>
