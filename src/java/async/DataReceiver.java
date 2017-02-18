@@ -124,7 +124,7 @@ public class DataReceiver {
              "  data: {\n" +
              "    labels: [" + timeStr + "],\n" +
              "    datasets: [{\n" +
-             "      label: 'Generated Data',\n" +
+             "      label: '" + key + "',\n" +
              "      data: [" + dataStr + "],\n" +
              "      backgroundColor: 'transparent', borderColor: 'orange'\n" +
              "    }]\n" +
