@@ -19,7 +19,7 @@
         </noscript>
         <title>Dashboard</title>
     </head>
-    <body>
+    <body onload="onLoad();">
         <img id="backPhoto" src="images/backgroundImage.JPG">
         <header class="title_bar_container"> 
             <div id="HeaderText">Water Quality</div>
@@ -34,9 +34,9 @@
             <section class = "content_container2" id = "graph_container">    
             <ul class="tab">
                 <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Graph'); hide();"
-                       id="defaultOpen">Graph</a></li>
-                <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Table'); hide();">
-                        Table</a></li>
+                       id="GraphTab">Graph</a></li>
+                <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Table'); hide();"
+                       id="TableTab">Table</a></li>
             </ul>
                 <div id="Graph" class="tabcontent">
                     <canvas id="myChart" width=25% height=20%></canvas>
@@ -71,9 +71,17 @@
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data7')" class="data" id="data7" value="data7">Data<br>
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data8')" class="data" id="data8" value="data8">Data<br>-->
                     <br>
-                    <div class="data_type_submit" id="Graph_submit" ><input type="submit" ></div>
-                    <div class="data_type_submit" id="Table_submit" ><input type="submit" ></div>
+                    
+                    <div class="data_type_submit" id="Graph_submit"><input type="submit" value="Graph" onclick="graphSubmit()"></div>
+                    <div class="data_type_submit" id="Table_submit"><input type="submit" value="Table"></div>
+                    
                 </form>
+                    
+                    <form id="submit_query" action="ControlServlet" value="Submit Query">
+                        <input type="hidden" name="control" value="submitQuery">
+                         <div class="data_type_submit" id="Graph_submit" onclick="graphSubmit()"><input type="submit" ></div>
+                        <div class="data_type_submit" id="Table_submit" ><input type="submit" ></div>
+                    </form>
             </aside><br>
             
             <!--The data description box is defined here. Sample text is shown-->
@@ -86,20 +94,69 @@
                         Description
                     </div>
                 </header>
-                <p>This is where the description of the data will go! This will need to be pulled from a text file. 
+                
+                <p id="tmp"> </p>
+                <!--datadesc is supposed to act the same as DummyData, it's the placeholder for the information from ControlServlet-->
+                <p>${datadesc}This is where the description of the data will go! This will need to be pulled from a text file. 
                    This is where the description of the data will go! This will need to be pulled from a text file. 
                    This is where the description of the data will go! This will need to be pulled from a text file. 
                    This is where the description of the data will go! This will need to be pulled from a text file. 
                    This is where the description of the data will go! This will need to be pulled from a text file. </p>
             </section>
+                   
+                   
             
         </section> 
-        
-        <%
-        Pair<String, String> data = DataReceiver.generateGraph();
-        out.append(data.getValue0()).append(data.getValue1());
-        %>
-        
+    
+                   
+        <script>
+            function post(path, params, method) {
+                method = method || "post"; // Set method to post by default if not specified.
+
+                // The rest of this code assumes you are not using a library.
+                // It can be made less wordy if you use one.
+                var form = document.createElement("form");
+                form.setAttribute("method", method);
+                form.setAttribute("action", path);
+
+                for(var key in params) {
+                    if(params.hasOwnProperty(key)) {
+                        var hiddenField = document.createElement("input");
+                        hiddenField.setAttribute("type", "hidden");
+                        hiddenField.setAttribute("name", key);
+                        hiddenField.setAttribute("value", params[key]);
+
+                        form.appendChild(hiddenField);
+                     }
+                }
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+            
+            function handleClick(cb)
+            {
+                if(current=='Graph') {
+                    fullCheck(cb.id);
+                }
+//                post("ControlServlet", {key: 'control', control: 'getDesc'});
+            }
+            
+            function graphSubmit(){
+                var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                var data = "{ data: [";
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if(checkboxes[i].checked==true) {
+                        data += checkbox[i].id.toString();
+                    }
+                }
+                data += "] }";
+                
+                post("ControlServlet", {key: 'control', control: 'getData ' + data});
+            }
+        </script>
+                   
+            ${DummyGraphAndTable}
             <script>
                 var ctx = document.getElementById('myChart').getContext('2d');
                 var myChart = new Chart(ctx, {
@@ -114,9 +171,9 @@
                     }
                 });
             </script>
-        
+                    
         <script type="text/javascript">
-            document.getElementById("defaultOpen").click();
+            document.getElementById("GraphTab").click();
             var current;
             /**
              * The <code>openTab</code> function activates a certain event
