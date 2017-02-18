@@ -74,6 +74,7 @@ public class DataReceiver {
                     
                     return sb.toString();
                 })
+                .map(str -> str.replaceAll("\\P{Print}", ""))
                 // From that received string, since it is in JSON, we can parse it into a JSONObject.
                 .map(str -> (JSONObject) new JSONParser().parse(str))
                 // For an example of the format given see: https://gist.github.com/LouisJenkinsCS/cca0069178f194329d55aabf33c28418
