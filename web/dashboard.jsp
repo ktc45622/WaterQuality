@@ -20,7 +20,7 @@
         <title>Dashboard</title>
     </head>
     <body>
-        <img id="backPhoto" src="images/backgroundImage.JPG">
+        <img id="backPhoto" src="images/Creek3.jpeg">
         <header class="title_bar_container"> 
             <div id="HeaderText">Water Quality</div>
         </header>
@@ -32,18 +32,23 @@
             </header>
             
             <section class = "content_container2" id = "graph_container">    
-            <ul class="tab">
-                <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Graph'); hide();"
-                       id="GraphTab">Graph</a></li>
-                <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Table'); hide();"
-                       id="TableTab">Table</a></li>
-            </ul>
-                <div id="Graph" class="tabcontent">
-                    ${DummyGraph}
-                    <canvas id="myChart" width=25% height=20%></canvas>
-                </div>
-                <div id="Table" class="tabcontent" style="height:400px;overflow:auto;">                    
-                </div>
+                <ul class="tab">
+                    <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Graph'); hide();"
+                           id="GraphTab">Graph</a></li>
+                    <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Table'); hide();"
+                           id="TableTab">Table</a></li>
+                    <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Export'); hide();"
+                       id="ExportTab">Export</a></li>
+                </ul>
+                    <div id="Graph" class="tabcontent">
+                        ${DummyGraph}
+                        <canvas id="myChart" width=25% height=20%></canvas>
+                    </div>
+                    <div id="Table" class="tabcontent" style="height:400px;overflow:auto;">  
+                    </div>
+                    <div id="Export" class="tabcontent">
+                        <img id="Excel" src="images/excel.png" onclick="exportData('Excel')">
+                    </div>
             </section>
             
             <aside class = "content_container2" id = "dashboard_data_container">
@@ -157,6 +162,10 @@
                 
                 post("ControlServlet", {key: 'control', control: 'getData ' + data});
             }
+            
+            function exportData(id){
+                document.write(id);
+            }
         </script>
                    
                    
@@ -256,7 +265,7 @@
             function fullCheck(id){
                 var item=document.getElementById(id);
                 if(item.checked==true){
-                    if(checkedBoxes<3)
+                    if(checkedBoxes<2)
                         checkedBoxes++;
                     else{
                         item.checked=false;
@@ -266,18 +275,7 @@
                     checkedBoxes--;
             }
             
-            /**
-             * The <code>toggle</code> function checks or unchecks
-             * all of the checkboxes in the given <code>source</code> 
-             * @param {type} source
-             */
-            function toggle(source) {
-                var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                for (var i = 0; i < checkboxes.length; i++) {
-                    if (checkboxes[i] != source)
-                        checkboxes[i].checked = source.checked;
-                }
-            }
+            
         </script>
     </body>
 </html>
