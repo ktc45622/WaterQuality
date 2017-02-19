@@ -19,13 +19,8 @@
         </noscript>
         <title>Dashboard</title>
     </head>
-<<<<<<< HEAD
-    <body>
-        <img id="backPhoto" src="images/Creek3.jpeg">
-=======
     <body onload="onLoad();">
-        <img id="backPhoto" src="images/backgroundImage.JPG">
->>>>>>> refs/remotes/origin/Louis-Development
+        <img id="backPhoto" src="images/Creek3.jpeg">
         <header class="title_bar_container"> 
             <div id="HeaderText">Water Quality</div>
         </header>
@@ -67,9 +62,11 @@
                     a graph
                 --%>
                 <form id="data_type_form" action="ControlServlet" method = "POST">
+                    <!--<div id="dateInstructDiv">Start Date to End Date</div>
+                    <div id="dateselectordiv"><input class="dateselector" type="date" name="startdate"> to
+                    <input class="dateselector" type="date" name="enddate"></div>-->
                     <div class="" id="select_all_toggle"><input type="checkbox" onclick="toggle(this);" 
                            id="select_all_data" value="select_all_data">Select all</div><br>
-                    
                     ${DummyData}
                     <input type="submit" name="Get Data" value="Get Data" />
                     <input type="hidden" name="control" value ="getData">

@@ -126,7 +126,7 @@ and open the template in the editor.
     float:right;
     margin-top:5%;
     margin-right:10px;
-    width: 300px;
+    width: 350px;
     position:relative;
 }
 
@@ -209,4 +209,17 @@ button:hover,input[type = "submit"]:hover {
 
 .data_type_submit{
     display:none;
+}
+
+#dateselectordiv{
+    text-align:center;
+    margin:5px;
+}
+
+.dateselector{
+    width:130px;
+}
+
+#dateInstructDiv{
+    text-align:center;
 }
