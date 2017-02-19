@@ -6,7 +6,9 @@
 package async;
 
 import io.reactivex.Observable;
+import io.reactivex.observables.GroupedObservable;
 import io.reactivex.schedulers.Schedulers;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -16,11 +18,16 @@ import java.time.Instant;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.javatuples.Pair;
+import org.javatuples.Quartet;
 import org.javatuples.Triplet;
+import org.javatuples.Unit;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -94,68 +101,131 @@ public class DataReceiver {
      * Generates the chart, data table, and description for a given sensor parameter. 
      * Currently, it will obtain all data over a month's period of time. 
      * Note: The sensor MUST exist, as it does not (currently) perform any checks. 
-     * @param key Sensor parameter
+     * @param keys Sensor parameters
      * @return Tuple of (Chart, Table, Description) HTML as String.
      */
-    public static Triplet<String, String, String> generateGraph(String key) {
-        long id = idMap.get(key);
-        List<Pair<String, Double>> data = new ArrayList<>();
-        String url = "https://ienvironet.com/api/data/" + Instant.now().minus(Period.ofWeeks(4)).getEpochSecond() 
-                + ":" + Instant.now().getEpochSecond() + "/" + id + ".json?auth_token=avfzf6dn7xgv48qnpdhqzvlkz5ke7184";
+    public static Triplet<String, String, String> generateGraph(String ...keys) {
+        String chartHeader =  "<script>" +
+                "var ctx = document.getElementById('myChart').getContext('2d');\n" + 
+                "var myChart = new Chart(ctx, {\n" +
+                 "  type: 'line',\n" +
+                 "  data: {\n";
         
-        // Obtain the JSON of the data sent. 
-        getData(url)
-                // See above for why
-                .map((JSONObject obj) -> (JSONArray) obj.get("data"))
+        List<String> chartDataSets = new ArrayList<>();
+        
+        StringBuilder tableHeader = new StringBuilder("<table border='1'>\n\t<tr>\n\t\t<th>Timestamp</th>");
+        
+        StringBuilder descriptions = new StringBuilder();
+        
+        List<List<Pair<String, Double>>> tableBody = new ArrayList<>();
+        
+        // Note: The method of which we retrieve the data for each is inefficient...
+        // This is because this is a prototype and not the final release version.
+        // A ton of optimizaitons can be made in terms of paralellizing this code
+        // but not until we get to that point in time.
+        Observable
+                // For each key
+                .fromArray(keys)
+                // A Unit is a tuple consisting of a single element. So we wrap the key in a Unit, or (key) -> ({key})
+                .map(Unit::with)
+                // The reason for the above is that a tuple can be added to. A Unit, when added to, becomes a Pair.
+                // We obtain the API identifier used to carry on to the next computation. 
+                .map((Unit<String> unit) -> unit.add(idMap.get(unit.getValue0())))
+                // With the identifier, we can finally form our URL for the API call. We discard the identifier for the URL obtained.
+                .map((Pair<String, Long> pair) -> pair.setAt1(getParameterURL(Instant.now().minus(Period.ofWeeks(4)), Instant.now(), pair.getValue1())))
+                // Given both the URL and key, we can finally go about making the API call and obtaining the data needed.
+                // As well, since we no longer require the URL, we can discard it and replace it with the list of data obtained.
+                .map((Pair<String, String> pair) -> {
+                    List<Pair<String, Double>> data = new ArrayList<>();
+                    // Obtain the JSON of the data sent. 
+                    getData(pair.getValue1())
+                            // See above for why
+                            .map((JSONObject obj) -> (JSONArray) obj.get("data"))
+                            .flatMap(Observable::fromIterable)
+                            // We take both the timestamp (X-Axis) and the value (Y-Axis).
+                            // Note that the data sent is already sorted, so there is no need
+                            // to do so ourselves.
+                            .map(obj -> Pair.with((String)((JSONObject) obj).get("timestamp"), (Double) ((JSONObject) obj).get("value")))
+                            // This ensures that the observable's computations are performed immediately.
+                            // Observables are 'lazy' by nature and are evaluated on need; this enforces
+                            // that need. In the future, we will do this with the help of an AsyncContext
+                            // and will be non-blocking.
+                            .subscribe(p -> data.add((Pair<String, Double>) p));
+                    
+                    return pair.setAt1(data);
+                })
+                .blockingSubscribe((Pair<String, List<Pair<String, Double>>> pair) -> {
+                    // Add our dataset to the chart.
+                    String chartData = pair.getValue1()
+                            .stream()
+                            .map(p -> "" + p.getValue1())
+                            .collect(Collectors.joining(","));
+                    
+                    int rgb[] = new Random().ints(0, 256).limit(3).toArray();
+                    Color color = new Color(rgb[0], rgb[1], rgb[2]);
+                    chartDataSets.add(
+                            "{\n" +
+                            "      label: '" + pair.getValue0() + "',\n" +
+                            "      data: [" + chartData + "],\n" +
+                            "      backgroundColor: 'transparent', borderColor: 'rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")'\n" +
+                            "}"
+                    );
+                    
+                    // Add ourselves to the header.
+                    tableHeader
+                            .append("\n\t\t<th>\n\t\t")
+                            .append(pair.getValue0())
+                            .append("\n\t\t</th>");
+                    
+                    tableBody.add(pair.getValue1());
+                    
+                    // Fit for multiple descriptions
+                    String description = descriptionMap.get(pair.getValue0().substring(0, pair.getValue0().indexOf("(") - 1));
+                    descriptions
+                            .append("\n<center><h1>")
+                            .append(pair.getValue0())
+                            .append("</h1></center>\n")
+                            .append(description);
+                });
+        
+        
+        tableHeader.append("</tr>\n");
+        Observable.fromIterable(tableBody)
                 .flatMap(Observable::fromIterable)
-                // We take both the timestamp (X-Axis) and the value (Y-Axis).
-                // Note that the data sent is already sorted, so there is no need
-                // to do so ourselves.
-                .map(obj -> Pair.with((String)((JSONObject) obj).get("timestamp"), (Double) ((JSONObject) obj).get("value")))
-                // This ensures that the observable's computations are performed immediately.
-                // Observables are 'lazy' by nature and are evaluated on need; this enforces
-                // that need. In the future, we will do this with the help of an AsyncContext
-                // and will be non-blocking.
-                .blockingSubscribe(pair -> data.add((Pair<String, Double>) pair));
-                
-        // Maps each timestamp and value as a string that can be used in HTML.
-        String timeStr = data
-                .stream()
-                .map(p -> "\"" +  p.getValue0() + "\"")
-                .collect(Collectors.joining(","));
-        String dataStr = data
-                .stream()
-                .map(p -> "" + p.getValue1())
-                .collect(Collectors.joining(","));
+                .groupBy((Pair<String, Double> pair) -> pair.getValue0(), (Pair<String, Double> pair) -> pair.getValue1())
+                .flatMap((GroupedObservable<String, Double> obs) -> {
+                    System.out.println ("Processing key for: " + obs.getKey());
+                    return Observable
+                            .just("\n\t<tr>\n\t\t<td>" + obs.getKey() + "</td>")
+                            .flatMap(str -> obs.map(value -> "\n\t\t<td>" + value + "</td>").buffer(Integer.MAX_VALUE).map(list -> str + list.stream().collect(Collectors.joining())))
+                            .map(str -> str + "\n\t</tr>");
+                })
+                .subscribe(tableHeader::append);
+        tableHeader.append("</table>");
         
-        // Create the Chart.js needed code
-        String chart = 
-            "<script>" +
-            "var ctx = document.getElementById('myChart').getContext('2d');\n" + 
-            "var myChart = new Chart(ctx, {\n" +
-             "  type: 'line',\n" +
-             "  data: {\n" +
-             "    labels: [" + timeStr + "],\n" +
-             "    datasets: [{\n" +
-             "      label: '" + key + "',\n" +
-             "      data: [" + dataStr + "],\n" +
-             "      backgroundColor: 'transparent', borderColor: 'orange'\n" +
-             "    }]\n" +
-             "  }\n" +
+        // Add timestamp values as X-Axis. Both are required to have the same
+        // timestamps, so we just pick the first
+        chartHeader += "    labels: [" + tableBody
+                .get(0)
+                .stream()
+                .map(p -> "\"" + p.getValue0() + "\"")
+                .collect(Collectors.joining(",")) + "],\n" +
+                "    datasets: [";
+        
+        // Add datasets to be displayed as Y-Axis
+        chartHeader += chartDataSets.stream().collect(Collectors.joining(","));
+        chartHeader += "]\n";
+        chartHeader += "  }\n" +
              "});" + 
              "</script>";
         
-        // Create the data table.
-        String table = "<script>"
-                + "var table = document.getElementById('Table').innerHTML = "
-                + "\"<table border='1'><tr><th>Timestamp</th><th>Value</th></tr>";
-        table += data
-                .stream()
-                .map(p -> "<tr><td>" + p.getValue0() + "</td><td>" + p.getValue1() + "</td></tr>")
-                .collect(Collectors.joining());
-        table += "</table>\"</script>";
+        System.out.println("Returning");
         
-        return Triplet.with(chart, table, descriptionMap.get(key.substring(0, key.indexOf("(") - 1)));
+        return Triplet.with(chartHeader, tableHeader.toString(), descriptions.toString());
+    }
+    
+    private static String getParameterURL(Instant start, Instant end, long id) {
+       return "https://ienvironet.com/api/data/" + start.getEpochSecond() + ":" + end.getEpochSecond() + "/" + id + ".json?auth_token=avfzf6dn7xgv48qnpdhqzvlkz5ke7184";
     }
     
     /**
