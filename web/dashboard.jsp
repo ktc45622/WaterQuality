@@ -19,8 +19,13 @@
         </noscript>
         <title>Dashboard</title>
     </head>
+<<<<<<< HEAD
     <body>
         <img id="backPhoto" src="images/Creek3.jpeg">
+=======
+    <body onload="onLoad();">
+        <img id="backPhoto" src="images/backgroundImage.JPG">
+>>>>>>> refs/remotes/origin/Louis-Development
         <header class="title_bar_container"> 
             <div id="HeaderText">Water Quality</div>
         </header>
@@ -77,8 +82,10 @@
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data7')" class="data" id="data7" value="data7">Data<br>
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data8')" class="data" id="data8" value="data8">Data<br>-->
                     <br>
-                   
-
+                    
+                    <div class="data_type_submit" id="Graph_submit"><input type="submit" value="Graph" onclick="graphSubmit()"></div>
+                    <div class="data_type_submit" id="Table_submit"><input type="submit" value="Table"></div>
+                    
                 </form>
                     
                     <form id="submit_query" action="ControlServlet" value="Submit Query">
@@ -101,11 +108,7 @@
                 
                 <p id="tmp"> </p>
                 <!--datadesc is supposed to act the same as DummyData, it's the placeholder for the information from ControlServlet-->
-                <p>${datadesc}This is where the description of the data will go! This will need to be pulled from a text file. 
-                   This is where the description of the data will go! This will need to be pulled from a text file. 
-                   This is where the description of the data will go! This will need to be pulled from a text file. 
-                   This is where the description of the data will go! This will need to be pulled from a text file. 
-                   This is where the description of the data will go! This will need to be pulled from a text file. </p>
+                <p>${DummyDescription}</p>
             </section>
                    
                    
@@ -140,14 +143,10 @@
             
             function handleClick(cb)
             {
-                
-            if(current=='Graph')
-                fullCheck(cb.id);//Making sure only 3 are checked for graph tab
-                    datadesc = (this.value() + " clicked");
-                    
-//                document.getElementById("tmp").innerHTML = "<form id=\"click_data_receiver\" action=\"ControlServlet\" method=\"POST\"> <input type=\"hidden\" name=\"control\" value=\"getDesc\"></form>"
-//                if(cb.checked())
-//                    datadesc = (this.value() + " clicked");
+                if(current=='Graph') {
+                    fullCheck(cb.id);
+                }
+//                post("ControlServlet", {key: 'control', control: 'getDesc'});
             }
  
             function graphSubmit(){
@@ -168,12 +167,7 @@
             }
         </script>
                    
-                   
-        <%
-        Pair<String, String> data = DataReceiver.generateGraph();
-        out.append(data.getValue0()).append(data.getValue1());
-        %>
-        
+            ${DummyGraphAndTable}
             <script>
                 var ctx = document.getElementById('myChart').getContext('2d');
                 var myChart = new Chart(ctx, {
@@ -188,7 +182,7 @@
                     }
                 });
             </script>
-        
+                    
         <script type="text/javascript">
             document.getElementById("GraphTab").click();
             var current;
