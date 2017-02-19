@@ -68,6 +68,7 @@
                     <div class="" id="select_all_toggle"><input type="checkbox" onclick="toggle(this);" 
                            id="select_all_data" value="select_all_data">Select all</div><br>
                     ${DummyData}
+                    ${Parameters}
                     <input type="submit" name="Get Data" value="Get Data" />
                     <input type="hidden" name="control" value ="getData">
 <!--                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data1')" class="data" id="data1" value="data1">Data<br>
@@ -105,7 +106,7 @@
                 
                 <p id="tmp"> </p>
                 <!--datadesc is supposed to act the same as DummyData, it's the placeholder for the information from ControlServlet-->
-                <p>${DummyDescription}</p>
+                <p>${Descriptions}</p>
             </section>
                    
                    
@@ -163,23 +164,7 @@
                 document.write(id);
             }
         </script>
-                   
-            ${DummyGraphAndTable}
-            <script>
-                var ctx = document.getElementById('myChart').getContext('2d');
-                var myChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: [timeStr],
-                        datasets: [{
-                            label: 'Current (~1 Month)',
-                            data: [dataStr],
-                            backgroundColor: 'transparent', borderColor: 'orange'
-                        }]
-                    }
-                });
-            </script>
-                    
+            ${ChartJS}
         <script type="text/javascript">
             document.getElementById("GraphTab").click();
             var current;
