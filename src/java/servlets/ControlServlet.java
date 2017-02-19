@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.javatuples.Triplet;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -71,7 +72,7 @@ public class ControlServlet extends HttpServlet {
             }
             
             log("User Selected: " + selected);
-            Pair<String, String> graphData = DataReceiver.generateGraph(selected);
+            Triplet<String, String, String> graphData = DataReceiver.generateGraph(selected);
             String js = graphData.getValue0() + graphData.getValue1();
             
 //            request
@@ -91,6 +92,7 @@ public class ControlServlet extends HttpServlet {
 
             request.setAttribute("DummyData", data.toString());
             request.setAttribute("DummyGraphAndTable", js);
+            request.setAttribute("DummyDescription", graphData.getValue2());
             request.getServletContext()
                 .getRequestDispatcher("/dashboard.jsp") 
                 .forward(request, response);

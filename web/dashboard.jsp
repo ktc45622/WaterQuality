@@ -97,11 +97,7 @@
                 
                 <p id="tmp"> </p>
                 <!--datadesc is supposed to act the same as DummyData, it's the placeholder for the information from ControlServlet-->
-                <p>${datadesc}This is where the description of the data will go! This will need to be pulled from a text file. 
-                   This is where the description of the data will go! This will need to be pulled from a text file. 
-                   This is where the description of the data will go! This will need to be pulled from a text file. 
-                   This is where the description of the data will go! This will need to be pulled from a text file. 
-                   This is where the description of the data will go! This will need to be pulled from a text file. </p>
+                <p>${DummyDescription}</p>
             </section>
                    
                    
