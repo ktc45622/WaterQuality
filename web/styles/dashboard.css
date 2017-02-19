@@ -119,20 +119,21 @@ and open the template in the editor.
 #dashboard_container{
     margin-top: 5%;
     width: 1000px;
-    height: 1000px;
+    overflow:auto;
 }
 
 #dashboard_data_container{
     float:right;
-    margin-top:5%;
+    margin-top:10px;
     margin-right:10px;
+    margin-bottom: 10px;;
     width: 350px;
     position:relative;
 }
 
 #graph_container{
     float:left;
-    margin-top: 5%;
+    margin-top: 10px;
     margin-left:10px;
     width: 600px;
     position:relative;
@@ -142,6 +143,7 @@ and open the template in the editor.
     display:inline-block;
     margin-top:10px;
     margin-left:10px;
+    margin-bottom:10px;
     width:600px;
 }
 
