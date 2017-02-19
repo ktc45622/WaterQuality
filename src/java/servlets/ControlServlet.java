@@ -12,6 +12,8 @@ import org.javatuples.Pair;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -58,22 +60,21 @@ public class ControlServlet extends HttpServlet {
         log("Action is: " + action);
         
         if (action.trim().equalsIgnoreCase("getData")) {
-            String selected =  request
+            String[] selected = request
                     .getParameterMap()
                     .keySet()
                     .stream()
                     .filter(k -> !k.equals("Get Data") && !k.equals("control"))
-                    .findFirst()
-                    .orElse(null);
+                    .collect(Collectors.toList())
+                    .toArray(new String[0]);
             
             // Nothing selected...
-            if (selected == null) {
+            if (selected == null || selected.length == 0) {
                 return;
             }
             
-            log("User Selected: " + selected);
-            Triplet<String, String, String> graphData = DataReceiver.generateGraph(selected);
-            String js = graphData.getValue0() + graphData.getValue1();
+            log("User Selected: " + Arrays.deepToString(selected));
+            Triplet<String, String, String> data = DataReceiver.generateGraph(selected);
             
 //            request
 //                    .getParameterMap()
@@ -81,18 +82,20 @@ public class ControlServlet extends HttpServlet {
 //                    .stream()
 //                    .filter(k -> !k.equals("Get Data") && !k.equals("control"))
 //                    .forEach(k -> log("Key: " + k));
-            StringBuilder data = new StringBuilder();
+            StringBuilder paramData = new StringBuilder();
             DataReceiver
                 .getParameters()
                 .sorted()
                 //I changed the onclick function to handleClick(this) to pass the checkbox element to the function,
                 //and replaced the id with the name given in the JSON object (at least, I think I did. I tried to. lol)
                 .map(str -> "<input type=\"checkbox\" name=\"" + str + "\" onclick=\"handleClick(this)\" class=\"data\" id=\"" + str  + "\" value=\"data\">" + str + "<br>\n")
-                .blockingSubscribe(data::append);
+                .blockingSubscribe(paramData::append);
 
-            request.setAttribute("DummyData", data.toString());
-            request.setAttribute("DummyGraphAndTable", js);
-            request.setAttribute("DummyDescription", graphData.getValue2());
+            request.setAttribute("Descriptions", data.getValue2());
+            request.setAttribute("ChartJS", data.getValue0());
+            request.setAttribute("Table", data.getValue1());
+            request.setAttribute("Parameters", paramData.toString());
+            
             request.getServletContext()
                 .getRequestDispatcher("/dashboard.jsp") 
                 .forward(request, response);
@@ -199,7 +202,7 @@ public class ControlServlet extends HttpServlet {
                 .map(str -> "<input type=\"checkbox\" name=\"" + str + "\" onclick=\"handleClick(this)\" class=\"data\" id=\"" + str  + "\" value=\"data\">" + str + "<br>\n")
                 .blockingSubscribe(data::append);
 
-        request.setAttribute("DummyData", data.toString());
+        request.setAttribute("Parameters", data.toString());
         request.getServletContext()
                 .getRequestDispatcher("/dashboard.jsp") 
                 .forward(request, response);
