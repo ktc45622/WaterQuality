@@ -112,7 +112,9 @@ public class ControlServlet extends HttpServlet {
             
             // Obtain the data for what is selected
             Data data = DataReceiver.getData(Instant.now().minus(Period.ofWeeks(4)), Instant.now(), selected);
-            
+            String descriptions = DataReceiver.generateDescriptions(data);
+            String chartjs = DataReceiver.generateChartJS(data);
+            String table = DataReceiver.generateTable(data);
             
             StringBuilder paramData = new StringBuilder();
             DataReceiver
