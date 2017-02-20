@@ -41,10 +41,10 @@
                        id="ExportTab">Export</a></li>
                 </ul>
                     <div id="Graph" class="tabcontent">
-                        ${DummyGraph}
                         <canvas id="myChart" width=25% height=20%></canvas>
                     </div>
-                    <div id="Table" class="tabcontent" style="height:400px;overflow:auto;">  
+                    <div id="Table" class="tabcontent" style="height:400px;overflow:auto;">
+                    ${Table}
                     </div>
                     <div id="Export" class="tabcontent">
                         <img id="Excel" src="images/excel.png" onclick="exportData('Excel')">
@@ -70,14 +70,6 @@
                     ${Parameters}
                     <div class="data_type_submit"><input type="submit" name="Get Data" value="Get Data" /></div>
                     <input type="hidden" name="control" value ="getData">
-<!--                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data1')" class="data" id="data1" value="data1">Data<br>
-                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data2')" class="data" id="data2" value="data2">Data<br>
-                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data3')" class="data" id="data3" value="data3">Data<br>
-                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data4')" class="data" id="data4" value="data4">Data<br>
-                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data5')" class="data" id="data5" value="data5">Data<br>
-                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data6')" class="data" id="data6" value="data6">Data<br>
-                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data7')" class="data" id="data7" value="data7">Data<br>
-                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data8')" class="data" id="data8" value="data8">Data<br>-->
                     <br>
                     
                     <div class="data_type_submit" id="Graph_submit"><input type="submit" value="Graph" onclick="graphSubmit()"></div>
