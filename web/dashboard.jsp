@@ -62,9 +62,9 @@
                     a graph
                 --%>
                 <form id="data_type_form" action="ControlServlet" method = "POST">
-                    <!--<div id="dateInstructDiv">Start Date to End Date</div>
-                    <div id="dateselectordiv"><input class="dateselector" type="date" name="startdate"> to
-                    <input class="dateselector" type="date" name="enddate"></div>-->
+                    </br><div id="dateInstructDiv">Start Date to End Date</div>
+                    <div id="dateselectordiv" onclick="dateLimits();"><input class="dateselector" id="startdate" type="date" min="2016-01-01" max=""> to
+                    <input class="dateselector" id="enddate" type="date" min="2016-01-01" max=""></div>
                     <div class="" id="select_all_toggle"><input type="checkbox" onclick="toggle(this);" 
                            id="select_all_data" value="select_all_data">Select all</div><br>
                     ${Parameters}
@@ -242,7 +242,22 @@
                     checkedBoxes--;
             }
             
-            
+            function dateLimits(){
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+                if(dd<10){
+                    dd='0'+dd;
+                } 
+                if(mm<10){
+                    mm='0'+mm;
+                } 
+                today = yyyy+'-'+mm+'-'+dd;
+                document.getElementById("enddate").setAttribute("max",today);
+                document.getElementById("startdate").setAttribute("max",today);
+                document.getElementById("enddate").setAttribute("min",document.getElementById("startdate").value);
+            }
         </script>
     </body>
 </html>
