@@ -62,9 +62,10 @@
                     a graph
                 --%>
                 <form id="data_type_form" action="ControlServlet" method = "POST">
-                    </br><div id="dateInstructDiv">Start Date to End Date</div>
+                    <!--Allows the user to select a range of dates for data viewing-->
+                    <!--</br><div id="dateInstructDiv">Start Date to End Date</div>
                     <div id="dateselectordiv" onclick="dateLimits();"><input class="dateselector" id="startdate" type="date" min="2016-01-01" max=""> to
-                    <input class="dateselector" id="enddate" type="date" min="2016-01-01" max=""></div>
+                    <input class="dateselector" id="enddate" type="date" min="2016-01-01" max=""></div>-->
                     <div class="" id="select_all_toggle"><input type="checkbox" onclick="toggle(this);" 
                            id="select_all_data" value="select_all_data">Select all</div><br>
                     ${Parameters}
@@ -242,6 +243,11 @@
                     checkedBoxes--;
             }
             
+            /**
+             * Makes it so the date input fields can not be chosen for furture
+             * dates. Also sets makes sure the <code>enddate</code> can not be a
+             * date that is earlier than <code>startdate</code>
+             */
             function dateLimits(){
                 var today = new Date();
                 var dd = today.getDate();
@@ -257,6 +263,8 @@
                 document.getElementById("enddate").setAttribute("max",today);
                 document.getElementById("startdate").setAttribute("max",today);
                 document.getElementById("enddate").setAttribute("min",document.getElementById("startdate").value);
+                if(document.getElementById("enddate").value!=null)
+                    document.getElementById("startdate").setAttribute("max",document.getElementById("enddate").value);
             }
         </script>
     </body>
