@@ -123,6 +123,7 @@ description boxes */
     width: auto;
     min-width:1000px;
     overflow:auto;
+    padding-bottom:10px;
 }
 
 /* Styles the section with the data checboxes */
@@ -130,6 +131,7 @@ description boxes */
     float:right;
     margin-top:10px;
     margin-right:10px;
+    margin-left:5px;
     margin-bottom: 10px;;
     min-width: 350px;
     width:35%;
@@ -141,6 +143,7 @@ description boxes */
     float:left;
     margin-top: 10px;
     margin-left:10px;
+    margin-right:5px;
     min-width: 600px;
     width:60%;
     position:relative;
@@ -149,7 +152,7 @@ description boxes */
 /* Styles the description box */
 #dashboard_data_description{
     display:inline-block;
-    margin:10px 10px 10px 10px;
+    margin:10px 10px 0px 10px;
     min-width:600px;
     width:60%;
     
