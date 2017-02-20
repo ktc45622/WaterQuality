@@ -63,9 +63,14 @@
                 --%>
                 <form id="data_type_form" action="ControlServlet" method = "POST">
                     <!--Allows the user to select a range of dates for data viewing-->
-                    <!--</br><div id="dateInstructDiv">Start Date to End Date</div>
-                    <div id="dateselectordiv" onclick="dateLimits();"><input class="dateselector" id="startdate" type="date" min="2016-01-01" max=""> to
-                    <input class="dateselector" id="enddate" type="date" min="2016-01-01" max=""></div>-->
+                    </br>
+                    <div id="dateselectordiv" onclick="dateLimits();">
+                        Start Date:
+                        <input class="dateselector" id="startdate" type="datetime-local" min="2016-01-01" max="" value="">
+                        </br>to</br>
+                        End Date:
+                        <input class="dateselector" id="enddate" type="datetime-local" min="2016-01-01" max="" value="">
+                    </div>
                     <div class="" id="select_all_toggle"><input type="checkbox" onclick="toggle(this);" 
                            id="select_all_data" value="select_all_data">Select all</div><br>
                     ${Parameters}
@@ -159,6 +164,7 @@
             ${ChartJS}
         <script type="text/javascript">
             document.getElementById("GraphTab").click();
+            document.getElementById("dateselectordiv").click();
             var current;
             /**
              * The <code>openTab</code> function activates a certain event
@@ -260,11 +266,18 @@
                     mm='0'+mm;
                 } 
                 today = yyyy+'-'+mm+'-'+dd;
+                if(document.getElementById("enddate").value==""
+                        &&document.getElementById("startdate").value==""){
+                    document.getElementById("startdate").value=today;
+                    document.getElementById("enddate").value=today;
+                }
+                
                 document.getElementById("enddate").setAttribute("max",today);
-                document.getElementById("startdate").setAttribute("max",today);
+                document.getElementById("startdate").setAttribute("max",document.getElementById("enddate").value);
                 document.getElementById("enddate").setAttribute("min",document.getElementById("startdate").value);
-                if(document.getElementById("enddate").value!=null)
-                    document.getElementById("startdate").setAttribute("max",document.getElementById("enddate").value);
+                
+                
+                
             }
         </script>
     </body>
