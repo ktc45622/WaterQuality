@@ -38,6 +38,8 @@ import org.javatuples.Pair;
 /**
  *
  * @author Louis Jenkins
+ * 
+ * Represents data values for different parameters.
  */
 public class DataValue {
     String parameter;
@@ -52,7 +54,7 @@ public class DataValue {
     public DataValue(String parameter, String timestamp, Double value) throws ParseException {
         // Parse the timestamp into an equivalent Instant
         // Example of timestamp can be seen here: 
-        // https://gist.github.com/LouisJenkinsCS/cca0069178f194329d55aabf33c28418#file-environet_api_data-json-L10
+        // https://gist.github.com/LouisJenkinsCS/cca0069178f194329d55aabf33c28418#file-environet_api_data_specific-json-L12
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss z");
         this.timestamp = format.parse(timestamp).toInstant();
         this.value = value;

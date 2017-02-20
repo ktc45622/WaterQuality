@@ -35,6 +35,10 @@ import io.reactivex.observables.ConnectableObservable;
 /**
  *
  * @author Louis Jenkins
+ * 
+ * Data is created and used as a handle for the result of a data query for DataReceiver.
+ * Data is kept in the form of a ConnectableObservable, which is a way to cache
+ * data from a query to be used later.
  */
 public class Data {
     private ConnectableObservable<DataValue> data;
