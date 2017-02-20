@@ -19,7 +19,7 @@
         </noscript>
         <title>Dashboard</title>
     </head>
-    <body onload="onLoad();">
+    <body>
         <img id="backPhoto" src="images/Creek3.jpeg">
         <header class="title_bar_container"> 
             <div id="HeaderText">Water Quality</div>
@@ -63,9 +63,9 @@
                 --%>
                 <form id="data_type_form" action="ControlServlet" method = "POST">
                     <!--Allows the user to select a range of dates for data viewing-->
-                    <!--</br><div id="dateInstructDiv">Start Date to End Date</div>
-                    <div id="dateselectordiv" onclick="dateLimits();"><input class="dateselector" id="startdate" type="date" min="2016-01-01" max=""> to
-                    <input class="dateselector" id="enddate" type="date" min="2016-01-01" max=""></div>-->
+                    </br><div id="dateInstructDiv">Start Date to End Date</div>
+                    <div id="dateselectordiv" onclick="dateLimits();"><input class="dateselector" id="startdate" name="startdate"type="datetime-local" min="2016-01-01" max=""> to
+                    <input class="dateselector" id="enddate" name="enddate" type="datetime-local" min="2016-01-01" max=""></div>
                     <div class="" id="select_all_toggle"><input type="checkbox" onclick="toggle(this);" 
                            id="select_all_data" value="select_all_data">Select all</div><br>
                     ${Parameters}
@@ -104,7 +104,27 @@
                    
             
         </section> 
-    
+            
+            <script>
+            function pad(num, size) {
+                var s = num+"";
+                while (s.length < size) s = "0" + s;
+                return s;
+            }
+            
+            function setDate(date, id) {
+                var dateStr = date.getFullYear() + "-" + pad(date.getMonth() + 1, 2) + "-" + pad(date.getDate(), 2) + "T" + pad(date.getHours() + 1, 2) + ":" + pad(date.getMinutes() + 1, 2) + ":" + pad(date.getSeconds() + 1, 2);
+                document.getElementById(id).value = dateStr;
+                console.log("id: " + id + ", date: " + date, ", datestr: " + dateStr);
+            }
+            
+            var end = new Date();
+            var start = new Date();
+            start.setMonth(start.getMonth() - 1);
+            setDate(end, "enddate");
+            setDate(start, "startdate");
+            </script>
+<!--            <script>var d = new Date(); d.setMonth(d.getMonth() - 1); document.getElementById('startdate').valueAsDate = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12).toGMTString();</script>-->
                    
         <script>
             function post(path, params, method) {

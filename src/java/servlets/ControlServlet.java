@@ -94,11 +94,16 @@ public class ControlServlet extends HttpServlet {
         log("Action is: " + action);
 
         if (action.trim().equalsIgnoreCase("getData")) {
+            String start = request.getParameterValues("startdate")[0];
+            String end = request.getParameterValues("enddate")[0];
+            log("Start: " + start);
+            log("End: " + start);
+            
             String[] selected = request
                     .getParameterMap()
                     .keySet()
                     .stream()
-                    .filter(k -> !k.equals("Get Data") && !k.equals("control"))
+                    .filter(k -> !k.equals("startdate") && !k.equals("enddate") && !k.equals("Get Data") && !k.equals("control"))
                     .collect(Collectors.toList())
                     .toArray(new String[0]);
 
