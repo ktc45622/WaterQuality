@@ -67,9 +67,8 @@
                     <input class="dateselector" type="date" name="enddate"></div>-->
                     <div class="" id="select_all_toggle"><input type="checkbox" onclick="toggle(this);" 
                            id="select_all_data" value="select_all_data">Select all</div><br>
-                    ${DummyData}
                     ${Parameters}
-                    <input type="submit" name="Get Data" value="Get Data" />
+                    <div class="data_type_submit"><input type="submit" name="Get Data" value="Get Data" /></div>
                     <input type="hidden" name="control" value ="getData">
 <!--                    <input type="checkbox" onclick="if(current=='Graph')fullCheck('data1')" class="data" id="data1" value="data1">Data<br>
                     <input type="checkbox" onclick="if(current=='Graph')fullCheck('data2')" class="data" id="data2" value="data2">Data<br>
@@ -241,7 +240,7 @@
             function fullCheck(id){
                 var item=document.getElementById(id);
                 if(item.checked==true){
-                    if(checkedBoxes<2)
+                    if(checkedBoxes<3)
                         checkedBoxes++;
                     else{
                         item.checked=false;
