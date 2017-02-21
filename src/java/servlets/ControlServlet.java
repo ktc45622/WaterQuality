@@ -99,6 +99,16 @@ public class ControlServlet extends HttpServlet {
             log("Start: " + start);
             log("End: " + start);
             
+            if(!start.endsWith(":00")) {
+                start += ":00";
+            }
+            start += "Z";
+            
+            if (!end.endsWith(":00")) {
+                end += ":00";
+            }
+            end += "Z";
+            
             String[] selected = request
                     .getParameterMap()
                     .keySet()
@@ -116,7 +126,7 @@ public class ControlServlet extends HttpServlet {
             log("User Selected: " + Arrays.deepToString(selected));
             
             // Obtain the data for what is selected
-            Data data = DataReceiver.getData(Instant.now().minus(Period.ofWeeks(4)), Instant.now(), selected);
+            Data data = DataReceiver.getData(Instant.parse(start), Instant.parse(end), selected);
             String descriptions = DataReceiver.generateDescriptions(data);
             String chartjs = DataReceiver.generateChartJS(data);
             String table = DataReceiver.generateTable(data);
