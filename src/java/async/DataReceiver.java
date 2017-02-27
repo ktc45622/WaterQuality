@@ -108,6 +108,9 @@ public class DataReceiver {
                 .filter((JSONObject obj) -> parameters
                         .stream()
                         .map(DataParameter::getName)
+                        // TODO: Fix Protocol so that it does not crash when no data is available. For now
+                        // removing Turbidity.
+                        .filter((String name) -> !name.equals("Turbidity"))
                         .anyMatch((name -> name.equals(obj.get("name"))))
                 )
                 .doOnNext(obj -> System.out.println("Parameter: " + obj.toJSONString()))
@@ -128,6 +131,9 @@ public class DataReceiver {
                     PARAMETER_MAP.put(param.getId(), param);
                     parameters.remove(param);
                 });
+        
+        
+        
     }
     
     /**
@@ -257,6 +263,79 @@ public class DataReceiver {
 "});</script>");
         
         return chartJS.toString();
+    }
+    
+    public static String generateSeries(Data source) {
+        StringBuilder series = new StringBuilder();
+        // Add all data to the dataset for each element
+        source.getData()
+                .groupBy(DataValue::getId)
+                .sorted((GroupedObservable<Long, DataValue> group1, GroupedObservable<Long, DataValue> group2) -> 
+                        group1.getKey().compareTo(group2.getKey())
+                )
+                .flatMap((GroupedObservable<Long, DataValue> group) -> {
+                    return group
+                            .buffer(Integer.MAX_VALUE)
+                            .map((List<DataValue> data) -> "{\n" +
+                                    "      name: '" + PARAMETER_MAP.get(group.getKey()).getName() + "',\n" +
+                                    "      data: [" + data.stream().map(DataValue::getValue).map(Object::toString).collect(Collectors.joining(",")) + "],\n" +
+                                    "},"
+                            );
+                })
+                .blockingSubscribe(series::append);
+        series.delete(series.length()-1, series.length());
+        
+        return series.toString();
+    }
+    
+    public static Observable<JSONObject> processQuery(Data source) {
+        return source.getData()
+                .groupBy(DataValue::getId)
+                .flatMap((GroupedObservable<Long, DataValue> group) -> {
+                    JSONObject obj = new JSONObject();
+                    // The key is the actual 'id' for the parameter.
+                    obj.put("param", group.getKey());
+                    obj.put("name", PARAMETER_MAP.get(group.getKey()));
+                    
+                    // Create a JSONArray filled with the DataValues
+                    return group.sorted()
+                            .map((DataValue dv) -> {
+                                JSONObject dataField = new JSONObject();
+                                dataField.put("timestamp", dv.getTimestamp().getEpochSecond() * 1000);
+                                dataField.put("value", dv.value);
+                                return dataField;
+                            })
+                            .buffer(Integer.MAX_VALUE)
+                            .map((List<JSONObject> list) -> {
+                                JSONArray arr = new JSONArray();
+                                arr.addAll(list);
+                                return arr;
+                            })
+                            .map((JSONArray arr) -> {
+                                obj.put("data", arr);
+                                return obj;
+                            });
+                })
+                .buffer(Integer.MAX_VALUE)
+                .map((List<JSONObject> list) -> {
+                    JSONArray arr = new JSONArray();
+                    arr.addAll(list);
+                    return arr;
+                })
+                .map((JSONArray arr) -> {
+                    JSONObject response = new JSONObject();
+                    response.put("resp", arr);
+                    return response;
+                });                
+    }
+    
+    public static String getParameterName(long id) {
+        DataParameter param = PARAMETER_MAP.get(id);
+        if (param == null) {
+            return null;
+        }
+        
+        return param.getName();
     }
     
     public static String generateSeries(Data source) {
