@@ -108,6 +108,9 @@ public class DataReceiver {
                 .filter((JSONObject obj) -> parameters
                         .stream()
                         .map(DataParameter::getName)
+                        // TODO: Fix Protocol so that it does not crash when no data is available. For now
+                        // removing Turbidity.
+                        .filter((String name) -> !name.equals("Turbidity"))
                         .anyMatch((name -> name.equals(obj.get("name"))))
                 )
                 .doOnNext(obj -> System.out.println("Parameter: " + obj.toJSONString()))
@@ -187,75 +190,14 @@ public class DataReceiver {
         
         return descriptions.toString();
     }
-    
-    /**
-     * Generates HTML for the Chart.js. This assumes that the receiving HTML document
-     * contains a canvas with the element 'myChart'. The chart is constructed with
-     * it's timestamp as the X-Axis, and it's values as the Y-Axis. The color of each
-     * parameter held by the underlying source are given a randomized color.
-     * @param source Data.
-     * @return Generated HTML for Chart.js.
-     */
-    public static String generateChartJS(Data source) {
-        StringBuilder chartJS =  new StringBuilder("<script>" +
-                "var ctx = document.getElementById('myChart').getContext('2d');\n" + 
-                "var myChart = new Chart(ctx, {\n" +
-                 "  type: 'line',\n" +
-                 "  data: {\n");
         
-        StringBuilder labels = new StringBuilder("    labels: [ ");
-        source.getData()
-                .map(DataValue::getTimestamp)
-                .distinct()
-                .sorted()
-                .map((Instant ts) -> "\"" + ts.toString().replace("T", " ").replace("Z", "") + "\",")
-                .blockingSubscribe(labels::append);
-        
-        // Replace the last ',' for a end bracket ']'
-        labels.replace(labels.length()-1, labels.length(), "]");
-        chartJS.append(labels.toString());
-        chartJS.append(",\n    datasets: [ ");
-        AtomicInteger yAxis = new AtomicInteger(0);
-        
-        // Add all data to the dataset for each element
-        source.getData()
-                .groupBy(DataValue::getId)
-                .sorted((GroupedObservable<Long, DataValue> group1, GroupedObservable<Long, DataValue> group2) -> 
-                        group1.getKey().compareTo(group2.getKey())
-                )
-                .flatMap((GroupedObservable<Long, DataValue> group) -> {
-                    int axis = yAxis.getAndIncrement();
-                    int rgb[] = new Random().ints(0, 256).limit(3).toArray();
-                    return group
-                            .buffer(Integer.MAX_VALUE)
-                            .map((List<DataValue> data) -> "{\n" +
-                                    "      label: '" + PARAMETER_MAP.get(group.getKey()).getName() + "',\n" +
-                                    "      data: [" + data.stream().map(DataValue::getValue).map(Object::toString).collect(Collectors.joining(",")) + "],\n" +
-                                    "      backgroundColor: 'transparent', yAxisID: 'y-axis-" + axis + "', borderColor: 'rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")'\n" +
-                                    "},"
-                            );
-                })
-                .blockingSubscribe(chartJS::append);
-        
-        // Replace the last ',' with a ']' and finish off chartJS
-        chartJS.replace(chartJS.length()-1, chartJS.length(), "]");
-        chartJS.append("\n  }");
-        
-        chartJS.append(",options: { scales: {\n" +
-"          yAxes: [{\n" +
-"            position: 'left',\n" +
-"            id: 'y-axis-0'\n" +
-"          }");
-        
-        if (yAxis.get() >= 2) {
-            chartJS.append(", {\n" +
-"            position: 'right',\n" +
-"            id: 'y-axis-1'\n" +
-"          }");
+    public static String getParameterName(long id) {
+        DataParameter param = PARAMETER_MAP.get(id);
+        if (param == null) {
+            return null;
         }
-        chartJS.append("]}\n}});</script>");
         
-        return chartJS.toString();
+        return param.getName();
     }
     
     /**
