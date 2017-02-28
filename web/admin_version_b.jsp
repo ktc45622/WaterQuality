@@ -244,7 +244,6 @@
 
         </section> 
 
-
         <script>
             function post(path, params, method) {
                 method = method || "post"; // Set method to post by default if not specified.
@@ -269,7 +268,6 @@
                 document.body.appendChild(form);
                 form.submit();
             }
-
             function handleClick(cb)
             {
                 if (current == 'Graph') {
@@ -277,7 +275,6 @@
                 }
 //                post("ControlServlet", {key: 'control', control: 'getDesc'});
             }
-
             function graphSubmit() {
                 var checkboxes = document.querySelectorAll('input[type="checkbox"]');
                 var data = "{ data: [";
@@ -287,7 +284,6 @@
                     }
                 }
                 data += "] }";
-
                 post("ControlServlet", {key: 'control', control: 'getData ' + data});
             }
 
@@ -308,7 +304,6 @@
             function openTab(evt, tabName) {
                 var i, tabcontent, tablinks, submitbutton;
                 tabcontent = document.getElementsByClassName("tabcontent");
-
                 for (i = 0; i < tabcontent.length; i++) {
                     tabcontent[i].style.display = "none";
                 }
@@ -319,7 +314,6 @@
                 }
                 document.getElementById(tabName).style.display = "block";
                 evt.currentTarget.className += " active";
-
                 //unchecks all of the checkboxes
                 toggle(this);
                 checkedBoxes = 0;
@@ -403,7 +397,6 @@
                 if (document.getElementById("enddate").value != null)
                     document.getElementById("startdate").setAttribute("max", document.getElementById("enddate").value);
             }
-
 
         </script>
     </body>
