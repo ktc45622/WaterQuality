@@ -1073,7 +1073,7 @@ public class DatabaseManager
         JSONParser parser = new JSONParser();
         try{
             Object obj = parser.parse(new FileReader("P:/Compsci480/environet_api_data.json"));
-            JSONObject jsonObject = (JSONObject)obj
+            JSONObject jsonObject = (JSONObject)obj;
             JSONArray jarray = (JSONArray)jsonObject.get("data");
             Iterator<JSONObject> iterator = jarray.iterator();
             while(iterator.hasNext())
