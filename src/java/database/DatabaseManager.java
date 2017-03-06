@@ -37,7 +37,7 @@ public class DatabaseManager
         dataValue is the value of the of data recorded
         delta is the difference between this data value and the last
     */
-    public void createDataValueTable()    
+    public static void createDataValueTable()    
     {
         Statement createTable = null;
         try(Connection conn = Web_MYSQL_Helper.getConnection();)
@@ -50,14 +50,13 @@ public class DatabaseManager
                     + "sensor varchar(20),"
                     + "timeRecorded varchar(25),"
                     + "dataValue FLOAT(3),"
-                    + "delta FLOAT(8),"
-                    + "id INT"
+                    + "delta FLOAT(8)"
                     + ");";
             createTable.execute(createSQL);
         }
         catch (Exception ex)//SQLException ex 
         {
-            System.out.println("Error processing request: Create Data Value Table");
+            LogError("Error creating Data Value Table: " + ex);
         }
         finally
         {
@@ -66,7 +65,10 @@ public class DatabaseManager
                 if(createTable != null)
                     createTable.close();
             }
-            catch(SQLException e){System.out.println("Error closing statement");}
+            catch(SQLException e)
+            {
+                LogError("Error closing statement:" + e);
+            }
         }
     }
     
@@ -75,7 +77,7 @@ public class DatabaseManager
         dataName is the data type of the data value (e.g. Temperature)
         description is the description of this data type
     */
-    public void createDataDescriptionTable()    
+    public static void createDataDescriptionTable()    
     {
         Statement createTable = null;
         try(Connection conn = Web_MYSQL_Helper.getConnection();)
@@ -89,7 +91,7 @@ public class DatabaseManager
         }
         catch (Exception ex)//SQLException ex 
         {
-            System.out.println("Error processing request: Create Data Description Table");
+            LogError("Error creating Data Description Table: " + ex);
         }
         finally
         {
@@ -98,7 +100,10 @@ public class DatabaseManager
                 if(createTable != null)
                     createTable.close();
             }
-            catch(SQLException e){System.out.println("Error closing statement");}
+            catch(SQLException e)
+            {
+                LogError("Error closing statement: " + e);
+            }
         }
     }
     
@@ -110,7 +115,7 @@ public class DatabaseManager
         AttemptedLoginCount is the number of recent failed logins
         The rest are self explanitory
     */
-    public void createUserTable()
+    public static void createUserTable()
     {
         Statement createTable = null;
         try(Connection conn = Web_MYSQL_Helper.getConnection();)
@@ -135,7 +140,7 @@ public class DatabaseManager
         }
         catch (Exception ex)//SQLException ex 
         {
-            System.out.println("Error processing request: Create Users Table");
+            LogError("Error creating Users Table: " + ex);
         }
         finally
         {
@@ -144,7 +149,45 @@ public class DatabaseManager
                 if(createTable != null)
                     createTable.close();
             }
-            catch(SQLException e){System.out.println("Error closing statement");}
+            catch(SQLException e)
+            {
+                LogError("Error closing statement: " + e);
+            }
+        }
+    }
+    
+    /*
+        Creates a table to log the errors that may occur
+        Time occured is the time the error happened
+        Error is the error message
+    */
+    public static void createErrorLogsTable()    
+    {
+        Statement createTable = null;
+        try(Connection conn = Web_MYSQL_Helper.getConnection();)
+        {
+            createTable = conn.createStatement();
+            String createSQL = "Create Table IF NOT EXISTS ErrorLogs("
+                    + "timeOccured varchar(25) primary key,"
+                    + "error varchar(100)"
+                    + ");";
+            createTable.execute(createSQL);
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            LogError("Error creating Error Logs Table: " + ex);
+        }
+        finally
+        {
+            try
+            {
+                if(createTable != null)
+                    createTable.close();
+            }
+            catch(SQLException e)
+            {
+                LogError("Error closing statement: " + e);
+            }
         }
     }
     
@@ -158,7 +201,7 @@ public class DatabaseManager
         @param u the user who entered this data value
         @return whether this function was successful or not
     */
-    public boolean manualInput(String name, String units, LocalDateTime time, float value, float delta, int id, User u)
+    public static boolean manualInput(String name, String units, LocalDateTime time, float value, float delta, int id, User u)
     {
         boolean status;
         Connection conn = Web_MYSQL_Helper.getConnection();
@@ -166,8 +209,8 @@ public class DatabaseManager
         try
         {
             conn.setAutoCommit(false);
-            String insertSQL = "INSERT INTO DataValues (dataName,units,sensor,timeRecorded,dataValue,delta,entryID) "
-                    + "values(?,?,?,?,?,?,?)";
+            String insertSQL = "INSERT INTO DataValues (dataName,units,sensor,timeRecorded,dataValue,delta) "
+                    + "values(?,?,?,?,?,?)";
             String sensor = u.getFirstName()+u.getLastName();
             if(sensor.length() > 20)
                 sensor = sensor.substring(0, 20);
@@ -185,7 +228,6 @@ public class DatabaseManager
             insertData.setFloat(5, value);
             insertData.setFloat(6, delta);
             insertData.setInt(7, id);
-            System.out.println("Query:     " + insertData);
             insertData.executeUpdate();
             conn.commit();
             status = true;
@@ -193,17 +235,16 @@ public class DatabaseManager
         catch (Exception ex)//SQLException ex 
         {
             status = false;
-            System.out.println("Error processing request: Manual Data Insertion\n" + ex);
+            LogError("Error Manualing Inserting Data: " + ex);
             if(conn!=null)
             {
                 try
                 {
-                    System.out.println("Transaction is being rolled back");
                     conn.rollback();
                 }
                 catch(SQLException excep)
                 {
-                    System.out.println("Rollback unsuccessful: " + excep);
+                    LogError("Rollback unsuccessful: " + excep);
                 }
             }
         }
@@ -218,7 +259,7 @@ public class DatabaseManager
             }
             catch(SQLException excep)
             {
-                System.out.println("Error closing statement or connection");
+                LogError("Error closing statement or connection: " + excep);
             }
         }
         return status;
@@ -230,7 +271,7 @@ public class DatabaseManager
         @param u the user doing the deletion
         @return whether this function was successful or not
     */
-    public boolean manualDeletion(int entryID, User u)
+    public static boolean manualDeletion(int entryID, User u)
     {
         boolean status;
         Connection conn = Web_MYSQL_Helper.getConnection();
@@ -252,17 +293,16 @@ public class DatabaseManager
         catch (Exception ex)//SQLException ex 
         {
             status = false;
-            System.out.println("Error processing request: Manual Data Deletion\n" + ex);
+            LogError("Error Manualing Deleting Data: " + ex);
             if(conn!=null)
             {
                 try
                 {
-                    System.out.println("Transaction is being rolled back");
                     conn.rollback();
                 }
                 catch(SQLException excep)
                 {
-                    System.out.println("Rollback unsuccessful: " + excep);
+                    LogError("Rollback unsuccessful: " + excep);
                 }
             }
         }
@@ -277,7 +317,7 @@ public class DatabaseManager
             }
             catch(SQLException excep)
             {
-                System.out.println("Error closing statement or connection");
+                LogError("Error closing statement or connection: " + excep);
             }
         }
         return status;
@@ -289,7 +329,7 @@ public class DatabaseManager
         @param u the user who is doing the deletion
         @return whether this function was successful or not
     */
-    public boolean deleteUser(int userID, User u)
+    public static boolean deleteUser(int userID, User u)
     {
         boolean status;
         Connection conn = Web_MYSQL_Helper.getConnection();
@@ -313,17 +353,16 @@ public class DatabaseManager
         catch (Exception ex)//SQLException ex 
         {
             status = false;
-            System.out.println("Error processing request: Manual User Deletion\n" + ex);
+            LogError("Error Manualing Deleting User: " + ex);
             if(conn!=null)
             {
                 try
                 {
-                    System.out.println("Transaction is being rolled back");
                     conn.rollback();
                 }
                 catch(SQLException excep)
                 {
-                    System.out.println("Rollback unsuccessful: " + excep);
+                    LogError("Rollback unsuccessful: " + excep);
                 }
             }
         }
@@ -338,7 +377,7 @@ public class DatabaseManager
             }
             catch(SQLException excep)
             {
-                System.out.println("Error closing statement or connection");
+                LogError("Error closing statement or connection: " + excep);
             }
         }
         return status;
@@ -350,7 +389,7 @@ public class DatabaseManager
         @param lower the lower range of the time
         @param upper the upper range of the time
     */
-    public ArrayList<DataValue> getGraphData(String name, LocalDateTime lower, LocalDateTime upper)
+    public static ArrayList<DataValue> getGraphData(String name, LocalDateTime lower, LocalDateTime upper)
     {
         ArrayList<DataValue> graphData = new ArrayList<>();
         PreparedStatement selectData = null;
@@ -371,7 +410,6 @@ public class DatabaseManager
             float value;
             float delta;
             String sensor;
-            int id;
             while(dataRange.next())
             {
                 entryID = dataRange.getInt(1);
@@ -381,14 +419,13 @@ public class DatabaseManager
                 time = LocalDateTime.parse(dataRange.getString(5));
                 value = dataRange.getFloat(6);
                 delta = dataRange.getFloat(7);
-                id = dataRange.getInt(8);
-                DataValue dV = new DataValue(entryID,name,units,sensor,time,value,delta,id);
+                DataValue dV = new DataValue(entryID,name,units,sensor,time,value,delta);
                 graphData.add(dV);
             }
         }
         catch (Exception ex)//SQLException ex 
         {
-            System.out.println("Error processing request: Retrieve Graph Data");
+            LogError("Error Retrieving Graph Data: " + ex);
         }
         finally
         {
@@ -400,72 +437,11 @@ public class DatabaseManager
                     dataRange.close();
             }
             catch(SQLException excep)
-            {System.out.println("Error closing statement or result set");}
+            {
+                LogError("Error closing statement or result set: " + excep);
+            }
         }
         return graphData;
-    }
-    
-    /*
-        Unused/unnecessary
-        Was meant for data to be directly inputed from the sensors but instead
-        we decided to just funnel all the data from netronix through JSONs
-    */
-    public void sensorDataInput(String name, String units, String sensor, LocalDateTime time, float value, float delta, int id)
-    {
-        Connection conn = Web_MYSQL_Helper.getConnection();
-        PreparedStatement sensorDataInput = null;
-        try
-        {
-            conn.setAutoCommit(false);
-            String insertSQL = "INSERT INTO DataValues (dataName,units,sensor,timeRecorded,dataValue, delta, id) "
-                    + "values(?,?,?,?,?,?,?)";
-            
-            //removes special characters as prepared statement will replace them with ?
-            if(units.equals("℃"))
-                units = "C";
-            units = units.replace("μ","u");
-            
-            sensorDataInput = conn.prepareStatement(insertSQL);
-            sensorDataInput.setString(1, name);
-            sensorDataInput.setString(2, units);
-            sensorDataInput.setString(3, sensor);
-            sensorDataInput.setString(4, time+"");
-            sensorDataInput.setFloat(5, value);
-            sensorDataInput.setFloat(6, delta);
-            sensorDataInput.setInt(7, id);
-            sensorDataInput.executeUpdate();
-            conn.commit();
-        }
-        catch (Exception ex)//SQLException ex 
-        {
-            System.out.println("Error processing request: Sensor Data Insertion");
-            if(conn!=null)
-            {
-                try
-                {
-                    System.out.println("Transaction is being rolled back");
-                    conn.rollback();
-                }
-                catch(SQLException excep)
-                {
-                    System.out.println("Rollback unsuccessful: " + excep);
-                }
-            }
-        }
-        finally
-        {
-            try
-            {
-                if(sensorDataInput != null)
-                    sensorDataInput.close();
-                if(conn != null)
-                    conn.close();
-            }
-            catch(SQLException excep)
-            {
-                System.out.println("Error closing statement or connection");
-            }
-        }
     }
     
     /*
@@ -474,7 +450,7 @@ public class DatabaseManager
         Last login and attempted login are initiallized to now
         @return whether this function was successful or not
     */
-    public boolean addNewUser(String username, String password, String firstName,
+    public static boolean addNewUser(String username, String password, String firstName,
             String lastName, String email, UserRole userRole, User u)
     {
         boolean status;
@@ -514,17 +490,16 @@ public class DatabaseManager
         catch (Exception ex)//SQLException ex 
         {
             status = false;
-            System.out.println("Error processing request: Add new user\n" + ex);
+            LogError("Error Adding New User: " + ex);
             if(conn!=null)
             {
                 try
                 {
-                    System.out.println("Transaction is being rolled back");
                     conn.rollback();
                 }
                 catch(SQLException excep)
                 {
-                    System.out.println("Rollback unsuccessful: " + excep);
+                    LogError("Rollback unsuccessful: " + excep);
                 }
             }
         }
@@ -539,7 +514,7 @@ public class DatabaseManager
             }
             catch(SQLException excep)
             {
-                System.out.println("Error closing statement or connection");
+                LogError("Error closing statement or connection: " + excep);
             }
         }
         return status;
@@ -551,7 +526,7 @@ public class DatabaseManager
         @param u the user doing the locking
         @return whether this function was successful or not
     */
-    public boolean lockUser(int userID, User u)
+    public static boolean lockUser(int userID, User u)
     {
         boolean status;
         Connection conn = Web_MYSQL_Helper.getConnection();
@@ -560,7 +535,7 @@ public class DatabaseManager
         {
             //throws an error if a user without proper roles somehow invokes this function
             if(u.getUserRole() != common.UserRole.SystemAdmin)
-                throw new Exception("Attempted Data Deletion by Non-Admin");
+                throw new Exception("Attempted User Lock by Non-Admin");
             
             conn.setAutoCommit(false);
             String modifySQL = "UPDATE users "
@@ -577,17 +552,16 @@ public class DatabaseManager
         catch (Exception ex)//SQLException ex 
         {
             status = false;
-            System.out.println("Error processing request: Lock User #" + userID);
+            LogError("Error Locking User #" + userID + ": " + ex);
             if(conn!=null)
             {
                 try
                 {
-                    System.out.println("Transaction is being rolled back");
                     conn.rollback();
                 }
                 catch(SQLException excep)
                 {
-                    System.out.println("Rollback unsuccessful: " + excep);
+                    LogError("Rollback unsuccessful: " + excep);
                 }
             }
         }
@@ -602,7 +576,7 @@ public class DatabaseManager
             }
             catch(SQLException excep)
             {
-                System.out.println("Error closing statement or connection");
+                LogError("Error closing statement or connection:" + excep);
             }
         }
         return status;
@@ -614,7 +588,7 @@ public class DatabaseManager
         @param u the user doing the unlocking
         @return whether this function was successful or not
     */
-    public boolean unlockUser(int userID, User u)
+    public static boolean unlockUser(int userID, User u)
     {
         boolean status;
         Connection conn = Web_MYSQL_Helper.getConnection();
@@ -623,7 +597,7 @@ public class DatabaseManager
         {
             //throws an error if a user without proper roles somehow invokes this function
             if(u.getUserRole() != common.UserRole.SystemAdmin)
-                throw new Exception("Attempted Data Deletion by Non-Admin");
+                throw new Exception("Attempted User Unlock by Non-Admin");
             
             conn.setAutoCommit(false);
             String modifySQL = "UPDATE users "
@@ -640,17 +614,16 @@ public class DatabaseManager
         catch (Exception ex)//SQLException ex 
         {
             status = false;
-            System.out.println("Error processing request: Lock User #" + userID);
+            LogError("Error Unlocking User #" + userID + ": " + ex);
             if(conn!=null)
             {
                 try
                 {
-                    System.out.println("Transaction is being rolled back");
                     conn.rollback();
                 }
                 catch(SQLException excep)
                 {
-                    System.out.println("Rollback unsuccessful: " + excep);
+                    LogError("Rollback unsuccessful: " + excep);
                 }
             }
         }
@@ -665,7 +638,7 @@ public class DatabaseManager
             }
             catch(SQLException excep)
             {
-                System.out.println("Error closing statement or connection");
+                LogError("Error closing statement or connection: " + excep);
             }
         }
         return status;
@@ -678,15 +651,15 @@ public class DatabaseManager
     
         @param j a json object containing data for the data value table
     */
-    public void insertJSON(JSONObject j)
+    public static void insertJSON(JSONObject j)
     {
         Connection conn = Web_MYSQL_Helper.getConnection();
         PreparedStatement insertData = null;
         try
         {
             conn.setAutoCommit(false);
-            String insertSQL = "INSERT INTO DataValues (dataName,units,sensor,timeRecorded,dataValue,delta,id) "
-                    + "values (?,?,?,?,?,?,?)";
+            String insertSQL = "INSERT INTO DataValues (dataName,units,sensor,timeRecorded,dataValue,delta) "
+                    + "values (?,?,?,?,?,?)";
             
             //removes special characters as prepared statement will replace them with ?
             String units = (String)j.get("unit");
@@ -701,23 +674,21 @@ public class DatabaseManager
             insertData.setString(4, ((String)j.get("timestamp")).substring(0,19));
             insertData.setFloat(5, (float)(double)j.get("value"));
             insertData.setFloat(6, (float)(double)j.get("delta"));
-            insertData.setInt(7, (int)j.get("id"));
             insertData.executeUpdate();
             conn.commit();
         }
         catch (Exception ex)//SQLException ex 
         {
-            System.out.println("Error processing request: JSON Insertion\n" + ex);
+            LogError("Error with JSON Insertion: " + ex);
             if(conn!=null)
             {
                 try
                 {
-                    System.out.println("Transaction is being rolled back");
                     conn.rollback();
                 }
                 catch(SQLException excep)
                 {
-                    System.out.println("Rollback unsuccessful: " + excep);
+                    LogError("Rollback unsuccessful: " + excep);
                 }
             }
         }
@@ -732,7 +703,7 @@ public class DatabaseManager
             }
             catch(SQLException excep)
             {
-                System.out.println("Error closing statement or connection");
+                LogError("Error closing statement or connection: " + excep);
             }
         }
     }
@@ -741,7 +712,7 @@ public class DatabaseManager
         Gets the user with the parameter login name
         @return the user with this login name (null if none was found)
     */
-    public User getUserByLoginName(String username) 
+    public static User getUserByLoginName(String username) 
     {
         User u = null;
         
@@ -772,7 +743,7 @@ public class DatabaseManager
         }
         catch(Exception e)
         {
-            System.out.println("Error retrieving user by login name\n" + e);
+            LogError("Error retrieving user with login name \"" + username + "\": "+ e);
         }
         finally
         {
@@ -784,7 +755,9 @@ public class DatabaseManager
                     selectedUser.close();
             }
             catch(SQLException excep)
-            {System.out.println("Error closing statement or result set");}
+            {
+                LogError("Error closing statement or result set: " + excep);
+            }
         }
         
         return u;
@@ -794,7 +767,7 @@ public class DatabaseManager
         Returns the user info if the username and password are correct
         @return a user with these specs, or null if either are wrong
     */
-    public User validateUser(String username, String password) 
+    public static User validateUser(String username, String password) 
     {
         User u = null;
         
@@ -827,7 +800,7 @@ public class DatabaseManager
         }
         catch(Exception e)
         {
-            System.out.println("Error validating user: " + username + "\n" + e);
+            LogError("Error validating user \"" + username + "\": " + e);
         }
         finally
         {
@@ -839,7 +812,9 @@ public class DatabaseManager
                     validatee.close();
             }
             catch(SQLException excep)
-            {System.out.println("Error closing statement or result set");}
+            {
+                LogError("Error closing statement or result set: " + excep);
+            }
         }
         
         return u;
@@ -849,7 +824,7 @@ public class DatabaseManager
         Updates the user's loginCount, attemptedLoginCount, lastLoginTime
         and lastAttemptedLoginTime
     */
-    public void updateUserLogin(User potentialUser) 
+    public static void updateUserLogin(User potentialUser) 
     {
         Connection conn = Web_MYSQL_Helper.getConnection();
         PreparedStatement updateUser = null;
@@ -873,15 +848,16 @@ public class DatabaseManager
         }
         catch(Exception e)
         {
-            System.out.println("Error updating user login\n" + e);
+            LogError("Error updating user login: " + e);
             if(conn != null)
                 try
                 {
-                    System.out.println("Transaction is being rolled back");
                     conn.rollback();
                 }
             catch(SQLException excep)
-            {System.out.println("Rollback unsuccessful");}
+            {
+                LogError("Rollback unsuccessful: " + excep);
+            }
         }
         finally
         {
@@ -894,7 +870,7 @@ public class DatabaseManager
             }
             catch(Exception excep)
             {
-                System.out.println("Error closing statement or connection");
+                LogError("Error closing statement or connection: " + excep);
             }
         }
     }
@@ -903,7 +879,7 @@ public class DatabaseManager
         Updates the description with dataName 'name' using the description 'desc'
         @return whether this operation was sucessful or not
     */
-    public boolean updateDescription(String desc, String name)
+    public static boolean updateDescription(String desc, String name)
     {
         boolean status;
         Connection conn = Web_MYSQL_Helper.getConnection();
@@ -924,15 +900,16 @@ public class DatabaseManager
         catch(Exception e)
         {
             status = false;
-            System.out.println("Error updating description for " + name);
+            LogError("Error updating description for \"" + name + "\": " + e);
             if(conn != null)
                 try
                 {
-                    System.out.println("Transaction is being rolled back");
                     conn.rollback();
                 }
-            catch(SQLException excep)
-            {System.out.println("Rollback unsuccessful");}
+                catch(SQLException excep)
+                {
+                    LogError("Rollback unsuccessful: " + excep);
+                }
         }
         finally
         {
@@ -945,7 +922,7 @@ public class DatabaseManager
             }
             catch(Exception excep)
             {
-                System.out.println("Error closing statement or connection");
+                LogError("Error closing statement or connection:" + excep);
             }
         }
         return status;
@@ -955,7 +932,7 @@ public class DatabaseManager
         Retrieves the description for the parameter data name
         @param name the name of the data type being requested
     */
-    public String getDescription(String name)
+    public static String getDescription(String name)
     {
         Connection conn = Web_MYSQL_Helper.getConnection();
         PreparedStatement getDesc = null;
@@ -972,7 +949,7 @@ public class DatabaseManager
         }
         catch(Exception e)
         {
-            System.out.println("Error retrieving description for " + name);
+            LogError("Error retrieving description for \"" + name + "\": " + e);
         }
         finally
         {
@@ -987,7 +964,7 @@ public class DatabaseManager
             }
             catch(Exception excep)
             {
-                System.out.println("Error closing statement or connection");
+                LogError("Error closing statement or connection: " + excep);
             }
         }
         return desc;
@@ -998,7 +975,7 @@ public class DatabaseManager
         @param name the name of the data type that is getting a description
         @param the description (limit 500 characters)
     */
-    public void insertDescription(String name, String desc)
+    public static void insertDescription(String name, String desc)
     {
         Connection conn = Web_MYSQL_Helper.getConnection();
         PreparedStatement insertDesc = null;
@@ -1012,7 +989,7 @@ public class DatabaseManager
         }
         catch(Exception e)
         {
-            System.out.println("Error inserting description for " + name);
+            LogError("Error inserting description for \"" + name + "\": " + e);
         }
         finally
         {
@@ -1025,7 +1002,7 @@ public class DatabaseManager
             }
             catch(Exception excep)
             {
-                System.out.println("Error closing statement or connection");
+                LogError("Error closing statement or connection: " + excep);
             }
         }
     }
@@ -1033,7 +1010,7 @@ public class DatabaseManager
     /*
         Retrieves the salt of the user with the parameter login name
     */
-    public String getSaltByLoginName(String loginName) 
+    public static String getSaltByLoginName(String loginName) 
     {
         PreparedStatement getUserByLogin = null;
         ResultSet selectedUser = null;
@@ -1049,7 +1026,7 @@ public class DatabaseManager
         }
         catch(SQLException e)
         {
-            System.out.println("Error retrieving salt by login name" + e);
+            LogError("Error retrieving salt by login name for \"" + loginName + "\": " + e);
         }
         finally
         {
@@ -1061,16 +1038,46 @@ public class DatabaseManager
                     selectedUser.close();
             }
             catch(Exception excep)
-            {System.out.println("Error closing statement or result set");}
+            {
+                LogError("Error closing statement or result set: " + excep);
+            }
         }
         
         return salt;
     }
     
+    public static void LogError(String errorMessage)
+    {
+        PreparedStatement logError = null;
+        try(Connection conn = Web_MYSQL_Helper.getConnection();)
+        {
+            String getSQL = "INSERT INTO ErrorLogs values (?,?)";
+            logError = conn.prepareStatement(getSQL);
+            logError.setString(1, LocalDateTime.now().toString());
+            logError.setString(2, errorMessage);
+            logError.executeUpdate();
+        }
+        catch(SQLException e)
+        {
+            //LogError("Error inserting error:\n" + e);
+        }
+        finally
+        {
+            try
+            {
+                if(logError != null)
+                    logError.close();
+            }
+            catch(Exception excep)
+            {
+                //LogError("Error closing statement or result set:\n" + excep);
+            }
+        }
+    }
+    
     public static void main(String[] args)
     {
-        DatabaseManager d = new DatabaseManager();
-        d.createDataValueTable();
+        DatabaseManager.createDataValueTable();
         JSONParser parser = new JSONParser();
         try{
             Object obj = parser.parse(new FileReader("P:/Compsci480/environet_api_data.json"));
@@ -1078,7 +1085,7 @@ public class DatabaseManager
             JSONArray jarray = (JSONArray)jsonObject.get("data");
             Iterator<JSONObject> iterator = jarray.iterator();
             while(iterator.hasNext())
-                d.insertJSON(iterator.next());
+                DatabaseManager.insertJSON(iterator.next());
         }
         catch(Exception e)
         {}
