@@ -32,7 +32,7 @@ public class Web_MYSQL_Helper {
     private static  String password;
     
     public static void initialize(){
-      initialized = true;
+      initialized = true;/*
       String dir = null;
         try {
             dir = Web_MYSQL_Helper.class.getResource("../../config/General.properties").toURI().toString();
@@ -41,9 +41,9 @@ public class Web_MYSQL_Helper {
         } catch (URISyntaxException ex) {
             Logger.getLogger(Web_MYSQL_Helper.class.getName()).log(Level.SEVERE, null, ex);
         }
+      */
       
-      
-      PropertyManager.configure(dir);
+      PropertyManager.configure("p:/Compsci480/WaterQuality/web/WEB-INF/config/General.properties");
       PropertyManager.setProperty("UseDBPooling", "no");
       USE_DB_POOLING = PropertyManager.getProperty("UseDBPooling").equalsIgnoreCase("yes");
       hostname = PropertyManager.getProperty("MySQLHostName").trim();
