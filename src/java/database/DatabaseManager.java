@@ -73,6 +73,49 @@ public class DatabaseManager
     }
     
     /*
+        Creates the manual data value table
+        entryID is the unique id number of the data value
+        dataName is the name of the data type (e.g. Temperature)
+        units is the units associated with the data value
+        submittedBy is the name of the user that recorded the data value
+        timeRecorded is a the time the data was recorded
+        dataValue is the value of the of data recorded
+    */
+    public static void createManualDataValueTable()    
+    {
+        Statement createTable = null;
+        try(Connection conn = Web_MYSQL_Helper.getConnection();)
+        {
+            createTable = conn.createStatement();
+            String createSQL = "Create Table IF NOT EXISTS ManualDataValues("
+                    + "entryID INT primary key AUTO_INCREMENT,"
+                    + "dataName varchar(40),"
+                    + "units varchar(10),"
+                    + "submittedBy varchar(20),"
+                    + "timeRecorded varchar(25),"
+                    + "dataValue FLOAT(3)"
+                    + ");";
+            createTable.execute(createSQL);
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            LogError("Error creating Manual Data Value Table: " + ex);
+        }
+        finally
+        {
+            try
+            {
+                if(createTable != null)
+                    createTable.close();
+            }
+            catch(SQLException e)
+            {
+                LogError("Error closing statement:" + e);
+            }
+        }
+    }
+    
+    /*
         Creates the data description table
         dataName is the data type of the data value (e.g. Temperature)
         description is the description of this data type
@@ -169,13 +212,52 @@ public class DatabaseManager
             createTable = conn.createStatement();
             String createSQL = "Create Table IF NOT EXISTS ErrorLogs("
                     + "timeOccured varchar(25) primary key,"
-                    + "error varchar(100)"
+                    + "error varchar(300)"
                     + ");";
             createTable.execute(createSQL);
         }
         catch (Exception ex)//SQLException ex 
         {
             LogError("Error creating Error Logs Table: " + ex);
+        }
+        finally
+        {
+            try
+            {
+                if(createTable != null)
+                    createTable.close();
+            }
+            catch(SQLException e)
+            {
+                LogError("Error closing statement: " + e);
+            }
+        }
+    }
+    
+    /*
+        A table consisting only of the unique data names of all data
+    
+        This table is important for making the code modular as instead of hard
+        coding a list of buttons for displaying a graph for each data type,
+        a list of all data types can be obtained from this table and used to 
+        produce said buttons, allowing for new data types pulled from netronix
+        to automatically be accounted for everywhere it would be desirable to have
+        access to them.
+    */
+    public static void createDataNamesTable()    
+    {
+        Statement createTable = null;
+        try(Connection conn = Web_MYSQL_Helper.getConnection();)
+        {
+            createTable = conn.createStatement();
+            String createSQL = "Create Table IF NOT EXISTS DataNames("
+                    + "dataName varchar(40) primary key"
+                    + ");";
+            createTable.execute(createSQL);
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            LogError("Error creating DataNames Table: " + ex);
         }
         finally
         {
@@ -209,25 +291,18 @@ public class DatabaseManager
         try
         {
             conn.setAutoCommit(false);
-            String insertSQL = "INSERT INTO DataValues (dataName,units,sensor,timeRecorded,dataValue,delta) "
-                    + "values(?,?,?,?,?,?)";
-            String sensor = u.getFirstName()+u.getLastName();
-            if(sensor.length() > 20)
-                sensor = sensor.substring(0, 20);
-            
-            //removes special characters as prepared statement will replace them with ?
-            if(units.equals("℃"))
-                units = "C";
-            units = units.replace("μ","u");
+            String insertSQL = "INSERT INTO ManualDataValues (dataName,units,submittedBy,timeRecorded,dataValue) "
+                    + "values(?,?,?,?,?)";
+            String submittedBy = u.getFirstName()+u.getLastName();
+            if(submittedBy.length() > 20)
+                submittedBy = submittedBy.substring(0, 20);
             
             insertData = conn.prepareStatement(insertSQL);
             insertData.setString(1, name);
             insertData.setString(2, units);
-            insertData.setString(3, sensor);
+            insertData.setString(3, submittedBy);
             insertData.setString(4, time+"");
             insertData.setFloat(5, value);
-            insertData.setFloat(6, delta);
-            insertData.setInt(7, id);
             insertData.executeUpdate();
             conn.commit();
             status = true;
@@ -294,6 +369,64 @@ public class DatabaseManager
         {
             status = false;
             LogError("Error Manualing Deleting Data: " + ex);
+            if(conn!=null)
+            {
+                try
+                {
+                    conn.rollback();
+                }
+                catch(SQLException excep)
+                {
+                    LogError("Rollback unsuccessful: " + excep);
+                }
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(deleteData != null)
+                    deleteData.close();
+                if(conn != null)
+                    conn.close();
+            }
+            catch(SQLException excep)
+            {
+                LogError("Error closing statement or connection: " + excep);
+            }
+        }
+        return status;
+    }
+    
+    /*
+        Allows an admin to delete data from the manual data values table
+        @param entryID the id of the data to be deleted
+        @param u the user doing the deletion
+        @return whether this function was successful or not
+    */
+    public static boolean manualDeletionM(int entryID, User u)
+    {
+        boolean status;
+        Connection conn = Web_MYSQL_Helper.getConnection();
+        PreparedStatement deleteData = null;
+        try
+        {
+            //throws an error if a user without proper roles somehow invokes this function
+            if(u.getUserRole() != common.UserRole.SystemAdmin)
+                throw new Exception("Attempted Data Deletion by Non-Admin");
+            conn.setAutoCommit(false);
+            String deleteSQL = "Delete from ManualDataValues where entryID = ?";
+                
+            deleteData = conn.prepareStatement(deleteSQL);
+            deleteData.setInt(1, entryID);
+            deleteData.executeUpdate();
+            conn.commit();
+            status = true;
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            status = false;
+            LogError("Error Manualing Deleting Data-M: " + ex);//-m disguishes this error for this function, not the datavalue function
             if(conn!=null)
             {
                 try
@@ -657,6 +790,10 @@ public class DatabaseManager
         PreparedStatement insertData = null;
         try
         {
+            String name = (String)j.get("name");
+            if(name.equals("Turbidity"))//turbidity values from the old sensor are not wanted
+                return;
+            
             conn.setAutoCommit(false);
             String insertSQL = "INSERT INTO DataValues (dataName,units,sensor,timeRecorded,dataValue,delta) "
                     + "values (?,?,?,?,?,?)";
@@ -664,11 +801,30 @@ public class DatabaseManager
             //removes special characters as prepared statement will replace them with ?
             String units = (String)j.get("unit");
             if(units.equals("℃"))
+            {
                 units = "C";
-            units = units.replace("μ","u");
+                //air temperature is stored as degrees C
+                //This change allows for easy distinguishing among water and air temp
+                if(name.equals("Temperature"))//dewpoint is also degrees C so this line is necessary here
+                    name = "Air Temperature";
+            }
+            else if(units.equals("C") && name.equals("Temperature"))
+            {
+                name = "Water Temperature";//Water has units C and is only labeled temperature
+            }
+            //HDO refers to a method of checking dissolved oxygen
+            //We only care that is it dissolved oxygen
+            if(name.equals("HDO"))
+                name = "DO";
+            else if(name.equals("Turbidity Dig"))//dig only refers to digital, not something meaningful
+                name = "Turbidity";
+            units = units.replace("μ","u");//special chars not allowed
+            
+            if(!dataNameExists(name))//updates the table of unique data names should any new ones appear
+                insertDataName(name);
             
             insertData = conn.prepareStatement(insertSQL);
-            insertData.setString(1, (String)j.get("name"));
+            insertData.setString(1, name);
             insertData.setString(2, units);
             insertData.setString(3, (String)j.get("sensor_name"));
             insertData.setString(4, ((String)j.get("timestamp")).substring(0,19));
@@ -1046,20 +1202,24 @@ public class DatabaseManager
         return salt;
     }
     
+    /*
+        Inserts the error message into a database table with now as the associated
+        time for when the error occured
+    */
     public static void LogError(String errorMessage)
     {
         PreparedStatement logError = null;
         try(Connection conn = Web_MYSQL_Helper.getConnection();)
         {
-            String getSQL = "INSERT INTO ErrorLogs values (?,?)";
-            logError = conn.prepareStatement(getSQL);
+            String insertSQL = "INSERT INTO ErrorLogs values (?,?)";
+            logError = conn.prepareStatement(insertSQL);
             logError.setString(1, LocalDateTime.now().toString());
             logError.setString(2, errorMessage);
             logError.executeUpdate();
         }
         catch(SQLException e)
         {
-            //LogError("Error inserting error:\n" + e);
+            //System.out.println("Error inserting error:" + e);
         }
         finally
         {
@@ -1070,14 +1230,127 @@ public class DatabaseManager
             }
             catch(Exception excep)
             {
-                //LogError("Error closing statement or result set:\n" + excep);
+                //LogError("Error closing statement or result set:" + excep);
             }
         }
     }
     
+    /*
+        Returns whether the parameter data name is already in the list of all
+        unique data names or not
+    */
+    private static boolean dataNameExists(String name)
+    {
+        Statement selectDataNames = null;
+        ResultSet dataNames = null;
+        try(Connection conn = Web_MYSQL_Helper.getConnection();)
+        {
+            String query = "Select * from DataNames";
+            selectDataNames = conn.createStatement();
+            dataNames = selectDataNames.executeQuery(query);
+            
+            while(dataNames.next())
+                if(dataNames.getString(1).equals(name))
+                    return true;
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            LogError("Error checking data names: " + ex);
+        }
+        finally
+        {
+            try
+            {
+                if(selectDataNames != null)
+                    selectDataNames.close();
+                if(dataNames != null)
+                    dataNames.close();
+            }
+            catch(SQLException excep)
+            {
+                LogError("Error closing statement or result set: " + excep);
+            }
+        }
+        return false;
+    }
+
+    /*
+        Inserts the data name into the table of unique data names
+        This should only be called if it is known in advance that the 
+        parameter name is not already in the table (ex: through the dataNameExists
+        function)
+    */
+    private static void insertDataName(String name)
+    {
+        PreparedStatement insertDataName = null;
+        try(Connection conn = Web_MYSQL_Helper.getConnection();)
+        {
+            String insertSQL = "INSERT INTO DataNames values (?)";
+            insertDataName = conn.prepareStatement(insertSQL);
+            insertDataName.setString(1, name);
+            insertDataName.executeUpdate();
+        }
+        catch(SQLException e)
+        {
+            LogError("Error inserting Data Name:" + e);
+        }
+        finally
+        {
+            try
+            {
+                if(insertDataName != null)
+                    insertDataName.close();
+            }
+            catch(Exception excep)
+            {
+                LogError("Error closing statement or result set:" + excep);
+            }
+        }
+    }
+    
+    /*
+        Returns an arraylist of all unique data names
+    */
+    private static ArrayList<String> getDataNames()
+    {
+        ArrayList<String> dataNameList= new ArrayList<>();
+        Statement selectDataNames = null;
+        ResultSet dataNames = null;
+        try(Connection conn = Web_MYSQL_Helper.getConnection();)
+        {
+            String query = "Select * from DataNames";
+            selectDataNames = conn.createStatement();
+            dataNames = selectDataNames.executeQuery(query);
+            
+            while(dataNames.next())
+                    dataNameList.add(dataNames.getString(1));
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            System.out.println("Logging Error");
+            LogError("Error retrieving data names: " + ex);
+        }
+        finally
+        {
+            try
+            {
+                if(selectDataNames != null)
+                    selectDataNames.close();
+                if(dataNames != null)
+                    dataNames.close();
+            }
+            catch(SQLException excep)
+            {
+                LogError("Error closing statement or result set: " + excep);
+            }
+        }
+        return dataNameList;
+    }
+    
     public static void main(String[] args)
     {
-        DatabaseManager.createDataValueTable();
+        //DatabaseManager.createDataNamesTable();
+        /*
         JSONParser parser = new JSONParser();
         try{
             Object obj = parser.parse(new FileReader("P:/Compsci480/environet_api_data.json"));
