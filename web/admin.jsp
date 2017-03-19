@@ -17,6 +17,9 @@ Current bugs:
         <link rel="stylesheet" href="styles/admin.css" type="text/css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="scripts/admin_insertion.js"></script>
+        <script src="scripts/admin_register.js"></script>
+        <script src="scripts/admin_removeuser.js"></script>
+        <script src="scripts/admin_editdesc.js"></script>
         <script src="scripts/AJAX_magic.js"></script>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <noscript>
@@ -59,13 +62,8 @@ Current bugs:
             </div>
             <!--Admin insertion-->
             <admincontent id="Input_Data" class="tab_content">
-                <div class="large_text">Upload .CSV File</div>
-                <input type="file" value="Browse..."><br/>
-                <input type="submit" value="Submit">
-                <a id="input_space"></a>
                 <script>doTheThing();</script>
-                <button type="button" onclick="doTheThing()">+</button>
-                <button type="button" onclick="getRidOfIt()">x</button>
+                <!--Input Tab defined in admin_insertion.j-->
             </admincontent>
 
 
@@ -96,21 +94,25 @@ Current bugs:
 
 
             <admincontent id="Register_User" class="tab_content">
-
-
+                <!--Register User Tab defined in admin_insertion.js-->
+                 <script>fillPageRegisterUser();</script>
+                <%--option 2 would have been
+                    <%@include file="jsp/admin_register.jsp"%>
+                    however, this causes issues with admin_register.jsp 
+                    accessing directories outside of /jsp.
+                --%>
             </admincontent>
 
 
             <admincontent id="Remove_User" class="tab_content">
-                <div>
-
-
-                </div>
+                <!--Remove User Tab defined in admin_removeuser.js-->
+                <script>fillPageRemoveUser();</script>
             </admincontent>
 
 
             <admincontent id="Edit_Description" class="tab_content">
-                <div></div>
+                <!--Edit Desc Tab defined in admin_editdesc.js-->
+                <script>fillPageEditDesc();</script>
             </admincontent>
 
 
