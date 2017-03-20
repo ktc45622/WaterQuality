@@ -55,11 +55,17 @@ function toggle() {
     document.getElementById("select_all_box").checked=false;
 }
 
-function setCookie(name, value, exdays) {
+/**Sets a cookie so that the current tab name can remembered for reloading the page
+ * 
+ * @param {type} CookieName the name of the cookie 
+ * @param {type} tab is the current tab that is being loaded into the cookie
+ * @param {type} exdays the number of days till the cookie expires
+ */
+function setCookie(CookieName, tab, exdays) {
     var d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
     var expires = "expires=" + d.toUTCString();
-    document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    document.cookie = CookieName + "=" + tab + ";" + expires + ";path=/";
 }
 
 function getCookie(cname) {
@@ -89,11 +95,12 @@ function openTab(evt, tabName) {
     var i, tabcontent, tablinks, form;
     tabcontent = document.getElementsByClassName("tabcontent");
 
-
+    //Makes all tabs not display anything
     for (i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
     }
 
+    
     tablinks = document.getElementsByClassName("tablinks");
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
@@ -106,11 +113,13 @@ function openTab(evt, tabName) {
     //for the Graph tab and not the Table tab
     current = tabName;
 
+    //Switches between the forms depending on which tab is open
     form = document.getElementsByClassName("data_type_form");
     for (i = 0; i < form.length; i++) {
         form[i].style.display = "none";
     }
     document.getElementById(current + "_form").style.display = "block";
+    //Sets a cookie so that the current tab can be remembered
     setCookie("id", current, 1);
 }
 
@@ -155,8 +164,15 @@ function fetchData(json) {
     }
 }
 
+/**The <code>handleClick</code> function handles any and hall actions that need
+ * to be done upon clicking of checkbox <code>cb</code>
+ * 
+ * @param {type} cb
+ * @returns {undefined}
+ */
 function handleClick(cb)
 {
+    //If the current tab is the graph then it limits the number of boxes checked
     if (current == 'Graph') {
         fullCheck(cb.id);
     }
@@ -272,4 +288,49 @@ function fillTable(dataResp) {
     }
     console.log(finalHtml);
     table.innerHTML = finalHtml;
+}
+
+/**The <code>openPoppup()</code> function simply opens a popped up
+ * version of the data table when <code>dataTable</code> is clicked 
+ * so that the user can more easily see the data 
+ */
+function openPopup() {
+    var modal = document.getElementById("myModal");
+    var span = document.getElementsByClassName("close")[0];
+    var table = document.getElementById("dataTable");
+    var popup = document.getElementById("popup");
+
+
+    popup.innerHTML = table.innerHTML;
+    modal.style.display = "block";
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+}
+
+/**The <code>exportTable()</function> taakes the innerHTML from the given 
+ * <code>tableId</code> paramter and converts it to csv format. Then initiates
+ * a download of a csv file
+ * @param {type} tableId the id of the table being exported
+ */
+function exportTable(tableId) {
+    var table = document.getElementById(tableId).innerHTML;
+    //converts the innerHTML of table into csv format
+    var data = table.replace(/<thead>/g, '').replace(/<\/thead>/g, '')
+            .replace(/<tbody>/g, '').replace(/<\/tbody>/g, '')
+            .replace(/<tr>/g, '').replace(/<\/tr>/g, '\r\n')
+            .replace(/,/g, '')
+            .replace(/<th>/g, '').replace(/<\/th>/g, ',')
+            .replace(/<td>/g, '').replace(/<\/td>/g, ',')
+            .replace(/\t/g, '')
+            .replace(/\n/g, '');
+    //creates a link to initiate a download of the csv formated data in a csv file
+    var downloadLink = document.createElement("a");
+    downloadLink.download = "tabledata.csv";
+    downloadLink.href = "data:application/csv," + escape(data);
+    downloadLink.click();
+}
+
+function exportGraph() {
+    chart.exportChartLocal();
 }
