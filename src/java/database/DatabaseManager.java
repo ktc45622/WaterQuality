@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Includes various database managing 
  */
 package database;
