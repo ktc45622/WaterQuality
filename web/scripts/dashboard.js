@@ -37,18 +37,24 @@ function fullCheck(id) {
     }
 }
 
+//<code>doCheck</code> tells the checkboxes if they need to check or uncheck
+//The default value is set to true so that first time it is clicked it resets
+var doCheck=true;
 /**
  * The <code>toggle</code> function checks or unchecks
- * all of the checkboxes in the given <code>source</code> 
- * @param {type} source
+ * all of the checkboxes in the table tab depending on the state of <code>doCheck</code>
  */
-function toggle(source) {
+function toggle() {
     var checkboxes = document.getElementById("Table_form").querySelectorAll('input[type="checkbox"]');
     for (var i = 0; i < checkboxes.length; i++) {
-        if (checkboxes[i] != source)
-            checkboxes[i].checked = source.checked;
+            checkboxes[i].checked = doCheck;
     }
+    //Sets to the opposite of itself so that the next click will be the revers
+    doCheck=!doCheck;
+    //makes sure the <code>select_all_box</code>
+    document.getElementById("select_all_box").checked=false;
 }
+
 
 /**Sets a cookie so that the current tab name can remembered for reloading the page
  * 
