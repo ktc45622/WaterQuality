@@ -246,7 +246,7 @@ function fillTable(dataResp) {
                 continue;
             }
             var ts_val=d[i];
-            if(ts_val["timestamp"]!=dates[i]){
+            if(ts_val["timestamp"]!=dates[i])
                 html.push("<td> N/A </td>");
             else
                 html.push("<td>" + ts_val["value"] + "</td>");
