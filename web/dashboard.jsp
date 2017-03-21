@@ -52,7 +52,7 @@
                                 console.log('SUCCESS');
                             });"
                            id="TableTab">Table</a></li>
-                    <li>                        
+                    <li>
                         <form><input id="exportbutton" type="button" value="Export" 
                                      onclick="if(getCookie('id') == 'Table'){exportTable('dataTable');}
                                      if(getCookie('id') == 'Graph'){exportGraph();}"></form>
