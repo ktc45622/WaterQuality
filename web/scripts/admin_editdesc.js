@@ -2,6 +2,7 @@
 
 $.getScript("scripts/AJAX_magic.js", function () {});
 $.getScript("scripts/general.js", function () {});
+$.getScript("scripts/protocol.js", function () {});
 
 var edit_options = "";
 var cached_names = [];
@@ -13,7 +14,7 @@ var saved_index;
 function fillPageEditDesc()
 {
     var ALL_MASK = 3;
-    var parametersRequest = new ParametersRequest(ALL_MASK);
+    var parametersRequest = new ParameterRequest(ALL_MASK);
     parametersRequest.action = "getParameters";
     var sample_desc = "Retrieved description goes here.";
 
@@ -29,15 +30,17 @@ function fillPageEditDesc()
                 edit_options += '<option disabled=true>-----Manual Parameters-----</option>';
 
             resp.descriptors = resp.data[k]["descriptors"];
-
+            
+            var current_names = [];
             for (var i = 0; i < resp.descriptors.length; i++) {
                 resp.piece = resp.descriptors[i];
                 cached_ids.push(resp.piece["id"]);
                 cached_names.push(resp.piece["name"]);
+                current_names.push(resp.piece["name"]);
                 cached_Descriptions.push(resp.piece["description"]);
             }
 
-            (cached_names).forEach(function (item) {
+            (current_names).forEach(function (item) {
                 edit_options += '<option>';
                 edit_options += item;
                 edit_options += '</option>';
