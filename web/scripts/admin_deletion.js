@@ -167,7 +167,7 @@ function loadDelete()
                     .datepicker("setDate", date);
         });
 
-
+        //console.log("del_options: " + del_options);
     });
 }
 

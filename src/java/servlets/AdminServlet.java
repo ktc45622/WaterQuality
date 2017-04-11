@@ -490,22 +490,28 @@ public class AdminServlet extends HttpServlet {
         } else if (action.trim().equalsIgnoreCase("insertData")) {
 
             Observable.just(request.getParameter("data"))
-                    .map(req -> (JSONObject) new JSONParser().parse(req))
-                    .map(obj -> (JSONArray) obj.get("data"))
+                    .map(req -> (JSONArray) new JSONParser().parse(req))
                     .flatMap(JSONUtils::flattenJSONArray)
+                    .doOnNext(System.out::println)
                     .flatMap(obj -> Observable.just(obj)
-                    .map(o -> (JSONArray) o.get("values"))
-                    .flatMap(JSONUtils::flattenJSONArray)
-                    .flatMap(o -> DatabaseManager
-                    .parameterNameToId((String) o.get("name"))
-                    .map(id -> new DataValue(id, Instant.ofEpochMilli((long) o.get("timestamp")), (double) o.get("value")))
+                            .map(o -> (JSONArray) o.get("values"))
+                            .flatMap(JSONUtils::flattenJSONArray)
+                            .filter(o -> o.get("timestamp") != null && o.get("value") != null)
+                            .doOnNext(System.out::println)
+                            .flatMap(o -> DatabaseManager
+                                    .parameterNameToId((String) obj.get("name"))
+                                    .map(id -> new DataValue(id, Instant.ofEpochMilli((long) o.get("timestamp")), o.get("value") != null ? Double.parseDouble(o.get("value").toString()) : Double.NaN))
+                            )
                     )
-                    )
-                    // Not Implemented
-                    .subscribe(dv -> System.out.println("Insert for: " + dv));
-
-        } else if (action.trim().equalsIgnoreCase("deleteManualData")) {
-            try {
+                    .buffer(Integer.MAX_VALUE)
+                    .flatMap(DatabaseManager::insertManualData)
+                    .blockingSubscribe(count -> System.out.println("Inserted " + count + " fields..."));
+                    
+        }
+        else if (action.trim().equalsIgnoreCase("deleteManualData")) 
+        {
+            try
+            {
                 ArrayList<Integer> deletionIDs = (ArrayList) session.getAttribute("deletionIDs");
                 for (Integer i : deletionIDs) {
                     DatabaseManager.manualDeletionM(i.intValue(), admin);
@@ -573,9 +579,16 @@ public class AdminServlet extends HttpServlet {
                 obj.put("status", "Error getting error list: " + e);
                 response.getWriter().append(obj.toJSONString());
             }
-        } else if (action.trim().equalsIgnoreCase("insertCSV")) {
-
-        } else if (action.trim().equalsIgnoreCase("getRoles")) {
+        }
+        
+        else if (action.trim().equalsIgnoreCase("insertCSV"))
+        {
+            int count = 0;
+            System.out.println("Received - c: " + count++);
+        }
+        
+        else if (action.trim().equalsIgnoreCase("getRoles"))
+        {
             response.getWriter().append(UserRole.getUserRoles().toJSONString());
         }
         else if (action.trim().equalsIgnoreCase("logout")) {
