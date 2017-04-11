@@ -455,6 +455,7 @@ public class AdminServlet extends HttpServlet {
                         JSONObject obj = new JSONObject();
                         obj.put("id", triplet.getValue0());
                         obj.put("name", triplet.getValue1());
+                        obj.put("unit", DatabaseManager.getDataParameter(triplet.getValue0()));
                         obj.put("description", triplet.getValue2());
                         return obj;
                     })
@@ -510,7 +511,7 @@ public class AdminServlet extends HttpServlet {
                     DatabaseManager.manualDeletionM(i.intValue(), admin);
                 }
             } catch (Exception e) {
-                request.setAttribute("manualDeleteStatus", "Error: Did you not check any boxes for deletion?");
+                request.setAttribute("status", "Error: Did you not select anything for deletion?");
             }
         } /*
             Retrieves a list of all Users
@@ -576,9 +577,7 @@ public class AdminServlet extends HttpServlet {
 
         } else if (action.trim().equalsIgnoreCase("getRoles")) {
             response.getWriter().append(UserRole.getUserRoles().toJSONString());
-        } else if (action.trim().equalsIgnoreCase("getParameters")) {
-            response.getWriter().append("Response");
-        } //could also be done in LogoutServlet instead?
+        }
         else if (action.trim().equalsIgnoreCase("logout")) {
             session.removeAttribute("user");//logout on server
             

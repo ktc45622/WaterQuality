@@ -6,6 +6,7 @@ var selected = [];
 var tableSelected = [];
 // Descriptions for DataParameters; (id -> description)
 var descriptions = [];
+var units = [];
 // Names for DataParameters; (id -> name)
 var names = [];
 
@@ -191,7 +192,7 @@ function fetchData(json) {
                 name: names[data.data[i].id],
                 data: timeStampStr[i]
             }, false);
-            chart.yAxis[i].setTitle({text: names[data.data[i].id]});
+            chart.yAxis[i].setTitle({text: names[data.data[i].id] + " (" + units[names[data.data[i].id]] + ")"});
         }
         if (data.data.length == 1)
             chart.yAxis[i].setTitle({text: ""});
@@ -211,7 +212,7 @@ function fetchData(json) {
                     name: names[data.data[i].id],
                     data: timeStampStr[i]
                 }, false);
-                chart.yAxis[i].setTitle({text: names[data.data[i].id]});
+                chart.yAxis[i].setTitle({text: names[data.data[i].id] + " (" + units[names[data.data[i].id]] + ")"});
             }
             if (data.data.length == 1)
                 chart.yAxis[i].setTitle({text: ""});
@@ -249,7 +250,7 @@ function fetch() {
     var hours = minutes * 60;
     //makes the cursor show loading when graph/table is being generated 
     document.getElementById("loader").style.cursor = "progress";
-    if (current == "Graph") {
+    if (current === "Graph") {
         var startTime = new Date(document.getElementById("graph_start_date").value);
         if (startTime.dst())
             startTime = startTime.getTime() - 14400000;
@@ -501,9 +502,11 @@ function startingData() {
             // Cache parameter descriptors
             descriptions[data[i].id] = data[i].description;
             names[data[i].id] = data[i].name;
-            
+            units[data[i].name] = data[i].unit;
+          
             var param = "<input type='checkbox' name='graph_" + data[i].id + "' onclick='handleClick(this); fetch();' class='sensor_data' id='graph_" + data[i].id + "' value='data'>" + data[i].name + "<br>\n";
             var tableparam = "<input type='checkbox' name='table_" + data[i].id + "' onclick='handleClick(this); fetch();' class='sensor_data' id='table_" + data[i].id + "' value='data'>" + data[i].name + "<br>\n";
+            
             document.getElementById("graph_sensor_parameters").innerHTML += param;
             document.getElementById("table_sensor_parameters").innerHTML += tableparam;
         }
@@ -511,9 +514,11 @@ function startingData() {
         for (i = 0; i < data.length; i++) {
             descriptions[data[i].id] = data[i].description;
             names[data[i].id] = data[i].name;
-            
+            units[data[i].name] = data[i].unit;
+          
             var param = "<input type='checkbox' name='graph_" + data[i].id + "' onclick='handleClick(this); fetch();' class='manual_data' id='graph_" + data[i].id + "' value='data'>" + data[i].name + "<br>\n";
             var tableparam = "<input type='checkbox' name='table_" + data[i].id + "' onclick='handleClick(this); fetch();' class='manual_data' id='table_" + data[i].id + "' value='data'>" + data[i].name + "<br>\n";
+          
             document.getElementById("graph_manual_parameters").innerHTML += param;
             document.getElementById("table_manual_parameters").innerHTML += tableparam;
         }
