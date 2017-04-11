@@ -20,7 +20,11 @@ import java.util.ArrayList;
 import com.github.davidmoten.rx.jdbc.Database;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
+import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import org.json.simple.JSONArray;
@@ -272,6 +276,30 @@ public class DatabaseManager
                 LogError("Error closing statement: " + e);
             }
         }
+    }
+    
+    public static io.reactivex.Observable<Integer> insertManualData(List<async.DataValue> data) {
+        Database db = Database.from(Web_MYSQL_Helper.getConnection());
+        PublishSubject<Integer> results = PublishSubject.create();
+        Subject<Integer> serializedResults = results.toSerialized();
+        
+        
+        Observable.from(data)
+                .flatMap(dv -> db.update("insert into data_values (time, value, parameter_id) values (?, ?, ?)")
+                        .parameter(Timestamp.from(dv.getTimestamp()))
+                        .parameter(dv.getValue())
+                        .parameter(dv.getId())
+                        .count()
+                )
+                .reduce(0, (x, y) -> x + y)
+                .subscribeOn(rx.schedulers.Schedulers.computation())
+                .subscribe(serializedResults::onNext, serializedResults::onError, () -> { serializedResults.onComplete(); Web_MYSQL_Helper.returnConnection(db.getConnectionProvider().get());});
+//        db.update("insert into data_values (time, value, parameter_id) values (?, ?, ?)")
+//                .parameterTransformer()
+//                .subscribeOn(rx.schedulers.Schedulers.computation())
+//                .subscribe(serializedResults::onNext, serializedResults::onError, () -> { serializedResults.onComplete(); Web_MYSQL_Helper.returnConnection(db.getConnectionProvider().get());});
+        
+        return results;
     }
     
     public static io.reactivex.Observable<Long> parameterNameToId(String name) {
@@ -1549,28 +1577,10 @@ public class DatabaseManager
     }
  
     public static void main(String[] args) {
-        DataReceiver
-                .getParameters()
-                .subscribeOn(Schedulers.computation())
-                .doOnNext(DatabaseManager::insertRemoteParameter)
-                .blockingSubscribe();
-        
-        System.out.println("Transactions Done...");
-        
-        io.reactivex.Observable
-                .just("resources/manual_entry_items.json")
-                .map(FileUtils::readAll)
-                .map(str -> (JSONObject) new JSONParser().parse(str))
-                .map(obj -> (JSONArray) obj.get("data"))
-                .flatMap(JSONUtils::flattenJSONArray)
-                .map((JSONObject obj) -> {
-                    DataParameter param = new DataParameter((String) obj.get("name"), (String) obj.get("description"));
-                    param.setUnit((String) obj.get("units"));
-                    return param;
-                })
-                .blockingSubscribe(DatabaseManager::insertManualParameter);
-        
-        DatabaseManager.getRemoteParameterNames().map("Name: "::concat).blockingSubscribe(System.out::println);
+        User u = new User();
+        u.setUserRole(UserRole.SystemAdmin);
+        addNewUser("root", "root", "Louis", "Jenkins", "", UserRole.SystemAdmin, u);
+
     }
 
     private static boolean usernameExists(String username) 
