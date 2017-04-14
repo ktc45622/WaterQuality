@@ -16,6 +16,11 @@ So it is also known as the deployment descriptor -->
         <exception-type>java.lang.Throwable</exception-type>
         <location>/jsp/error_java.jsp</location>
     </error-page>
+    <filter>
+        <description>Secure login and admin pages. Add Filter mapping for /loginScreen.jsp and /admin.jsp when not on local host (HTTPS does not work on local host</description>
+        <filter-name>HTTPS</filter-name>
+        <filter-class>servlets.filter.HttpsRedirectFilter</filter-class>
+    </filter>
     <filter-mapping>
         <filter-name>AdminLogin</filter-name>
         <url-pattern>/admin.jsp</url-pattern>
@@ -43,6 +48,7 @@ So it is also known as the deployment descriptor -->
     </context-param>
     <!-- Filters ******************************************* -->
     <filter>
+        <description>Prevents people from accessing admin pages without logging in</description>
         <filter-name>AdminLogin</filter-name>
         <filter-class>servlets.filter.LoginFilter</filter-class>
     </filter>

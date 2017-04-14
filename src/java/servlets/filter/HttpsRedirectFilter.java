@@ -22,7 +22,7 @@ import utilities.PropertyManager;
  */
 public class HttpsRedirectFilter implements Filter {
 
-    private static final boolean debug = false;
+    private static final boolean debug = true;
 
     /* 
      * The filter configuration object we are associated with.  If
@@ -99,6 +99,8 @@ public class HttpsRedirectFilter implements Filter {
             int portStartIndex = url.indexOf(portNumber);
             url.replace(portStartIndex, portStartIndex+4,PropertyManager.getProperty("HTTPSPort"));
             String site = url.toString();
+            //System.out.println("url is "+site );
+            //    String site = new String(httpsPath);
             res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             res.setHeader("Location", site);
         }
