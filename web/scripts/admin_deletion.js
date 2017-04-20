@@ -101,18 +101,9 @@ function filterData() {
     // The entered/selected parameter is stored
     var $paramName = $('#delete_param').val();
 
-    var deleteStartDate = new Date($('#delete_startdate').val());
-    if (deleteStartDate.dst())
-        deleteStartDate = deleteStartDate.getTime() - 14400000;
-    else
-        deleteStartDate = deleteStartDate.getTime() - 18000000;
-
-    var deleteEndDate = new Date($('#delete_enddate').val());
-    if (deleteEndDate.dst())
-        deleteEndDate = deleteEndDate.getTime() - 14400000;
-    else
-        deleteEndDate = deleteEndDate.getTime() - 18000000;
-
+    var deleteStartDate = new Date($('#delete_startdate').val()).getTime();
+    var deleteEndDate = new Date($('#delete_enddate').val()).getTime();
+    
     var deleteStartTime = $('#delete_starttime').val();
     var deleteEndTime = $('#delete_endtime').val();
 
@@ -194,7 +185,7 @@ function createDatePickers() {
     })
             .datepicker("setDate", date);
 
-    date.setMonth(date.getMonth() - 1);
+     date.setDate(date.getDate() - 7);
 
     $("#delete_startdate").datetimepicker({
         controlType: 'select',
