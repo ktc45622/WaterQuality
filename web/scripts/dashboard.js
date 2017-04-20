@@ -537,9 +537,9 @@ function startingData() {
             units[data[i].name] = data[i].unit;
           
             var param = "<input type='checkbox' name='graph_" + data[i].id + "' onclick='handleClick(this);' class='sensor_data' id='graph_" + data[i].id + "' value='data'>" + data[i].name 
-                    + "<span id='recent_"+data[i].id+"'></span><br>\n";
+                    + "<span class='recent_sensor_"+data[i].id+"'></span><br>\n";
             var tableparam = "<input type='checkbox' name='table_" + data[i].id + "' onclick='handleClick(this);' class='sensor_data' id='table_" + data[i].id + "' value='data'>" + data[i].name 
-                    + "<span id='recent_"+data[i].id+"'></span><br>\n";
+                    + "<span class='recent_sensor_"+data[i].id+"'></span><br>\n";
             
             document.getElementById("graph_sensor_parameters").innerHTML += param;
             document.getElementById("table_sensor_parameters").innerHTML += tableparam;
@@ -551,9 +551,9 @@ function startingData() {
             units[data[i].name] = data[i].unit;
           
             var param = "<input type='checkbox' name='graph_" + data[i].id + "' onclick='handleClick(this);' class='manual_data' id='graph_" + data[i].id + "' value='data'>" + data[i].name 
-                    + "<span id='recent_"+data[i].id+"'></span><br>\n";
+                    + "<span class='graph_recent_manual_"+data[i].id+"'></span><br>\n";
             var tableparam = "<input type='checkbox' name='table_" + data[i].id + "' onclick='handleClick(this);' class='manual_data' id='table_" + data[i].id + "' value='data'>" + data[i].name 
-                    + "<span id='recent_"+data[i].id+"'></span><br>\n";
+                    + "<span class='table_recent_manual_"+data[i].id+"'></span><br>\n";
           
             document.getElementById("graph_manual_parameters").innerHTML += param;
             document.getElementById("table_manual_parameters").innerHTML += tableparam;
@@ -634,8 +634,15 @@ function getMostRecent(){
          *  }]
          *  }
          */
+        //var html="";
         for(var i=0; i<data.length; i++){
-            document.getElementById("recent_"+data[i].id).innerHTML=data[i].time+" "+data[i].value;
+            var sensorrecent=document.getElementsByClassName("recent_sensor_"+data[i].id);
+            var html=" ("+formatDate(new Date(data[i].time))+" - "+data[i].value+")";
+            if(html!=null){
+                for(var j=0; j<sensorrecent.length; j++){
+                    sensorrecent[j].innerHTML=html;
+                }
+            }
         }
     });
 }
