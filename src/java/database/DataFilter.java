@@ -34,47 +34,59 @@ import async.DataReceiver;
 import async.DataValue;
 import com.github.davidmoten.rx.jdbc.Database;
 import io.reactivex.Observable;
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  *
  * @author Louis Jenkins
  */
 public class DataFilter {
-    
-    private static DataFilter INSTANCE = new DataFilter(); 
-    
+        
     public AtomicReference<Set<Long>> filter = new AtomicReference<>(new TreeSet<>());
     public static Map<Long, DataFilter> INSTANCES = new ConcurrentHashMap<>();
-    
-    private DataFilter() {
+    private final long id;
+    private DataFilter(long id) {
+        this.id = id;
         
+        // Reconstruct if already exist
+        Database db = Database.from(Web_MYSQL_Helper.getConnection());
+        filter.set(
+                db.select("select time from data_filter where parameter_id = " + id)
+                        .getAs(Long.class)
+                        .toList()
+                        .map(list -> {
+                            Set<Long> set = new TreeSet<>();
+                            set.addAll(list);
+                            return set;
+                        })
+                        .toBlocking()
+                        .singleOrDefault(new TreeSet<>())
+        );
     }
     
     public static DataFilter getFilter(long id) {
         if (!INSTANCES.containsKey(id)) {
-            INSTANCES.putIfAbsent(id, new DataFilter());
+            DataFilter dataFilter = new DataFilter(id); 
+            INSTANCES.putIfAbsent(id, dataFilter);
             System.out.println("Created filter for id: " + id);
+            return dataFilter;
         }
         
         return INSTANCES.get(id);
     }
     
-    /**
-     * Must be called before server is shutdown; saves everything to database to be used later.
-     */
-    public static void destroy() {
-        
-    }
     
     /**
      * Uses a RCU (Read-Copy-Update) synchronization strategy to update the filter.
@@ -90,6 +102,7 @@ public class DataFilter {
             // Read...
             Set<Long> currentFilter = filter.get();
             if (currentFilter.containsAll(times)) {
+                System.out.println("Contains all items, skipping...");
                 return;
             }
             
@@ -102,38 +115,11 @@ public class DataFilter {
             }
         }
         
-        Database db = Database.from(Web_MYSQL_Helper.getConnection());
-        db.update("lock table data_filter write").execute();
-        Set<Long> currentFilter = filter.get();
-        
-        db.update("unlock tables");
-        
-        
-        
-        System.out.println("Added Dates: " + times);
+        DatabaseManager.insertFilteredData(id, filter.get());
     }
     
     public Observable<DataValue> filter(Observable<DataValue> data) {
         Set<Long> currentFilter = filter.get();
         return data.filter((DataValue dv) -> !currentFilter.contains(dv.getTimestamp().toEpochMilli()));
-    }
-    
-    
-    public static void main(String[] args) {
-        DataFilter instance = DataFilter.INSTANCE;
-        Instant start = Instant.now().minus(Period.ofWeeks(8)).truncatedTo(ChronoUnit.DAYS);
-        Instant filterStart = Instant.now().minus(Period.ofWeeks(4)).truncatedTo(ChronoUnit.DAYS);
-        Instant end = Instant.now();
-        
-        Set<Long> filteredTime = new TreeSet<>();
-        for (Instant time = filterStart; time.isBefore(end); time = time.plus(Duration.ofMinutes(15))) {
-            filteredTime.add(time.toEpochMilli());
-        }
-        instance.add(filteredTime);
-        
-        DataReceiver.getRemoteData(start, end, 1050296639L)
-                .getData()
-                .compose(instance::filter)
-                .blockingSubscribe(System.out::println);
     }
 }

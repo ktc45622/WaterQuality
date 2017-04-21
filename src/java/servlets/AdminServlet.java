@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.BasicConfigurator;
 import org.javatuples.Quartet;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONArray;
@@ -98,7 +99,7 @@ public class AdminServlet extends HttpServlet {
                         .map(arr -> arr.stream().mapToLong(o -> (Long) o).boxed().collect(Collectors.toSet()))
                         .blockingSubscribe(allTimes -> DatabaseManager
                                 .parameterNameToId((String) req.get("parameter"))
-                                .subscribe(id -> DataFilter
+                                .blockingSubscribe(id -> DataFilter
                                         .getFilter(id)
                                         .add((Set<Long>) allTimes)
                                 )
@@ -721,6 +722,14 @@ public class AdminServlet extends HttpServlet {
         }
 
     }
+
+    @Override
+    public void init() throws ServletException {
+        BasicConfigurator.configure();
+        super.init();
+    }
+    
+    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
