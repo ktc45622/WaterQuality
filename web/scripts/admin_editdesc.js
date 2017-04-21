@@ -10,6 +10,7 @@ var cached_ids = [];
 var cached_Descriptions = [];
 var saved_id;
 var saved_index;
+var simplemde;
 
 /*
  * The HTML displayed to the user is built here. The data parameters are
@@ -71,8 +72,80 @@ function fillPageEditParams() {
                 '<textarea name="desc" id="textarea_desc" form="form_edit_desc">' +
                 sample_desc +
                 '</textarea><br><br>' +
+                '</section>' +
+                '<section style="width: 95%;" class="section_edit_desc">' +
+                '<div style="width: 100%; border: 1px solid black;" name="preview" id="textarea_preview">' +
+                'Preview...' +
+                '</div><br><br>' +
                 '</section>'
                 );
+        
+        simplemde = new SimpleMDE({
+                autofocus: true,
+                autosave: {
+                        enabled: true,
+                        uniqueId: "MyUniqueID",
+                        delay: 1000,
+                },
+                blockStyles: {
+                        bold: "__",
+                        italic: "_"
+                },
+                element: document.getElementById("textarea_desc"),
+                forceSync: true,
+                hideIcons: ["guide", "heading"],
+                indentWithTabs: false,
+                initialValue: "Hello world!",
+                insertTexts: {
+                        horizontalRule: ["", "\n\n-----\n\n"],
+                        image: ["![](http://", ")"],
+                        link: ["[", "](http://)"],
+                        table: ["", "\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text      | Text     |\n\n"],
+                },
+                lineWrapping: true,
+                parsingConfig: {
+                        allowAtxHeaderWithoutSpace: true,
+                        strikethrough: false,
+                        underscoresBreakWords: true,
+                },
+                placeholder: "Type here...",
+                promptURLs: true,
+                renderingConfig: {
+                        singleLineBreaks: false,
+                        codeSyntaxHighlighting: true,
+                },
+                shortcuts: {
+                        drawTable: "Cmd-Alt-T"
+                },
+                showIcons: ["code", "table"],
+                spellChecker: false,
+                status: false,
+                status: ["autosave", "lines", "words", "cursor"], // Optional usage
+                status: ["autosave", "lines", "words", "cursor", {
+                        className: "keystrokes",
+                        defaultValue: function(el) {
+                                this.keystrokes = 0;
+                                el.innerHTML = "0 Keystrokes";
+                        },
+                        onUpdate: function(el) {
+                                el.innerHTML = ++this.keystrokes + " Keystrokes";
+                        }
+                }], // Another optional usage, with a custom status bar item that counts keystrokes
+                styleSelectedText: false,
+                tabSize: 4,
+                toolbar: ["bold", "italic", "heading", "|", "quote", {
+                        name: "preview",
+                        action: editor => {
+                            document.getElementById('textarea_preview').innerHTML = editor.options.previewRender(simplemde.value());
+                        },
+                        title: "Preview"
+                }],
+                toolbarTips: false,
+        });
+        
+        setTimeout(function(){
+            document.getElementById('textarea_preview').innerHTML = simplemde.options.previewRender(simplemde.value());
+        }, 250);
     });
 }
 
@@ -85,7 +158,7 @@ function viewDescription() {
 
     for (var i = 0; i < cached_names.length; i++) {
         if (cached_names[i] === $paramName) {
-            document.getElementById("textarea_desc").value = cached_Descriptions[i];
+            simplemde.value(cached_Descriptions[i]);
             document.getElementById("paramchange").value = cached_names[i];
             saved_id = cached_ids[i];
             saved_name = cached_names[i];
