@@ -17,13 +17,17 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import com.github.davidmoten.rx.jdbc.Database;
+import com.github.davidmoten.rx.util.Pair;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.json.simple.JSONArray;
@@ -279,25 +283,85 @@ public class DatabaseManager
         }
     }
     
-    public static io.reactivex.Observable<Integer> insertManualData(List<async.DataValue> data) {
+    public static long insertData(List<async.DataValue> data) {
         Database db = Database.from(Web_MYSQL_Helper.getConnection());
-        PublishSubject<Integer> results = PublishSubject.create();
-        Subject<Integer> serializedResults = results.toSerialized();
-        
-        
+        Map<Long, Long> sourceToDatabaseIdMap = new HashMap<>();
         Observable.from(data)
-                .flatMap(dv -> db.update("replace into data_values (time, value, parameter_id) values (?, ?, ?)")
-                        .parameter(Timestamp.from(dv.getTimestamp()))
-                        .parameter(dv.getValue())
-                        .parameter(dv.getId())
-                        .count()
+                .map(async.DataValue::getId)
+                .distinct()
+                .flatMap(id -> db.select("select parameter_id from remote_data_parameters where source = ?")
+                        .parameter(id)
+                        .getAs(Long.class)
+                        .map(databaseId -> Pair.create(id, databaseId))
+                        .defaultIfEmpty(Pair.create(id, id))
                 )
-                .reduce(0, (x, y) -> x + y)
-                .subscribeOn(rx.schedulers.Schedulers.computation())
-                .subscribe(serializedResults::onNext, serializedResults::onError, () -> { serializedResults.onComplete(); Web_MYSQL_Helper.returnConnection(db.getConnectionProvider().get());});
-
+                .toBlocking()
+                .subscribe(pair -> sourceToDatabaseIdMap.put(pair.a(), pair.b()));
+        Web_MYSQL_Helper.returnConnection(db.getConnectionProvider().get());
         
-        return results;
+        
+        long nBatch = 0;
+        Connection conn = Web_MYSQL_Helper.getConnection();
+        PreparedStatement insertData = null;
+        try
+        {
+            conn.setAutoCommit(false);
+            String insertSQL = "insert into data_values (time, value, parameter_id) values (?, ?, ?) on duplicate key update value=?";
+            insertData = conn.prepareStatement(insertSQL);
+            for (async.DataValue value : data) {
+                insertData.setTimestamp(1, Timestamp.from(value.getTimestamp()));
+                insertData.setDouble(2, value.getValue());
+                insertData.setLong(3, sourceToDatabaseIdMap.get(value.getId()));
+                insertData.setDouble(4, value.getValue());
+                insertData.addBatch();
+                
+                System.out.println("Inserted: " + value);
+                nBatch++;
+                
+                if (nBatch % 1000 == 0) {
+                    insertData.executeBatch();
+                    insertData.clearBatch();
+                }
+            }
+            if (insertData != null) {
+                insertData.executeBatch();
+            }
+            conn.commit();
+        }
+        catch (SQLException ex)
+        {
+            nBatch = 0;
+            LogError("Error Inserting Batches of Data: " + ex);
+            if(conn!=null)
+            {
+                try
+                {
+                    conn.rollback();
+                }
+                catch(SQLException excep)
+                {
+                    LogError("Rollback unsuccessful: " + excep);
+                }
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(insertData != null) {
+                    insertData.close();
+                }
+                if(conn != null) {
+//                    conn.setAutoCommit(true);
+                    Web_MYSQL_Helper.returnConnection(conn);
+                }
+            }
+            catch(SQLException excep)
+            {
+                LogError("Error closing statement or connection: " + excep);
+            }
+        }
+        return nBatch;
     }
     
     public static io.reactivex.Observable<Long> parameterNameToId(String name) {
@@ -740,6 +804,18 @@ public class DatabaseManager
         return graphData;
     }
     
+    public static Optional<Long> remoteSourceToDatabaseId(Long id) {
+        Database db = Database.from(Web_MYSQL_Helper.getConnection());
+        return  db.select("select parameter_id from remote_data_parameters where source = ?")
+                .parameter(id)
+                .getAs(Long.class)
+                .map(Optional::of)
+                .toBlocking()
+                .singleOrDefault(Optional.empty());
+                
+                
+    }
+    
     public static io.reactivex.Observable<async.DataValue> getDataValues(Instant start, Instant end, String name) {
         Database db = Database.from(Web_MYSQL_Helper.getConnection());
         PublishSubject<async.DataValue> results = PublishSubject.create();
@@ -770,57 +846,18 @@ public class DatabaseManager
                                         )
                                 ); 
                     } else {
-                        return db.select("select time, value from data_values where parameter_id = ?")
+                        return db.select("select time, value from data_values where parameter_id = ? and time < ? and time > ?")
                             .parameter(id)
+                            .parameter(Timestamp.from(end))
+                            .parameter(Timestamp.from(start))
                             .getAs(Long.class, Double.class)
-                             .sorted((p1, p2) -> p1._1().compareTo(p2._1()))
+                            .sorted((p1, p2) -> p1._1().compareTo(p2._1()))
                             .map(pair -> new async.DataValue(id, Instant.ofEpochMilli(pair._1()), pair._2()));
                     }
                 })
                 .subscribe(serializedResults::onNext, serializedResults::onError, () -> { serializedResults.onComplete(); Web_MYSQL_Helper.returnConnection(db.getConnectionProvider().get());});
         
         return results.compose(DataFilter.getFilter(id)::filter);
-    }
-    
-    /*
-        Returns a list of all data
-        @param name the name of the data type for which data is being requested
-    */
-    public static io.reactivex.Observable<async.DataValue> getDataValues(Instant start, Instant end, long id) {
-        Database db = Database.from(Web_MYSQL_Helper.getConnection());
-        PublishSubject<async.DataValue> results = PublishSubject.create();
-        Subject<async.DataValue> serializedResults = results.toSerialized();
-        
-        db.select("select source from remote_data_parameters where parameter_id = ?")
-                .parameter(id)
-                .count()
-                .doOnNext(System.out::println)
-                .subscribeOn(rx.schedulers.Schedulers.computation())
-                .flatMap(cnt -> {
-                    // Is it a remote data value?
-                    if (cnt != 0) {
-                        return db.select("select source from remote_data_parameters where parameter_id = ?")
-                                .parameter(id)
-                                .getAs(Long.class)
-                                .flatMap(remoteKey -> Observable
-                                        .from(DataReceiver
-                                                .getRemoteData(start, end, remoteKey)
-                                                .getRawData()
-                                                .stream()
-                                                .map(dv -> new async.DataValue(id, dv.getTimestamp(), dv.getValue()))
-                                                .collect(Collectors.toList())
-                                        )
-                                );              
-                    } else {
-                        return db.select("select time, value from data_values where parameter_id = ?")
-                            .parameter(id)
-                            .getAs(Long.class, Double.class)
-                            .map(pair -> new async.DataValue(id, Instant.ofEpochMilli(pair._1()), pair._2()));
-                    }
-                })
-                .subscribe(serializedResults::onNext, serializedResults::onError, () -> { serializedResults.onComplete(); Web_MYSQL_Helper.returnConnection(db.getConnectionProvider().get());});
-        
-        return results;
     }
     
     

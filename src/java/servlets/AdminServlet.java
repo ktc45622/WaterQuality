@@ -566,6 +566,7 @@ public class AdminServlet extends HttpServlet {
                             .map(o -> (JSONArray) o.get("values"))
                             .flatMap(JSONUtils::flattenJSONArray)
                             .filter(o -> o.get("timestamp") != null && o.get("value") != null)
+                            .doOnNext(o -> System.out.println((String) obj.get("name")))
                             .flatMap(o -> DatabaseManager
                                     .parameterNameToId((String) obj.get("name"))
                                     .map(id -> new DataValue(id, Instant.ofEpochMilli((long) o.get("timestamp")), o.get("value") != null ? Double.parseDouble(o.get("value").toString()) : Double.NaN))
@@ -573,7 +574,7 @@ public class AdminServlet extends HttpServlet {
                     )
                     .buffer(Integer.MAX_VALUE)
                     .doOnNext(System.out::println)
-                    .flatMap(DatabaseManager::insertManualData)
+                    .map(DatabaseManager::insertData)
                     .blockingSubscribe(updated -> System.out.println("Updated # of Rows: " + updated));
                     
         }
@@ -700,6 +701,7 @@ public class AdminServlet extends HttpServlet {
             long HDO = 1050296639;
             long Temp = 1050296629;
             long Pressure = 639121405;
+            long Depth = 1050296637;
 
             dataToCSV(DataReceiver
                             .getRemoteData(
@@ -708,7 +710,7 @@ public class AdminServlet extends HttpServlet {
                                             .truncatedTo(ChronoUnit.DAYS), 
                                     Instant.ofEpochMilli(end)
                                             .truncatedTo(ChronoUnit.DAYS), 
-                                    PAR, HDO, Temp, Pressure
+                                    PAR, HDO, Temp, Pressure, Depth
                             ))
                     .subscribeOn(Schedulers.computation())
                     .blockingSubscribe(resp -> 

@@ -24,7 +24,7 @@ function fullCheck(id) {
     if (item.checked == true) {
         if (checkedBoxes < 2) {
             checkedBoxes++;
-            
+
             selected.push(id);
         } else {
             it = selected.shift();
@@ -47,8 +47,8 @@ function tableChecked(id) {
     if (item.checked === true) {
         tableSelected.push(id);
     } else {
-        if(tableSelected.indexOf(id)!=-1){
-            tableSelected.splice(tableSelected.indexOf(id),1);
+        if (tableSelected.indexOf(id) != -1) {
+            tableSelected.splice(tableSelected.indexOf(id), 1);
         }
     }
 }
@@ -58,13 +58,13 @@ function tableChecked(id) {
  * all of the checkboxes in the table tab depending on the state of <code>source</code>
  * checkbox
  */
-function toggle(id,source) {
+function toggle(id, source) {
     var checkboxes = document.getElementById(id).querySelectorAll('input[type="checkbox"]');
     for (var i = 0; i < checkboxes.length; i++) {
         checkboxes[i].checked = source.checked;
     }
-    if(source.checked==false)
-            tableSelected=[];
+    if (source.checked == false)
+        tableSelected = [];
 }
 
 /**Sets a cookie so that the current tab name can remembered for reloading the page
@@ -131,7 +131,7 @@ function openTab(evt, tabName) {
         form[i].style.display = "none";
     }
     document.getElementById(current + "_form").style.display = "block";
-    
+
     descriptions = document.getElementsByClassName("description");
     for (i = 0; i < descriptions.length; i++) {
         descriptions[i].style.display = "none";
@@ -174,18 +174,9 @@ function fetch() {
     document.getElementById("loader").style.cursor = "progress";
     var startTime, endTime;
     if (current === "Graph") {
-        startTime = new Date(document.getElementById("graph_start_date").value);
-        if (startTime.dst())
-            startTime = startTime.getTime() - 14400000;
-        else
-            startTime = startTime.getTime() - 18000000;
+        var startTime = new Date(document.getElementById("graph_start_date").value).getTime();
+        var endTime = new Date(document.getElementById("graph_end_date").value).getTime();
         
-        endTime = new Date(document.getElementById("graph_end_date").value);
-        if (endTime.dst())
-            endTime = endTime.getTime() - 14400000;
-        else
-            endTime = endTime.getTime() - 18000000;
-
         var graphStartTime = document.getElementById("graph_start_time").value;
         var graphEndTime = document.getElementById("graph_end_time").value;
         
@@ -196,17 +187,8 @@ function fetch() {
         endTime = new Date(endTime + tempend[0] * 3600000 + tempend[1] * 60000).getTime();
     }
     if (current == "Table") {
-        startTime = new Date(document.getElementById("table_start_date").value);
-        if (startTime.dst())
-            startTime = startTime.getTime() - 14400000;
-        else
-            startTime = startTime.getTime() - 18000000;
-        
-        endTime = new Date(document.getElementById("table_end_date").value);
-        if (endTime.dst())
-            endTime = endTime.getTime() - 14400000;
-        else
-            endTime = endTime.getTime() - 18000000;
+        var startTime = new Date(document.getElementById("table_start_date").value).getTime();
+        var endTime = new Date(document.getElementById("table_end_date").value).getTime();
         
         var tableStartTime = document.getElementById("table_start_time").value;
         var tableEndTime = document.getElementById("table_end_time").value;
@@ -247,34 +229,34 @@ function fetch() {
 
 function fetchData(json) {
     var data = new DataResponse(json);
-    
+
     // New data: Clear descriptions
 
     //document.getElementById("graph_description").innerHTML = "";
     //document.getElementById("table_description").innerHTML = "";
-    
+
     // If there is a missing description for something selected, fill it ourselves...
-    if(current=="Graph"){
-    for (j = 0; j < selected.length; j++) {
-        var contains = false;
-        for (i = 0; i < data.data.length; i++) {
-            if (selected[j].substring(6) == data.data[i].id) {
-                contains = true;
-                break;
+    if (current == "Graph") {
+        for (j = 0; j < selected.length; j++) {
+            var contains = false;
+            for (i = 0; i < data.data.length; i++) {
+                if (selected[j].substring(6) == data.data[i].id) {
+                    contains = true;
+                    break;
+                }
+            }
+
+            if (!contains) {
+                data.data.push({id: selected[j].substring(6), dataValues: []});
             }
         }
-        
-        if (!contains) {
-            data.data.push({ id: selected[j].substring(6), dataValues: []});
-        }
-    }}
-    
+    }
+
     // Empty?
     if (data.data.length == 0) {
-        if(current=="Table"){
+        if (current == "Table") {
             fillTable(data);
-        }
-        else
+        } else
             return;
     }
     var timeStamps = getTimeStamps(data);
@@ -306,7 +288,10 @@ function fetchData(json) {
                 name: names[data.data[i].id],
                 data: timeStampStr[i]
             }, false);
-            chart.yAxis[i].setTitle({text: names[data.data[i].id] + " (" + units[names[data.data[i].id]] + ")"});
+            if (names[data.data[i].id] === "pH")
+                chart.yAxis[i].setTitle({text: names[data.data[i].id]});
+            else
+                chart.yAxis[i].setTitle({text: names[data.data[i].id] + " (" + units[names[data.data[i].id]] + ")"});
         }
         if (data.data.length == 1)
             chart.yAxis[i].setTitle({text: ""});
@@ -314,7 +299,7 @@ function fetchData(json) {
         
         document.getElementById("Graph_description").innerHTML="";
         document.getElementById("Table_description").innerHTML="";
-        var description = "";
+        var description = "# Description \n";
         for (i = 0; i < data.data.length; i++) {
             
             // The server gives us the identifier, not the name, and so we need to do a lookup in our own map.
@@ -327,10 +312,11 @@ function fetchData(json) {
         }
         document.getElementById("Graph_description").innerHTML = document.getElementById("Table_description").innerHTML = marked(description);
     } else {
-        if (getCookie("id") == "Table"){
+        var description = "# Description \n";
+        if (getCookie("id") == "Table") {
             //document.getElementById("Table").innerHTML = table;
             fillTable(data);
-
+            
             document.getElementById("Table_description").innerHTML = "";
             for (i = 0; i < data.data.length; i++) {
                 description += "## " + names[data.data[i].id] + "\n" + descriptions[data.data[i].id] + "\n";
@@ -352,7 +338,10 @@ function fetchData(json) {
                     name: names[data.data[i].id],
                     data: timeStampStr[i]
                 }, false);
-                chart.yAxis[i].setTitle({text: names[data.data[i].id] + " (" + units[names[data.data[i].id]] + ")"});
+                if (names[data.data[i].id] === "pH")
+                    chart.yAxis[i].setTitle({text: names[data.data[i].id]});
+                else
+                    chart.yAxis[i].setTitle({text: names[data.data[i].id] + " (" + units[names[data.data[i].id]] + ")"});
             }
             if (data.data.length == 1)
                 chart.yAxis[i].setTitle({text: ""});
@@ -368,7 +357,7 @@ function fetchData(json) {
             document.getElementById("Graph_description").innerHTML = marked(description);
         }
     }
-    
+
     //sets the cursor back to default after the graph/table is done being generated
     document.getElementById("loader").style.cursor = "default";
 }
@@ -441,12 +430,12 @@ function fillTable(dataResp) {
                 break;
             }
         }
-        
+
         if (!contains) {
-            dataResp.data.push({ id: tableSelected[j].substring(6), dataValues: []});
+            dataResp.data.push({id: tableSelected[j].substring(6), dataValues: []});
         }
     }
-    
+
     var html = [];//Holds the table that will be created 
     var dates = [];//holds the array of all dates from all parameters 
     html.push("<table><thead><tr><th>TimeStamp</th>");
@@ -469,7 +458,9 @@ function fillTable(dataResp) {
     }
     //since the dates are stored as epoch miliseconds this make sure the dates
     //are in the correct order
-    dates.sort(function (a, b) {return a-b;});
+    dates.sort(function (a, b) {
+        return a - b;
+    });
     //Adds all the values to the <code>html</code> array for the table
     for (var i = 0; i < dates.length; i++) {
         html.push("<tr>");
@@ -545,9 +536,9 @@ function startingData() {
             units[data[i].name] = data[i].unit;
           
             var param = "<input type='checkbox' name='graph_" + data[i].id + "' onclick='handleClick(this);' class='sensor_data' id='graph_" + data[i].id + "' value='data'>" + data[i].name 
-                    + "<span id='recent_"+data[i].id+"'></span><br>\n";
+                    + "<span class='recent_sensor_"+data[i].id+"'></span><br>\n";
             var tableparam = "<input type='checkbox' name='table_" + data[i].id + "' onclick='handleClick(this);' class='sensor_data' id='table_" + data[i].id + "' value='data'>" + data[i].name 
-                    + "<span id='recent_"+data[i].id+"'></span><br>\n";
+                    + "<span class='recent_sensor_"+data[i].id+"'></span><br>\n";
             
             document.getElementById("graph_sensor_parameters").innerHTML += param;
             document.getElementById("table_sensor_parameters").innerHTML += tableparam;
@@ -559,9 +550,9 @@ function startingData() {
             units[data[i].name] = data[i].unit;
           
             var param = "<input type='checkbox' name='graph_" + data[i].id + "' onclick='handleClick(this);' class='manual_data' id='graph_" + data[i].id + "' value='data'>" + data[i].name 
-                    + "<span id='recent_"+data[i].id+"'></span><br>\n";
+                    + "<span class='graph_recent_manual_"+data[i].id+"'></span><br>\n";
             var tableparam = "<input type='checkbox' name='table_" + data[i].id + "' onclick='handleClick(this);' class='manual_data' id='table_" + data[i].id + "' value='data'>" + data[i].name 
-                    + "<span id='recent_"+data[i].id+"'></span><br>\n";
+                    + "<span class='table_recent_manual_"+data[i].id+"'></span><br>\n";
           
             document.getElementById("graph_manual_parameters").innerHTML += param;
             document.getElementById("table_manual_parameters").innerHTML += tableparam;
@@ -580,7 +571,7 @@ function startingData() {
         if (getCookie("id") == "Table")
             document.getElementById("TableTab").click();
         else {
-            if(getCookie("id")=="Graph")
+            if (getCookie("id") == "Graph")
                 document.getElementById("GraphTab").click();
         }
         checkuser();
@@ -613,7 +604,7 @@ $(function () {
     })
             .datepicker("setDate", date);
 
-    date.setMonth(date.getMonth() - 1);
+    date.setDate(date.getDate() - 7);
     $("#graph_start_date").datetimepicker({
         controlType: 'select',
         oneLine: true,
@@ -631,6 +622,7 @@ $(function () {
 
 function getMostRecent(){
     post("ControlServlet", {action: "getMostRecent"}, function (resp) {
+        console.log(resp);
         var data=JSON.parse(resp)["data"];
         /*
          * getMostRecent
@@ -641,8 +633,15 @@ function getMostRecent(){
          *  }]
          *  }
          */
+        //var html="";
         for(var i=0; i<data.length; i++){
-            document.getElementById("recent_"+data[i].id).innerHTML=data[i].time+" "+data[i].value;
+            var sensorrecent=document.getElementsByClassName("recent_sensor_"+data[i].id);
+            var html=" ("+formatDate(new Date(data[i].time))+" - "+data[i].value+")";
+            if(html!=null){
+                for(var j=0; j<sensorrecent.length; j++){
+                    sensorrecent[j].innerHTML=html;
+                }
+            }
         }
     });
 }
