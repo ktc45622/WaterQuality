@@ -167,16 +167,20 @@ function handleClick(cb)
 }
 
 function fetch() {
+    if (current === null || current === undefined) {
+        current = "Graph";
+    }
     //makes the cursor show loading when graph/table is being generated 
     document.getElementById("loader").style.cursor = "progress";
+    var startTime, endTime;
     if (current === "Graph") {
-        var startTime = new Date(document.getElementById("graph_start_date").value);
+        startTime = new Date(document.getElementById("graph_start_date").value);
         if (startTime.dst())
             startTime = startTime.getTime() - 14400000;
         else
             startTime = startTime.getTime() - 18000000;
         
-        var endTime = new Date(document.getElementById("graph_end_date").value);
+        endTime = new Date(document.getElementById("graph_end_date").value);
         if (endTime.dst())
             endTime = endTime.getTime() - 14400000;
         else
@@ -192,13 +196,13 @@ function fetch() {
         endTime = new Date(endTime + tempend[0] * 3600000 + tempend[1] * 60000).getTime();
     }
     if (current == "Table") {
-        var startTime = new Date(document.getElementById("table_start_date").value);
+        startTime = new Date(document.getElementById("table_start_date").value);
         if (startTime.dst())
             startTime = startTime.getTime() - 14400000;
         else
             startTime = startTime.getTime() - 18000000;
         
-        var endTime = new Date(document.getElementById("table_end_date").value);
+        endTime = new Date(document.getElementById("table_end_date").value);
         if (endTime.dst())
             endTime = endTime.getTime() - 14400000;
         else
@@ -310,13 +314,18 @@ function fetchData(json) {
         
         document.getElementById("Graph_description").innerHTML="";
         document.getElementById("Table_description").innerHTML="";
+        var description = "";
         for (i = 0; i < data.data.length; i++) {
+            
             // The server gives us the identifier, not the name, and so we need to do a lookup in our own map.
-            document.getElementById("Graph_description").innerHTML += "<center><h1>" + names[data.data[i].id] + "</h1></center>";
-            document.getElementById("Graph_description").innerHTML += descriptions[data.data[i].id];
-            document.getElementById("Table_description").innerHTML += "<center><h1>" + names[data.data[i].id] + "</h1></center>";
-            document.getElementById("Table_description").innerHTML += descriptions[data.data[i].id];
+            description += "## " + names[data.data[i].id] + "\n" + descriptions[data.data[i].id] + "\n";
+            
+//            document.getElementById("Graph_description").innerHTML += "# " + names[data.data[i].id] + "\n";
+//            document.getElementById("Graph_description").innerHTML += descriptions[data.data[i].id];
+//            document.getElementById("Table_description").innerHTML += "# " + names[data.data[i].id] + "\n";
+//            document.getElementById("Table_description").innerHTML += descriptions[data.data[i].id];
         }
+        document.getElementById("Graph_description").innerHTML = document.getElementById("Table_description").innerHTML = marked(description);
     } else {
         if (getCookie("id") == "Table"){
             //document.getElementById("Table").innerHTML = table;
@@ -324,10 +333,13 @@ function fetchData(json) {
 
             document.getElementById("Table_description").innerHTML = "";
             for (i = 0; i < data.data.length; i++) {
-                // The server gives us the identifier, not the name, and so we need to do a lookup in our own map.
-                document.getElementById("Table_description").innerHTML += "<center><h1>" + names[data.data[i].id] + "</h1></center>";
-                document.getElementById("Table_description").innerHTML += descriptions[data.data[i].id];
+                description += "## " + names[data.data[i].id] + "\n" + descriptions[data.data[i].id] + "\n";
+                
+//                // The server gives us the identifier, not the name, and so we need to do a lookup in our own map.
+//                document.getElementById("Table_description").innerHTML += "<center><h1>" + names[data.data[i].id] + "</h1></center>";
+//                document.getElementById("Table_description").innerHTML += descriptions[data.data[i].id];
             }
+            document.getElementById("Table_description").innerHTML = marked(description);
         }
         else {
             // Remove all series data
@@ -347,10 +359,13 @@ function fetchData(json) {
             chart.redraw();
             document.getElementById("Graph_description").innerHTML = "";
             for (i = 0; i < data.data.length; i++) {
+                description += "## " + names[data.data[i].id] + "\n" + descriptions[data.data[i].id] + "\n";
+                
                 // The server gives us the identifier, not the name, and so we need to do a lookup in our own map.
-                document.getElementById("Graph_description").innerHTML += "<center><h1>" + names[data.data[i].id] + "</h1></center>";
-                document.getElementById("Graph_description").innerHTML += descriptions[data.data[i].id];
+//                document.getElementById("Graph_description").innerHTML += "<center><h1>" + names[data.data[i].id] + "</h1></center>";
+//                document.getElementById("Graph_description").innerHTML += descriptions[data.data[i].id];
             }
+            document.getElementById("Graph_description").innerHTML = marked(description);
         }
     }
     
