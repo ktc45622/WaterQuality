@@ -299,7 +299,7 @@ function fetchData(json) {
         
         document.getElementById("Graph_description").innerHTML="";
         document.getElementById("Table_description").innerHTML="";
-        var description = "# Description \n";
+        var description = "";
         for (i = 0; i < data.data.length; i++) {
             
             // The server gives us the identifier, not the name, and so we need to do a lookup in our own map.

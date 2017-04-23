@@ -141,6 +141,13 @@ description boxes */
     width:35%;
     display:inline-block;
 }
+.content_container2 h1, h2, h3, h4, h5, h6 {
+    text-align: center;
+}
+
+.content_container2 p {
+    text-align: none;
+}
 
 /* Styles the section the graph is displayed in */
 #graph_container{
@@ -166,11 +173,24 @@ description boxes */
 }
 
 .description{
+    text-align: left;
+    border: 2px solid;
     margin-left: 1%;
     margin-right: 1%;
-    text-align:justify;
+    padding: 20px;
+    overflow: auto;
     display:none;
-    text-align-last: center;
+}
+
+.description img {
+    display: block;
+    margin: auto;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.description table, td, tr {
+    border: 1px solid black;
 }
 
 /* Style the list */
