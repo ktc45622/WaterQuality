@@ -15,6 +15,7 @@ Current bugs:
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="styles/admin.css" type="text/css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.js"></script>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -22,6 +23,9 @@ Current bugs:
         <!--<script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
         <script src="https://cdn.datatables.net/1.10.14/js/jquery.dataTables.min.js"></script>
         <link rel="stylesheet" href="styles/datetimepicker.css" type="text/css">
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+        <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
         <script src="scripts/datetimepicker.js"></script>
         <script src="scripts/admin_insertion.js"></script>
         <script src="scripts/admin_register.js"></script>
@@ -39,6 +43,7 @@ Current bugs:
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.13/b-1.2.4/b-colvis-1.2.4/b-html5-1.2.4/b-print-1.2.4/r-2.1.1/se-1.2.0/datatables.min.css"/>
 
         <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.13/b-1.2.4/b-colvis-1.2.4/b-html5-1.2.4/b-print-1.2.4/r-2.1.1/se-1.2.0/datatables.min.js"></script>
+        
         <noscript>
         <meta http-equiv="refresh" content="0; URL=/html/javascriptDisabled.html">
         </noscript>
