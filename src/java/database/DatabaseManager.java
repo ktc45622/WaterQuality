@@ -1777,6 +1777,57 @@ public class DatabaseManager
         }
         return null;
     }
+    
+    public static void insertFilteredData(long paramId, Set<Long> times) {
+        System.out.println("Inserting for " + paramId + " the values: " + times);
+        PreparedStatement insertFilter = null;
+        Connection conn = null;
+        try
+        {
+            conn = Web_MYSQL_Helper.getConnection();
+            conn.setAutoCommit(false);
+            String insertSQL = "replace into data_filter (time, parameter_id) values (?, ?)";
+            insertFilter = conn.prepareStatement(insertSQL);
+            for (long time : times) {
+                insertFilter.setTimestamp(1, Timestamp.from(Instant.ofEpochMilli(time)));
+                insertFilter.setLong(2, paramId);
+                insertFilter.addBatch();
+            }
+            
+            insertFilter.executeBatch();
+            conn.commit();
+        }
+        catch(Exception e)
+        {
+            LogError("Error inserting filtered data with id " + paramId + ": " + e);
+            try
+            {
+                conn.rollback();
+            }
+            catch(SQLException excep)
+            {
+                LogError("Rollback unsuccessful: " + excep);
+            }
+        }
+        finally
+        {
+            try
+            {
+                if(conn != null) {
+                    Web_MYSQL_Helper.returnConnection(conn);
+                    conn.setAutoCommit(true);
+                }
+                if(insertFilter != null)
+                    insertFilter.close();
+            }
+            catch(Exception excep)
+            {
+                LogError("Error closing statement or result set: " + excep);
+            }
+        }
+        return;
+    }
+    
     /*
     public static boolean undoDatabaseFunction()
     {
