@@ -167,8 +167,12 @@ function handleClick(cb)
 }
 
 function fetch() {
+    if (current === null || current === undefined) {
+        current = "Graph";
+    }
     //makes the cursor show loading when graph/table is being generated 
     document.getElementById("loader").style.cursor = "progress";
+    var startTime, endTime;
     if (current === "Graph") {
         var startTime = new Date(document.getElementById("graph_start_date").value).getTime();
         var endTime = new Date(document.getElementById("graph_end_date").value).getTime();
@@ -292,28 +296,38 @@ function fetchData(json) {
         if (data.data.length == 1)
             chart.yAxis[i].setTitle({text: ""});
         chart.redraw();
-
-        document.getElementById("Graph_description").innerHTML = "";
-        document.getElementById("Table_description").innerHTML = "";
+        
+        document.getElementById("Graph_description").innerHTML="";
+        document.getElementById("Table_description").innerHTML="";
+        var description = "";
         for (i = 0; i < data.data.length; i++) {
+            
             // The server gives us the identifier, not the name, and so we need to do a lookup in our own map.
-            document.getElementById("Graph_description").innerHTML += "<center><h1>" + names[data.data[i].id] + "</h1></center>";
-            document.getElementById("Graph_description").innerHTML += descriptions[data.data[i].id];
-            document.getElementById("Table_description").innerHTML += "<center><h1>" + names[data.data[i].id] + "</h1></center>";
-            document.getElementById("Table_description").innerHTML += descriptions[data.data[i].id];
+            description += "## " + names[data.data[i].id] + "\n" + descriptions[data.data[i].id] + "\n";
+            
+//            document.getElementById("Graph_description").innerHTML += "# " + names[data.data[i].id] + "\n";
+//            document.getElementById("Graph_description").innerHTML += descriptions[data.data[i].id];
+//            document.getElementById("Table_description").innerHTML += "# " + names[data.data[i].id] + "\n";
+//            document.getElementById("Table_description").innerHTML += descriptions[data.data[i].id];
         }
+        document.getElementById("Graph_description").innerHTML = document.getElementById("Table_description").innerHTML = marked(description);
     } else {
+        var description = "# Description \n";
         if (getCookie("id") == "Table") {
             //document.getElementById("Table").innerHTML = table;
             fillTable(data);
-
+            
             document.getElementById("Table_description").innerHTML = "";
             for (i = 0; i < data.data.length; i++) {
-                // The server gives us the identifier, not the name, and so we need to do a lookup in our own map.
-                document.getElementById("Table_description").innerHTML += "<center><h1>" + names[data.data[i].id] + "</h1></center>";
-                document.getElementById("Table_description").innerHTML += descriptions[data.data[i].id];
+                description += "## " + names[data.data[i].id] + "\n" + descriptions[data.data[i].id] + "\n";
+                
+//                // The server gives us the identifier, not the name, and so we need to do a lookup in our own map.
+//                document.getElementById("Table_description").innerHTML += "<center><h1>" + names[data.data[i].id] + "</h1></center>";
+//                document.getElementById("Table_description").innerHTML += descriptions[data.data[i].id];
             }
-        } else {
+            document.getElementById("Table_description").innerHTML = marked(description);
+        }
+        else {
             // Remove all series data
             while (chart.series.length > 0)
                 chart.series[0].remove(true);
@@ -334,10 +348,13 @@ function fetchData(json) {
             chart.redraw();
             document.getElementById("Graph_description").innerHTML = "";
             for (i = 0; i < data.data.length; i++) {
+                description += "## " + names[data.data[i].id] + "\n" + descriptions[data.data[i].id] + "\n";
+                
                 // The server gives us the identifier, not the name, and so we need to do a lookup in our own map.
-                document.getElementById("Graph_description").innerHTML += "<center><h1>" + names[data.data[i].id] + "</h1></center>";
-                document.getElementById("Graph_description").innerHTML += descriptions[data.data[i].id];
+//                document.getElementById("Graph_description").innerHTML += "<center><h1>" + names[data.data[i].id] + "</h1></center>";
+//                document.getElementById("Graph_description").innerHTML += descriptions[data.data[i].id];
             }
+            document.getElementById("Graph_description").innerHTML = marked(description);
         }
     }
 

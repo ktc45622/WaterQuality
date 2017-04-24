@@ -56,7 +56,142 @@ function fillPageEditParams() {
             });
         }
 
-        var sample_desc = "Retrieved description goes here.";
+        var sample_desc = "# Markdown Syntax Demo\n" +
+                "---\n" +
+                "# h1 Heading\n" +
+                "## h2 Heading\n" +
+                "### h3 Heading\n" +
+                "#### h4 Heading\n" +
+                "##### h5 Heading\n" +
+                "###### h6 Heading\n" +
+                "\n" +
+                "\n" +
+                "## Horizontal Rules\n" +
+                "\n" +
+                "___\n" +
+                "\n" +
+                "---\n" +
+                "\n" +
+                "***\n" +
+                "\n" +
+                "\n" +
+                "## Emphasis\n" +
+                "\n" +
+                "**This is bold text**\n" +
+                "\n" +
+                "__This is bold text__\n" +
+                "\n" +
+                "*This is italic text*\n" +
+                "\n" +
+                "_This is italic text_\n" +
+                "\n" +
+                "~~Strikethrough~~\n" +
+                "\n" +
+                "\n" +
+                "## Blockquotes\n" +
+                "\n" +
+                "\n" +
+                "> Blockquotes can also be nested...\n" +
+                ">> ...by using additional greater-than signs right next to each other...\n" +
+                "> > > ...or with spaces between arrows.\n" +
+                "\n" +
+                "\n" +
+                "## Lists\n" +
+                "\n" +
+                "Unordered\n" +
+                "\n" +
+                "+ Create a list by starting a line with `+`, `-`, or `*`\n" +
+                "+ Sub-lists are made by indenting 2 spaces:\n" +
+                "  - Marker character change forces new list start:\n" +
+                "    * Ac tristique libero volutpat at\n" +
+                "    + Facilisis in pretium nisl aliquet\n" +
+                "    - Nulla volutpat aliquam velit\n" +
+                "+ Very easy!\n" +
+                "\n" +
+                "Ordered\n" +
+                "\n" +
+                "1. Lorem ipsum dolor sit amet\n" +
+                "2. Consectetur adipiscing elit\n" +
+                "3. Integer molestie lorem at massa\n" +
+                "\n" +
+                "\n" +
+                "1. You can use sequential numbers...\n" +
+                "1. ...or keep all the numbers as `1.`\n" +
+                "\n" +
+                "Start numbering with offset:\n" +
+                "\n" +
+                "57. foo\n" +
+                "1. bar\n" +
+                "\n" +
+                "\n" +
+                "## Code\n" +
+                "\n" +
+                "Inline `code`\n" +
+                "\n" +
+                "Indented code\n" +
+                "\n" +
+                "    // Some comments\n" +
+                "    line 1 of code\n" +
+                "    line 2 of code\n" +
+                "    line 3 of code\n" +
+                "\n" +
+                "\n" +
+                "Block code \"fences\"\n" +
+                "\n" +
+                "```\n" +
+                "Sample text here...\n" +
+                "```\n" +
+                "\n" +
+                "Syntax highlighting\n" +
+                "\n" +
+                "``` js\n" +
+                "var foo = function (bar) {\n" +
+                "  return bar++;\n" +
+                "};\n" +
+                "\n" +
+                "console.log(foo(5));\n" +
+                "```\n" +
+                "\n" +
+                "## Tables\n" +
+                "\n" +
+                "| Option | Description |\n" +
+                "| ------ | ----------- |\n" +
+                "| data   | path to data files to supply the data that will be passed into templates. |\n" +
+                "| engine | engine to be used for processing templates. Handlebars is the default. |\n" +
+                "| ext    | extension to be used for dest files. |\n" +
+                "\n" +
+                "Right aligned columns\n" +
+                "\n" +
+                "| Option | Description |\n" +
+                "| ------:| -----------:|\n" +
+                "| data   | path to data files to supply the data that will be passed into templates. |\n" +
+                "| engine | engine to be used for processing templates. Handlebars is the default. |\n" +
+                "| ext    | extension to be used for dest files. |\n" +
+                "\n" +
+                "\n" +
+                "## Links\n" +
+                "\n" +
+                "[link text](http://dev.nodeca.com)\n" +
+                "\n" +
+                "[link with title](http://nodeca.github.io/pica/demo/ \"title text!\")\n" +
+                "\n" +
+                "Autoconverted link https://github.com/nodeca/pica (enable linkify to see)\n" +
+                "\n" +
+                "\n" +
+                "## Images\n" +
+                "\n" +
+                "![Minion](https://octodex.github.com/images/minion.png)\n" +
+                "![Stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg \"The Stormtroopocat\")\n" +
+                "\n" +
+                "Like links, Images also have a footnote style syntax\n" +
+                "\n" +
+                "![Alt text][id]\n" +
+                "\n" +
+                "With a reference later in the document defining the URL location:\n" +
+                "\n" +
+                "[id]: https://octodex.github.com/images/dojocat.jpg  \"The Dojocat\"\n" +
+                "\n" +
+                "\n";
         $('#Edit_Params').append(
                 '<section class="section_edit_desc">' +
                 '<div class="large_text">Parameter to Edit:</div>' +
@@ -70,10 +205,29 @@ function fillPageEditParams() {
                 '<div class=large_text>Description</div>' +
                 '<textarea name="desc" id="textarea_desc" form="form_edit_desc">' +
                 sample_desc +
-                '</textarea><br><br>' +
+                '</textarea>' +
+                '<button type="button" onclick="showPreview()">Preview</button>' +
+                '<br><br>' +
+                '</section>' +
+                '<section style="width: 95%;" class="section_edit_desc">' +
+                '<div style="width: 100%; border: 1px solid black;" class="modal" name="preview" id="modal_preview">' +
+                '<span class="close" id="close-modal-box">&times;</span>' +
+                '<div style="min-width: 100%; min-height:100%; border: 1px solid black;" name="preview" id="textarea_preview">' +
+                '</div><br><br>' +
                 '</section>'
                 );
+        
+        document.getElementById("close-modal-box").onclick = function() {
+            document.getElementById("modal_preview").style.display = "none";
+        }
+        
+        
     });
+}
+
+function showPreview() {
+    document.getElementById('textarea_preview').innerHTML = marked(document.getElementById('textarea_desc').value);
+    document.getElementById("modal_preview").style.display = "inline-block";
 }
 
 /*
@@ -85,7 +239,7 @@ function viewDescription() {
 
     for (var i = 0; i < cached_names.length; i++) {
         if (cached_names[i] === $paramName) {
-            document.getElementById("textarea_desc").value = cached_Descriptions[i];
+            document.getElementById('textarea_desc').innerHTML = cached_Descriptions[i];
             document.getElementById("paramchange").value = cached_names[i];
             saved_id = cached_ids[i];
             saved_name = cached_names[i];
