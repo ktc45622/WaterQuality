@@ -266,6 +266,10 @@ function fetchData(json) {
     for (var i = 0; i < values.length; i++) {
         var arr = [];
         for (var j = 0; j < timeStamps.length; j++) {
+            // turbidity has 1000 values (== 1000 timestamps)
+            // GPP has 4 values ( === 4 timestamps)
+            // timestamps[4]
+            // timestamps[0] === 1:00; values[i][0] = 0.6....
             arr.push([timeStamps[j], values[i][j]]);
             //console.log("Pushed: " + values[i][j]);
         }
@@ -333,6 +337,9 @@ function fetchData(json) {
                 chart.series[0].remove(true);
 
             for (var i = 0; i < data.data.length; i++) {
+                if (names[data.data[i].id] === "Gross Primary Productivity") {
+                    console.log(timeStampStr[i]);
+                }
                 chart.addSeries({
                     yAxis: i,
                     name: names[data.data[i].id],

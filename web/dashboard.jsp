@@ -48,7 +48,7 @@
         <body id="loader" onload="blockButtons(); startingData();">
         <img id="backPhoto" src="images/Creek.jpeg">
         <header class="title_bar_container">
-            <div id="HeaderText">Water Quality</div>
+            <div id="HeaderText">Bloomsburg University Fishing Creek Water Quality Monitoring Station</div>
             <a href="loginScreen.jsp">
             <button id="Login_Button">Login</button>
             </a>
@@ -215,6 +215,20 @@
                     while the other description is hidden.-->
                 <div class="description" id="Graph_description"></div>
                 <div class="description" id="Table_description"></div>
+            </section>
+            
+            <section class = "content_container2" id = "dashboard_data_description">
+                <header class = "content_title_bar" id = "login_header">
+                    <div class = "title">
+                        Notes
+                    </div>
+                </header>
+
+                <p id="tmp">
+                    Temporary filler text.
+                </p>
+                <div class="notes" id="notes_section"></div>
+                
             </section>
             
         </section>
