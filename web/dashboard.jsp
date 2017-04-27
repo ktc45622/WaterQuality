@@ -49,6 +49,17 @@
     The server is still in early development! What you are seeing is liable to change and is not a final representation of the product!
     <br>
     Note: The sensor may or may not be down right now, as of 4/26/2017
+    
+    <br>
+    <button id="admin_expand_button" value="See Admin Notes..." class="overlay-content">
+        Notes
+    </button>
+    <div id="admin_notes" style="display: none">
+        <div class="notes_info">
+            <center><b>Info</b></center>
+            This is a dummy section...
+        </div>
+    </div>
   </p>
 </div>
     <!--<body id="loader" onload="checkUser(); startingData();">-->
@@ -157,10 +168,10 @@
                         <input class="dateselector" id="graph_end_time" type="text">
                         <!--<input class="dateselector" id="graph_end_date" name="graph_end_date" type="datetime-local" min="" max="">-->
                     </div>
-                    <div id="graph_parameters">
+                    <div id="graph_parameters" style="margin: 0 auto;">
                         <div id="graph_sensor_parameters">
                             <center>Sensor Data</center><BR>
-                            <table id="sensor_formatted_table" style="border: solid black 1px">
+                            <table id="sensor_formatted_table" style="width: 100%; margin: 0 auto;" class="parameter_table">
                                 <thead>
                                     <tr>
                                         <td>
@@ -182,7 +193,7 @@
                         <br>
                         <div id="graph_manual_parameters">
                             <center>Manual Data</center> <br>
-                            <table id="manual_formatted_table" style="border: solid black 1px">
+                            <table id="manual_formatted_table" style="width: 100%; margin: 0 auto;" class="parameter_table">
                                 <thead>
                                     <tr>
                                         <td>

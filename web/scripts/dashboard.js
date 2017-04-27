@@ -560,6 +560,12 @@ var load = true;
  * on load/refresh of a page by using setting them to Dewpoint
  */
 function startingData() {
+    $("#admin_expand_button").click(() => {
+        // Expand to about half page...
+        $("#myNav").css("z-index", "1");
+        $("#myNav").height(($(window).height() / 2) + "px");
+        $("#admin_notes").show();
+    })
     post("AdminServlet", {action: "getParameters", data: 3}, function (resp) {
 
 //        console.log(JSON.parse(resp));
