@@ -182,6 +182,21 @@
                         <br>
                         <div id="graph_manual_parameters">
                             <center>Manual Data</center> <br>
+                            <table id="manual_formatted_table" style="border: solid black 1px">
+                                <thead>
+                                    <tr>
+                                        <td>
+                                            Parameter
+                                        </td>
+                                        <td>
+                                            Unit
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Gets filled -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <br>
@@ -231,15 +246,17 @@
                         Description
                     </div>
                 </header>
-
+                
                 <p id="tmp"> 
                 <!--The <code>Graph_description</code> contains the descriptions
                     of selected data for the graph tab while the <code>Table_description</code>
                     contains the descriptions of selected data from the table tab.
                     Whichever tab is open is the description that is displayed
                     while the other description is hidden.-->
-                <div class="description" id="Graph_description"></div>
-                <div class="description" id="Table_description"></div>
+                <div style="margin: 8px; border: solid black 2px;">
+                    <div class="description" id="Graph_description"></div>
+                    <div class="description" id="Table_description"></div>
+                </div>
             </section>
             
         </section>
