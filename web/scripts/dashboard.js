@@ -245,7 +245,7 @@ function fetch() {
         return;
     }
     var request = new DataRequest(startTime, endTime, selecteddata);
-    post("ControlServlet", {action: "fetchQuery", query: JSON.stringify(request)}, fetchData);
+    post("DataServlet", {action: "fetchQuery", query: JSON.stringify(request)}, fetchData);
 }
 
 function fetchData(json) {
@@ -700,7 +700,7 @@ $(function () {
 });
 
 function getMostRecent(){
-    post("ControlServlet", {action: "getMostRecent"}, function (resp) {
+    post("DataServlet", {action: "getMostRecent"}, function (resp) {
         console.log(resp);
         var data=JSON.parse(resp)["data"];
         /*
