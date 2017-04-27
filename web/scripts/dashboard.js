@@ -20,6 +20,9 @@ var interval=setInterval(getMostRecent(),1000*60*5);
  */
 function fullCheck(id) {
     var item = document.getElementById(id);
+    if (item.nodeName === "SELECT") {
+        return;
+    }
     var it;
     if (item.checked == true) {
         if (checkedBoxes < 2) {
@@ -283,15 +286,16 @@ function fetchData(json) {
             chart.series[0].remove(true);
 
         for (var i = 0; i < data.data.length; i++) {
+            var currentSelectedUnit = document.getElementById("graph_unit_selection_" + data.data[i].id).selectedIndex;
             chart.addSeries({
                 yAxis: i,
                 name: names[data.data[i].id],
-                data: timeStampStr[i]
+                data: getDataValuesFor(data.data[i]["dataValues"], units[data.data[i].id][currentSelectedUnit].conversion)
             }, false);
             if (names[data.data[i].id] === "pH")
                 chart.yAxis[i].setTitle({text: names[data.data[i].id]});
             else
-                chart.yAxis[i].setTitle({text: names[data.data[i].id] + " (" + units[names[data.data[i].id]] + ")"});
+                chart.yAxis[i].setTitle({text: names[data.data[i].id] + " (" + units[data.data[i].id][currentSelectedUnit].unit + ")"});
         }
         if (data.data.length == 1)
             chart.yAxis[i].setTitle({text: ""});
@@ -333,15 +337,16 @@ function fetchData(json) {
                 chart.series[0].remove(true);
 
             for (var i = 0; i < data.data.length; i++) {
+                var currentSelectedUnit = document.getElementById("graph_unit_selection_" + data.data[i].id).selectedIndex;
                 chart.addSeries({
                     yAxis: i,
                     name: names[data.data[i].id],
-                    data: timeStampStr[i]
+                    data: getDataValuesFor(data.data[i]["dataValues"], units[data.data[i].id][currentSelectedUnit].conversion)
                 }, false);
                 if (names[data.data[i].id] === "pH")
                     chart.yAxis[i].setTitle({text: names[data.data[i].id]});
                 else
-                    chart.yAxis[i].setTitle({text: names[data.data[i].id] + " (" + units[names[data.data[i].id]] + ")"});
+                    chart.yAxis[i].setTitle({text: names[data.data[i].id] + " (" + units[data.data[i].id][currentSelectedUnit].unit + ")"});
             }
             if (data.data.length == 1)
                 chart.yAxis[i].setTitle({text: ""});
@@ -533,22 +538,50 @@ function startingData() {
             // Cache parameter descriptors
             descriptions[data[i].id] = data[i].description;
             names[data[i].id] = data[i].name;
-            units[data[i].name] = data[i].unit;
-          
+            units[data[i].id] = [ { unit: data[i].unit, conversion: x => x } ];
+            
+            if (data[i].name.includes("Temperature") || data[i].name === "Dewpoint") {
+                units[data[i].id].push({ unit: "F", conversion: x => x * 1.8 + 32 });
+            } else if (data[i].name === "Depth") {
+                units[data[i].id].push({ unit: "ft", conversion: x => x * 3.28084 });
+            }
+            
+            var tableRef = document.getElementById('sensor_formatted_table').getElementsByTagName('tbody')[0];
+            
+            // Insert a row in the table at the last row
+            var newRow   = tableRef.insertRow(tableRef.rows.length);
+
+            // Insert a cell in the row at index 0
+            var newCell  = newRow.insertCell(0);
+            newCell.innerHTML = "<input type='checkbox' name='graph_" + data[i].id + "' onclick='handleClick(this);' class='sensor_data' id='graph_" + data[i].id + "' value='data'>" + data[i].name;
+            
+                    
+            var unit_selection = "<select onchange='handleClick(this);' id='graph_unit_selection_" + data[i].id + "'>";
+            for (k = 0; k < units[data[i].id].length; k++) {
+                var unitObj = units[data[i].id][k];
+                unit_selection += "<option value='" + unitObj.unit + "'" + (k === 0 ? "selected='selected'" : "") + ">" + unitObj.unit + "</option>";
+            }
+            newCell = newRow.insertCell(1).innerHTML = unit_selection;
+            newCell = newRow.insertCell(2);
+            newCell.innerHTML = "<span class='recent_sensor_"+data[i].id+"'></span>";
+
             var param = "<input type='checkbox' name='graph_" + data[i].id + "' onclick='handleClick(this);' class='sensor_data' id='graph_" + data[i].id + "' value='data'>" + data[i].name 
                     + "<span class='recent_sensor_"+data[i].id+"'></span><br>\n";
             var tableparam = "<input type='checkbox' name='table_" + data[i].id + "' onclick='handleClick(this);' class='sensor_data' id='table_" + data[i].id + "' value='data'>" + data[i].name 
                     + "<span class='recent_sensor_"+data[i].id+"'></span><br>\n";
             
-            document.getElementById("graph_sensor_parameters").innerHTML += param;
+//            document.getElementById("graph_sensor_parameters").innerHTML += param;
             document.getElementById("table_sensor_parameters").innerHTML += tableparam;
         }
         data = JSON.parse(resp)["data"][1]["descriptors"];
         for (i = 0; i < data.length; i++) {
             descriptions[data[i].id] = data[i].description;
             names[data[i].id] = data[i].name;
-            units[data[i].name] = data[i].unit;
+            units[data[i].id] = [ { unit: data[i].unit, conversion: x => x } ];
+            
+            
           
+            
             var param = "<input type='checkbox' name='graph_" + data[i].id + "' onclick='handleClick(this);' class='manual_data' id='graph_" + data[i].id + "' value='data'>" + data[i].name 
                     + "<span class='graph_recent_manual_"+data[i].id+"'></span><br>\n";
             var tableparam = "<input type='checkbox' name='table_" + data[i].id + "' onclick='handleClick(this);' class='manual_data' id='table_" + data[i].id + "' value='data'>" + data[i].name 
@@ -636,7 +669,7 @@ function getMostRecent(){
         //var html="";
         for(var i=0; i<data.length; i++){
             var sensorrecent=document.getElementsByClassName("recent_sensor_"+data[i].id);
-            var html=" ("+formatDate(new Date(data[i].time))+" - "+data[i].value+")";
+            var html= formatDate(new Date(data[i].time));
             if(html!=null){
                 for(var j=0; j<sensorrecent.length; j++){
                     sensorrecent[j].innerHTML=html;
