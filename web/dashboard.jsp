@@ -44,6 +44,13 @@
         </noscript>
         <title>Dashboard</title>
     </head>
+    <div id="myNav" class="overlay">
+  <p class="overlay-content">
+    The server is still in early development! What you are seeing is liable to change and is not a final representation of the product!
+    <br>
+    Note: The sensor may or may not be down right now, as of 4/26/2017
+  </p>
+</div>
     <!--<body id="loader" onload="checkUser(); startingData();">-->
         <body id="loader" onload="blockButtons(); startingData();">
         <img id="backPhoto" src="images/Creek.jpeg">
@@ -152,11 +159,29 @@
                     </div>
                     <div id="graph_parameters">
                         <div id="graph_sensor_parameters">
-                            Sensor Data <BR>
+                            <center>Sensor Data</center><BR>
+                            <table id="sensor_formatted_table" style="border: solid black 1px">
+                                <thead>
+                                    <tr>
+                                        <td>
+                                            Parameter
+                                        </td>
+                                        <td>
+                                            Unit
+                                        </td>
+                                        <td>
+                                            Last Updated
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Gets filled -->
+                                </tbody>
+                            </table>
                         </div>
                         <br>
                         <div id="graph_manual_parameters">
-                            Manual Data <br>
+                            <center>Manual Data</center> <br>
                         </div>
                     </div>
                     <br>
@@ -181,13 +206,13 @@
                     </div>
                     <div id="table_parameters">
                         <div id="table_sensor_parameters">
-                            Sensor Data<br>
+                            <center>Sensor Data</center><br>
                             <input type="checkbox" onclick="toggle('table_sensor_parameters',this); fetch();"class="select_all_box" value="select_all_data">
                             Select All Sensor Data<br>
                         </div>
                         <br>
                         <div id="table_manual_parameters">
-                            Manual Data<br>
+                            <center>Manual Data</center><br>
                             <input type="checkbox" onclick="toggle('table_manual_parameters',this); fetch();"class="select_all_box" value="select_all_data">
                             Select All Manual Data<br>
                         </div> 
@@ -347,7 +372,8 @@
                         opposite: true
                     }],
                 tooltip: {
-                    valueSuffix: ''
+                    valueSuffix: '',
+                    valueDecimals: 2
                 },
                 legend: {
                     layout: 'vertical',
@@ -361,4 +387,13 @@
         </script>
         <script>            
         </script>
+        
+        
+
+
+
+
+
+
+
     </body>
