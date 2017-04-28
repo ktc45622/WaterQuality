@@ -17,12 +17,15 @@
         
         <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.js"></script>
         
+       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <script src="https://code.highcharts.com/highcharts.js"></script>
         <script src="http://code.highcharts.com/modules/exporting.js"></script>
         <script src="http://code.highcharts.com/modules/offline-exporting.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/shortcuts/sticky.min.js"></script>
         
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
         <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
@@ -157,10 +160,10 @@
                         <input class="dateselector" id="graph_end_time" type="text">
                         <!--<input class="dateselector" id="graph_end_date" name="graph_end_date" type="datetime-local" min="" max="">-->
                     </div>
-                    <div id="graph_parameters">
+                    <div id="graph_parameters" style="margin: 0 auto;">
                         <div id="graph_sensor_parameters">
                             <center>Sensor Data</center><BR>
-                            <table id="sensor_formatted_table" style="border: solid black 1px">
+                            <table id="sensor_formatted_table" style="width: 100%; margin: 0 auto;" class="parameter_table">
                                 <thead>
                                     <tr>
                                         <td>
@@ -182,6 +185,21 @@
                         <br>
                         <div id="graph_manual_parameters">
                             <center>Manual Data</center> <br>
+                            <table id="manual_formatted_table" style="width: 100%; margin: 0 auto;" class="parameter_table">
+                                <thead>
+                                    <tr>
+                                        <td>
+                                            Parameter
+                                        </td>
+                                        <td>
+                                            Unit
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Gets filled -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <br>
@@ -209,12 +227,46 @@
                             <center>Sensor Data</center><br>
                             <input type="checkbox" onclick="toggle('table_sensor_parameters',this); fetch();"class="select_all_box" value="select_all_data">
                             Select All Sensor Data<br>
+                            
+                            <table id="table_sensor_formatted_table" style="width: 100%; margin: 0 auto;" class="parameter_table">
+                                <thead>
+                                    <tr>
+                                        <td>
+                                            Parameter
+                                        </td>
+                                        <td>
+                                            Unit
+                                        </td>
+                                        <td>
+                                            Last Updated
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Gets filled -->
+                                </tbody>
+                            </table>
                         </div>
                         <br>
                         <div id="table_manual_parameters">
                             <center>Manual Data</center><br>
                             <input type="checkbox" onclick="toggle('table_manual_parameters',this); fetch();"class="select_all_box" value="select_all_data">
                             Select All Manual Data<br>
+                            <table id="table_manual_formatted_table" style="width: 100%; margin: 0 auto;" class="parameter_table">
+                                <thead>
+                                    <tr>
+                                        <td>
+                                            Parameter
+                                        </td>
+                                        <td>
+                                            Unit
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Gets filled -->
+                                </tbody>
+                            </table>
                         </div> 
                     </div>
                     <br>
@@ -231,15 +283,17 @@
                         Description
                     </div>
                 </header>
-
+                
                 <p id="tmp"> 
                 <!--The <code>Graph_description</code> contains the descriptions
                     of selected data for the graph tab while the <code>Table_description</code>
                     contains the descriptions of selected data from the table tab.
                     Whichever tab is open is the description that is displayed
                     while the other description is hidden.-->
-                <div class="description" id="Graph_description"></div>
-                <div class="description" id="Table_description"></div>
+                <div style="margin: 8px; border: solid black 2px;">
+                    <div class="description" id="Graph_description"></div>
+                    <div class="description" id="Table_description"></div>
+                </div>
             </section>
             
         </section>

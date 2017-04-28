@@ -14,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -42,14 +43,6 @@ import static utilities.TimestampUtils.toUTCInstant;
 @WebServlet(name = "ControlServlet", urlPatterns = {"/ControlServlet"})
 public class ControlServlet extends HttpServlet {
 
-    private void defaultHandler(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        common.User admin = (common.User) request.getSession(true).getAttribute("user");
-        request.setAttribute("loggedIn", admin == null ? false : admin.getUserRole() == UserRole.SystemAdmin ? true : false);
-        request.getServletContext()
-                .getRequestDispatcher("/dashboard.jsp")
-                .forward(request, response);
-    }
-
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -62,77 +55,12 @@ public class ControlServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession(true);//Create a new session if one does not exists
-        final Object lock = session.getId().intern();//To synchronize the session variable
-        database.UserManager um = database.Database.getDatabaseManagement().getUserManager();
-        common.User user = (common.User) session.getAttribute("user");
-        String action = request.getParameter("action");
         
-        // Nothing was selected, go back to dashboard.
-        if (action == null) {
-            defaultHandler(request, response);
-            return;
-        }
-        
-
-        if (action.trim().equalsIgnoreCase("fetchQuery")) {
-            String data = request.getParameter("query");
-            JSONObject onEmpty = new JSONObject();
-            onEmpty.put("data", new JSONArray());
-            JSONProtocol proto = new JSONProtocol();
-            try {
-                proto.process((JSONObject) new JSONParser().parse(data))
-                        .defaultIfEmpty(onEmpty)
-                        .blockingSubscribe(obj -> response.getWriter().append(obj.toJSONString()));
-            } catch (ParseException ex) {
-                Logger.getLogger(ControlServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        /*
-         * getMostRecent
-         * {data:[{
-         *  id:
-         *  time:
-         *  value:
-         *  }]
-         *  }
-         */
-        else if (action.trim().equalsIgnoreCase("getMostRecent")) {
-            DataReceiver.getData(DataReceiver.LATEST_DATE_URL)
-                    .map((JSONObject obj) -> (JSONArray) obj.get("data"))
-                    .flatMap(JSONUtils::flattenJSONArray)
-                    .doOnNext(System.out::println)
-                    .map((JSONObject obj) -> Triplet.with((Long) obj.get("id"), (Double) obj.get("value"), toUTCInstant((String) obj.get("timestamp")).toEpochMilli()))
-                    .flatMap((Triplet<Long, Double, Long> triplet) -> Observable
-                            .just(triplet.getValue0())
-                            .map(DatabaseManager::remoteSourceToDatabaseId)
-                            .filter(Optional::isPresent)
-                            .map(Optional::get)
-                            .map(triplet::setAt0)
-                    )
-                    .doOnNext(System.out::println)
-                    .map((Triplet<Long, Double, Long> triplet) -> {
-                        JSONObject obj = new JSONObject();
-                        obj.put("id", triplet.getValue0());
-                        obj.put("time", triplet.getValue2());
-                        obj.put("value", triplet.getValue1());
-                        return obj;
-                    })
-                    .doOnNext(System.out::println)
-                    .buffer(Integer.MAX_VALUE)
-                    .map(JSONUtils::toJSONArray)
-                    .map((JSONArray arr) -> {
-                        JSONObject resp = new JSONObject();
-                        resp.put("data", arr);
-                        return resp;
-                    })
-                    .doOnNext(System.out::println)
-                    .blockingSubscribe(obj -> response.getWriter().append(obj.toJSONString()));
-                    
-                    
-                    
-                    
-        }
+        common.User admin = (common.User) request.getSession(true).getAttribute("user");
+        request.setAttribute("loggedIn", admin == null ? false : admin.getUserRole() == UserRole.SystemAdmin ? true : false);
+        request.getServletContext()
+                .getRequestDispatcher("/dashboard.jsp")
+                .forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -147,7 +75,7 @@ public class ControlServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        defaultHandler(request, response);
+        processRequest(request, response);
     }
 
     /**
