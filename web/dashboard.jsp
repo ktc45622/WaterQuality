@@ -17,12 +17,15 @@
         
         <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.js"></script>
         
+       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <script src="https://code.highcharts.com/highcharts.js"></script>
         <script src="http://code.highcharts.com/modules/exporting.js"></script>
         <script src="http://code.highcharts.com/modules/offline-exporting.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/shortcuts/sticky.min.js"></script>
         
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
         <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
@@ -49,17 +52,6 @@
     The server is still in early development! What you are seeing is liable to change and is not a final representation of the product!
     <br>
     Note: The sensor may or may not be down right now, as of 4/26/2017
-    
-    <br>
-    <button id="admin_expand_button" value="See Admin Notes..." class="overlay-content">
-        Notes
-    </button>
-    <div id="admin_notes" style="display: none">
-        <div class="notes_info">
-            <center><b>Info</b></center>
-            This is a dummy section...
-        </div>
-    </div>
   </p>
 </div>
     <!--<body id="loader" onload="checkUser(); startingData();">-->
@@ -235,12 +227,46 @@
                             <center>Sensor Data</center><br>
                             <input type="checkbox" onclick="toggle('table_sensor_parameters',this); fetch();"class="select_all_box" value="select_all_data">
                             Select All Sensor Data<br>
+                            
+                            <table id="table_sensor_formatted_table" style="width: 100%; margin: 0 auto;" class="parameter_table">
+                                <thead>
+                                    <tr>
+                                        <td>
+                                            Parameter
+                                        </td>
+                                        <td>
+                                            Unit
+                                        </td>
+                                        <td>
+                                            Last Updated
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Gets filled -->
+                                </tbody>
+                            </table>
                         </div>
                         <br>
                         <div id="table_manual_parameters">
                             <center>Manual Data</center><br>
                             <input type="checkbox" onclick="toggle('table_manual_parameters',this); fetch();"class="select_all_box" value="select_all_data">
                             Select All Manual Data<br>
+                            <table id="table_manual_formatted_table" style="width: 100%; margin: 0 auto;" class="parameter_table">
+                                <thead>
+                                    <tr>
+                                        <td>
+                                            Parameter
+                                        </td>
+                                        <td>
+                                            Unit
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Gets filled -->
+                                </tbody>
+                            </table>
                         </div> 
                     </div>
                     <br>

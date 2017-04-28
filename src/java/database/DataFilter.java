@@ -40,30 +40,42 @@ import java.time.Instant;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.log4j.BasicConfigurator;
+import org.javatuples.Pair;
 
 /**
  *
  * @author Louis Jenkins
  */
 public class DataFilter {
-        
+    
     public AtomicReference<Set<Long>> filter = new AtomicReference<>(new TreeSet<>());
     public static Map<Long, DataFilter> INSTANCES = new ConcurrentHashMap<>();
+    
+    static {
+        init();
+    }
+    
     private final long id;
-    private DataFilter(long id) {
-        this.id = id;
-        
-        // Reconstruct if already exist
+    
+    /**
+     * Initialize all filters (for each identifier in the database). If a filter already
+     * exists for that data parameter, it will restore it.
+     */
+    public static void init() {
         Database db = Database.from(Web_MYSQL_Helper.getConnection());
-        filter.set(
-                db.select("select time from data_filter where parameter_id = " + id)
+        
+        db.select("select id from data_parameters")
+                .getAs(Long.class)
+                .flatMap(id -> db.select("select time from data_filter where parameter_id = " + id)
                         .getAs(Long.class)
                         .toList()
                         .map(list -> {
@@ -71,14 +83,29 @@ public class DataFilter {
                             set.addAll(list);
                             return set;
                         })
-                        .toBlocking()
-                        .singleOrDefault(new TreeSet<>())
-        );
+                        .timeout(30, TimeUnit.SECONDS)
+                        .onErrorReturn((Throwable t) -> {
+                            DatabaseManager.LogError("Error occurred while restoring data filter for id: " + id + " of type: " + t.getClass().getName() + "\nMessage: " + t.getMessage());
+                            return new TreeSet<>();
+                        })
+                        .map((Set<Long> timestamps) -> Pair.with(id, timestamps))
+                )
+                .toMap((Pair<Long, Set<Long>> pair) -> pair.getValue0(), (Pair<Long, Set<Long>> pair) -> new DataFilter(pair.getValue0(), pair.getValue1()))
+                .toBlocking()
+                .subscribe(INSTANCES::putAll);
+                
+    }
+    
+    private DataFilter(long id, Set<Long> set) {
+        this.id = id;
+        if (set != null) {
+            filter.set(set);
+        }
     }
     
     public static DataFilter getFilter(long id) {
         if (!INSTANCES.containsKey(id)) {
-            DataFilter dataFilter = new DataFilter(id); 
+            DataFilter dataFilter = new DataFilter(id, null); 
             INSTANCES.putIfAbsent(id, dataFilter);
             System.out.println("Created filter for id: " + id);
             return dataFilter;

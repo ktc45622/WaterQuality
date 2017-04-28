@@ -130,14 +130,23 @@ function openTab(evt, tabName) {
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
-    $('#' + tabName).show("slow", () => {
-        $('#' + tabName).css("display", "block").promise().done(() => {
-            if (tabName === "Graph") {
-                chart.redraw();
-                chart.reflow();
+    $('#' + tabName).finish().show({
+        duration: "slow",
+        complete: () =>
+            $('#' + tabName).css("display", "block").promise().done(() => {
+                if (tabName === "Graph") {
+                    chart.redraw();
+                    chart.reflow();
+                }
+            }),
+        step: (n, tween) => {
+                if ((n % 25) === 0) {
+                    chart.redraw();
+                    chart.reflow();
+                }
             }
-        })
-    });
+            
+        });
 //    document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
     
@@ -505,9 +514,11 @@ function fillTable(dataResp) {
             tempDate = tempDate - 14400000;
         else
             tempDate = tempDate - 18000000;
-        html.push("<td><span>" + formatHiddenDate(new Date(tempDate))
+        html.push("<td><span style='display: none'>" + formatHiddenDate(new Date(tempDate))
                 + "</span>" + formatDate(new Date(tempDate)) + "</td>");
         for (var j = 0; j < dataResp.data.length; j++) {
+            var currentSelectedUnit = document.getElementById("table_unit_selection_" + dataResp.data[j].id).selectedIndex;
+            var conversion = units[dataResp.data[j].id][currentSelectedUnit].conversion;
             var d = dataResp.data[j]["dataValues"];
             if (i >= d.length) {
                 html.push("<td> N/A </td>");
@@ -518,7 +529,7 @@ function fillTable(dataResp) {
                 html.push("<td> N/A </td>");
                 d.splice(i, 0, null);
             } else {
-                html.push("<td>" + ts_val["value"] + "</td>");
+                html.push("<td>" + conversion(ts_val["value"]) + "</td>");
             }
         }
         html.push("</tr>");
@@ -560,6 +571,15 @@ var load = true;
  * on load/refresh of a page by using setting them to Dewpoint
  */
 function startingData() {
+    $("#Graph").resize(() => {
+        chart.redraw();
+        chart.reflow();
+        console.log("Resized graph...");
+    })
+    // Stickies the admin notes to top of screen...
+    new Waypoint.Sticky({
+        element: $("#myNav")
+    });
     $("#admin_expand_button").click(() => {
         // Expand to about half page...
         $("#myNav").css("z-index", "1");
@@ -584,23 +604,30 @@ function startingData() {
             }
             
             var tableRef = document.getElementById('sensor_formatted_table').getElementsByTagName('tbody')[0];
-            
+            var table_tableRef = document.getElementById('table_sensor_formatted_table').getElementsByTagName('tbody')[0];
             // Insert a row in the table at the last row
             var newRow   = tableRef.insertRow(tableRef.rows.length);
+            var table_newRow = table_tableRef.insertRow(table_tableRef.rows.length);
 
             // Insert a cell in the row at index 0
             var newCell  = newRow.insertCell(0);
+            var table_newCell = table_newRow.insertCell(0);
             newCell.innerHTML = "<input type='checkbox' name='graph_" + data[i].id + "' onclick='handleClick(this);' class='sensor_data' id='graph_" + data[i].id + "' value='data'>" + data[i].name;
-            
+            table_newCell.innerHTML = "<input type='checkbox' name='table_" + data[i].id + "' onclick='handleClick(this);' class='sensor_data' id='table_" + data[i].id + "' value='data'>" + data[i].name;
                     
             var unit_selection = "<select onchange='handleClick(this);' id='graph_unit_selection_" + data[i].id + "'>";
+            var table_unit_selection = "<select onchange='handleClick(this);' id='table_unit_selection_" + data[i].id + "'>";
             for (k = 0; k < units[data[i].id].length; k++) {
                 var unitObj = units[data[i].id][k];
                 unit_selection += "<option value='" + unitObj.unit + "'" + (k === 0 ? "selected='selected'" : "") + ">" + unitObj.unit + "</option>";
+                table_unit_selection += "<option value='" + unitObj.unit + "'" + (k === 0 ? "selected='selected'" : "") + ">" + unitObj.unit + "</option>";
             }
             newCell = newRow.insertCell(1).innerHTML = unit_selection;
+            table_newCell = table_newRow.insertCell(1).innerHTML = table_unit_selection;
             newCell = newRow.insertCell(2);
+            table_newCell = table_newRow.insertCell(2);
             newCell.innerHTML = "<span class='recent_sensor_"+data[i].id+"'></span>";
+            table_newCell.innerHTML = "<span class='recent_sensor_"+data[i].id+"'></span>";
 
             var param = "<input type='checkbox' name='graph_" + data[i].id + "' onclick='handleClick(this);' class='sensor_data' id='graph_" + data[i].id + "' value='data'>" + data[i].name 
                     + "<span class='recent_sensor_"+data[i].id+"'></span><br>\n";
@@ -608,7 +635,7 @@ function startingData() {
                     + "<span class='recent_sensor_"+data[i].id+"'></span><br>\n";
             
 //            document.getElementById("graph_sensor_parameters").innerHTML += param;
-            document.getElementById("table_sensor_parameters").innerHTML += tableparam;
+//            document.getElementById("table_sensor_parameters").innerHTML += tableparam;
         }
         data = JSON.parse(resp)["data"][1]["descriptors"];
         for (i = 0; i < data.length; i++) {
@@ -617,21 +644,27 @@ function startingData() {
             units[data[i].id] = [ { unit: data[i].unit, conversion: x => x } ];
             
             var tableRef = document.getElementById('manual_formatted_table').getElementsByTagName('tbody')[0];
-            
+            var table_tableRef = document.getElementById('table_manual_formatted_table').getElementsByTagName('tbody')[0];
             // Insert a row in the table at the last row
             var newRow   = tableRef.insertRow(tableRef.rows.length);
+            var table_newRow = table_tableRef.insertRow(table_tableRef.rows.length);
+            
 
             // Insert a cell in the row at index 0
             var newCell  = newRow.insertCell(0);
+            var table_newCell  = table_newRow.insertCell(0);
             newCell.innerHTML = "<input type='checkbox' name='graph_" + data[i].id + "' onclick='handleClick(this);' class='manual_data' id='graph_" + data[i].id + "' value='data'>" + data[i].name;
-            
+            table_newCell.innerHTML = "<input type='checkbox' name='table_" + data[i].id + "' onclick='handleClick(this);' class='manual_data' id='table_" + data[i].id + "' value='data'>" + data[i].name;
                     
             var unit_selection = "<select onchange='handleClick(this);' id='graph_unit_selection_" + data[i].id + "'>";
+            var table_unit_selection = "<select onchange='handleClick(this);' id='table_unit_selection_" + data[i].id + "'>";
             for (k = 0; k < units[data[i].id].length; k++) {
                 var unitObj = units[data[i].id][k];
                 unit_selection += "<option value='" + unitObj.unit + "'" + (k === 0 ? "selected='selected'" : "") + ">" + unitObj.unit + "</option>";
+                table_unit_selection += "<option value='" + unitObj.unit + "'" + (k === 0 ? "selected='selected'" : "") + ">" + unitObj.unit + "</option>";
             }
             newCell = newRow.insertCell(1).innerHTML = unit_selection;
+            table_newCell = table_newRow.insertCell(1).innerHTML = table_unit_selection;
           
             
             var param = "<input type='checkbox' name='graph_" + data[i].id + "' onclick='handleClick(this);' class='manual_data' id='graph_" + data[i].id + "' value='data'>" + data[i].name 
@@ -640,7 +673,7 @@ function startingData() {
                     + "<span class='table_recent_manual_"+data[i].id+"'></span><br>\n";
           
 //            document.getElementById("graph_manual_parameters").innerHTML += param;
-            document.getElementById("table_manual_parameters").innerHTML += tableparam;
+//            document.getElementById("table_manual_parameters").innerHTML += tableparam;
         }
         current = "Graph";
         var graphcheckboxes = document.getElementById("Graph_form").querySelectorAll('input[type="checkbox"]');
