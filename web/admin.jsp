@@ -238,16 +238,24 @@ Current bugs:
          * @param {type} tabName the tab that the user is switching to
          */
         function openTab(evt, tabName) {
+            if (tabName === current) {
+                return;
+            }
             var i, tabcontent, tablinks, submitbutton;
             tabcontent = document.getElementsByClassName("tab_content");
             for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
+                $(tabcontent[i]).finish();
+                $(tabcontent[i]).hide("slow");
+//                tabcontent[i].style.display = "none";
             }
             tablinks = document.getElementsByClassName("tabs");
             for (i = 0; i < tablinks.length; i++) {
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
-            document.getElementById(tabName).style.display = "block";
+            $('#' + tabName).show("slow", () => {
+                $('#' + tabName).css("display", "block");
+            });
+//            document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
             //unchecks all of the checkboxes
             toggle(this);
