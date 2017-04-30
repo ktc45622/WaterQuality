@@ -130,7 +130,7 @@
                 <!--The contents of the table tab-->
                 <div id="Table" class="tabcontent">
                     <h4 align="center">Excel and PDF downloads require Adobe Flash</h4>
-                    <table align="center" id="data_table" onclick="">
+                    <table align="center" id="data_table">
                         <thead><tr><th></th></tr></thead>
                     </table>
                 </div>
@@ -160,10 +160,11 @@
                         <input class="dateselector" id="graph_end_time" type="text">
                         <!--<input class="dateselector" id="graph_end_date" name="graph_end_date" type="datetime-local" min="" max="">-->
                     </div>
-                    <div id="graph_parameters" style="margin: 0 auto;">
+                    <center>
+                    <div id="graph_parameters">
                         <div id="graph_sensor_parameters">
                             <center>Sensor Data</center><BR>
-                            <table id="sensor_formatted_table" style="width: 100%; margin: 0 auto;" class="parameter_table">
+                            <table id="sensor_formatted_table" style="width: 100%;" class="parameter_table">
                                 <thead>
                                     <tr>
                                         <td>
@@ -202,6 +203,7 @@
                             </table>
                         </div>
                     </div>
+                    </center>
                     <br>
                 </form>
                 <!--The <code>Table_form</code> is the form for selecting date 
@@ -217,12 +219,14 @@
                         End Date:
                         <input class="dateselector" id="table_end_date" type="text">
                         <input class="dateselector" id="table_end_time" type="text">
-                    </div>
-                    <div id="select_all_div">
+                    </div></br>
+                    
+                    <center>
+                    <div id="table_parameters">
+                        <div id="select_all_div">
                         <input type="checkbox" onclick="toggle('Table_form',this); fetch();" class="select_all_box" value="select_all_data">
                         Select All Data
-                    </div>
-                    <div id="table_parameters">
+                    </div><br>
                         <div id="table_sensor_parameters">
                             <center>Sensor Data</center><br>
                             <input type="checkbox" onclick="toggle('table_sensor_parameters',this); fetch();"class="select_all_box" value="select_all_data">
@@ -269,6 +273,7 @@
                             </table>
                         </div> 
                     </div>
+                    </center>
                     <br>
                 </form>
             </aside><br>
@@ -297,7 +302,7 @@
             </section>
             
         </section>
-                     
+        
         <script>
             // Custom this to set theme, see: http://www.highcharts.com/docs/chart-design-and-style/design-and-style
             Highcharts.theme = {
@@ -439,15 +444,4 @@
                 series: []
             });
         </script>
-        <script>            
-        </script>
-        
-        
-
-
-
-
-
-
-
     </body>
