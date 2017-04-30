@@ -21,7 +21,7 @@ import utilities.PropertyManager;
  */
 public class Web_MYSQL_Helper { 
     private static boolean initialized = false; 
-    private static final boolean REUSE_CONNECTION = true;
+    private static final boolean REUSE_CONNECTION = false;
     private static final ConnectionPoolMySQL connectionPool = ConnectionPoolMySQL.getInstance();
     private static boolean USE_DB_POOLING;
     private static Connection connection = null;
