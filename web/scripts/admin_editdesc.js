@@ -212,7 +212,7 @@ function fillPageEditParams() {
                 '<section style="width: 95%;" class="section_edit_desc">' +
                 '<div style="width: 100%; border: 1px solid black;" class="modal" name="preview" id="modal_preview">' +
                 '<span class="close" id="close-modal-box">&times;</span>' +
-                '<div style="min-width: 100%; min-height:100%; border: 1px solid black;" name="preview" id="textarea_preview">' +
+                '<div class="markdown-preview" data-use-github-style style="min-width: 100%; min-height:100%; border: 1px solid black;" name="preview" id="textarea_preview">' +
                 '</div><br><br>' +
                 '</section>'
                 );
