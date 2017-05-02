@@ -137,7 +137,7 @@ function openTab(evt, tabName) {
                 if (tabName === "Graph") {
                     chart.redraw();
                     chart.reflow();
-                }
+                } 
             }),
         step: (n, tween) => {
                 if ((n % 25) === 0) {
@@ -158,9 +158,14 @@ function openTab(evt, tabName) {
     //Switches between the forms depending on which tab is open
     form = document.getElementsByClassName("data_type_form");
     for (i = 0; i < form.length; i++) {
-        form[i].style.display = "none";
+        $(form[i]).finish();
+        $(form[i]).hide("slow");
+        //form[i].style.display = "none";
     }
-    document.getElementById(current + "_form").style.display = "block";
+    $('#' + tabName + '_form').finish().show("slow",() => {
+                $('#' + tabName+'_form').css("display", "block");
+            });
+    //document.getElementById(current + "_form").style.display = "block";
 
     descriptions = document.getElementsByClassName("description");
     for (i = 0; i < descriptions.length; i++) {
