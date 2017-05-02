@@ -312,7 +312,6 @@ img {
 
 
 .section_edit_desc,.section_edit_notes{
-    resize: both;
     overflow: auto;
     float: left;
     width: 40%;
