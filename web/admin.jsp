@@ -31,6 +31,7 @@ Current bugs:
         <script src="scripts/admin_register.js"></script>
         <script src="scripts/admin_removeuser.js"></script>
         <script src="scripts/admin_editdesc.js"></script>
+        <script src="scripts/admin_notes.js"></script>
         <script src="scripts/admin_deletion.js"></script>
         <script src="scripts/admin_errors.js"></script>
         <script src="scripts/admin_bayesian.js"></script>
@@ -65,12 +66,8 @@ Current bugs:
         <img id="back_photo" src="images/Creek.jpeg">
         <header class="banner"> 
             <div id="banner__text">Water Quality</div>
-            <a href="/WaterQuality/">
-                <button class="banner_buttons" id="button_logout" onclick="requestLogout()">Logout</button>
-            </a>
-            <a href="/WaterQuality/">
-                <button class="banner_buttons" id="button_to_dashboard">Dashboard</button>
-            </a>
+                <button class="banner_buttons" id="button_logout" onclick="requestLogout(); location.href='/WaterQuality/'">Logout</button>
+                <button class="banner_buttons" id="button_to_dashboard" onclick="location.href='/WaterQuality/'">Dashboard</button>
         </header>
         <section class = "content_box">
             <header class = "content_box__banner">
@@ -93,6 +90,8 @@ Current bugs:
                            id="RemoveTab">Manage Users</a></li>
                     <li><a href="javascript:void(0)" class="tabs" onclick="openTab(event, 'Edit_Params'); hide();"
                            id="EditTab">Edit Parameters</a></li>
+                    <li><a href="javascript:void(0)" class="tabs" onclick="openTab(event, 'Notes'); hide();"
+                        id="NotesTab">Edit Notes</a></li>
                     <li><a href="javascript:void(0)" class="tabs" onclick="openTab(event, 'Errors'); hide();"
                            id="ErrorsTab">Errors</a></li>
                     <li><a href="javascript:void(0)" class="tabs" onclick="openTab(event, 'Bayesian'); hide();"
@@ -133,6 +132,11 @@ Current bugs:
             <admincontent id="Edit_Params" class="tab_content">
                 <!--Edit Params Tab defined in admin_editdesc.js-->
                 <script>fillPageEditParams();</script>
+            </admincontent>
+            
+            <admincontent id="Notes" class="tab_content">
+                <!--Edit Params Tab defined in admin_editdesc.js-->
+                <script>fillPageNotes();</script>
             </admincontent>
 
             <admincontent id="Errors" class="tab_content">

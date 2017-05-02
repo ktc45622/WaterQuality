@@ -162,7 +162,9 @@ function openTab(evt, tabName) {
         $(form[i]).hide("slow");
         //form[i].style.display = "none";
     }
-    $('#' + tabName + '_form').finish().show("slow");
+    $('#' + tabName + '_form').finish().show("slow",() => {
+                $('#' + tabName+'_form').css("display", "block");
+            });
     //document.getElementById(current + "_form").style.display = "block";
 
     descriptions = document.getElementsByClassName("description");
