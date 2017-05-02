@@ -48,6 +48,7 @@
         <title>Dashboard</title>
     </head>
     <div id="myNav" class="overlay">
+        <button style='float:right; margin-right: 1em; margin-top: 1em;' onclick="$('#myNav').slideUp('slow');" value="X"></button>
   <p class="overlay-content">
     The server is still in early development! What you are seeing is liable to change and is not a final representation of the product!
     <br>
