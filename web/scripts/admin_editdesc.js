@@ -211,11 +211,11 @@ function fillPageEditParams() {
                 '</section>' +
                 '<section style="width: 95%;" class="section_edit_desc">' +
                  '<div style="height:100%; width: 100%; border: 1px solid black;" class="modal" name="descr_preview" id="descr_modal_preview">' +
-                '<div id="descr_preview" style="position: absolute; top: 1%; left: 0%; resize: none; width: 49.5%;">'+
+                '<div id="descr_preview" style="min-width: 49.5%; position: absolute; top: 1%; left: 0%; resize: none; width: 49.5%;">'+
                 '<textarea style="resize:none; width:100%;" name="notes" id="textarea_descr_preview">' +
                 '</textarea>'+
                 '</div>'+
-                '<div style="background-color:white; position: absolute; left: 50.5%; top: 1%; max-width: 49.5%; border: 1px solid black;"'+
+                '<div style="background-color:white; position: absolute; left: 50.5%; top: 1%; min-width: 49.5%; max-width: 49.5%; border: 1px solid black;"'+
                 'name="notes_preview" class="markdown-preview" data-use-github-style id="descr_textarea_preview">' +
                 '</div><br><br>' +
                 '</section>'
