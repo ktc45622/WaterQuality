@@ -211,15 +211,10 @@ function fillPageEditParams() {
                 '</section>' +
                 '<section style="width: 95%;" class="section_edit_desc">' +
                 '<div style="width: 100%; border: 1px solid black;" class="modal" name="preview" id="modal_preview">' +
-                '<span class="close" id="close-modal-box">&times;</span>' +
                 '<div class="markdown-preview" data-use-github-style style="min-width: 100%; min-height:100%; border: 1px solid black;" name="preview" id="textarea_preview">' +
                 '</div><br><br>' +
                 '</section>'
                 );
-        
-        document.getElementById("close-modal-box").onclick = function() {
-            document.getElementById("modal_preview").style.display = "none";
-        }
         
         
     });
@@ -227,7 +222,17 @@ function fillPageEditParams() {
 
 function showPreview() {
     document.getElementById('textarea_preview').innerHTML = marked(document.getElementById('textarea_desc').value);
-    document.getElementById("modal_preview").style.display = "inline-block";
+    $(document.getElementById("modal_preview")).show("slow");
+    
+    $(document).mouseup(e => {
+        var container = $("#modal_preview");
+
+        if (!container.is(e.target) // if the target of the click isn't the container...
+            && container.has(e.target).length === 0) // ... nor a descendant of the container
+        {
+            container.hide("slow");
+        }
+    });
 }
 
 /*

@@ -256,9 +256,7 @@ Current bugs:
             for (i = 0; i < tablinks.length; i++) {
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
-            $('#' + tabName).show("slow", () => {
-                $('#' + tabName).css("display", "block");
-            });
+            $('#' + tabName).css("display", "block");
 //            document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
             //unchecks all of the checkboxes
