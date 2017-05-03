@@ -58,16 +58,15 @@ public class AdminServlet extends HttpServlet {
         final Object lock = session.getId().intern();
         common.User admin = (common.User) session.getAttribute("user");
         String action = request.getParameter("action");
-        
-        if(DatabaseManager.isUserLocked(admin))
-        {
+
+        if (DatabaseManager.isUserLocked(admin)) {
             session.removeAttribute("user");//logout on server
-            
+
             session.invalidate();
             response.sendRedirect(request.getContextPath() + "/WaterQuality/");
             return;
         }
-        
+
         if (action == null) {
             return;
         }
@@ -97,11 +96,11 @@ public class AdminServlet extends HttpServlet {
                         .map(o -> (JSONArray) o.get("time"))
                         .map(arr -> arr.stream().mapToLong(o -> (Long) o).boxed().collect(Collectors.toSet()))
                         .blockingSubscribe(allTimes -> DatabaseManager
-                                .parameterNameToId((String) req.get("parameter"))
-                                .subscribe(id -> DataFilter
-                                        .getFilter(id)
-                                        .add((Set<Long>) allTimes)
-                                )
+                        .parameterNameToId((String) req.get("parameter"))
+                        .subscribe(id -> DataFilter
+                        .getFilter(id)
+                        .add((Set<Long>) allTimes)
+                        )
                         );
                 /*
                 String tempIDs = request.getParameter("deletionIDs");
@@ -118,7 +117,7 @@ public class AdminServlet extends HttpServlet {
                     obj.put("status", dataDeletionTimes.length - successfulDeletions + " deletions failed, check the error logs");
                     response.getWriter().append(obj.toJSONString());
                 }
-                */
+                 */
             } catch (Exception e) {
                 request.setAttribute("status", "Error: " + e);
             }
@@ -170,13 +169,13 @@ public class AdminServlet extends HttpServlet {
          */ else if (action.trim().equalsIgnoreCase("RemoveUser")) {
             try {
                 String userIDsTemp = request.getParameter("userDeletionIDs");
-                String [] userIDs = userIDsTemp.split(",");
-                
-                int [] userIntIDs = new int[userIDs.length];
-                for(int i = 0; i < userIDs.length; i++)
+                String[] userIDs = userIDsTemp.split(",");
+
+                int[] userIntIDs = new int[userIDs.length];
+                for (int i = 0; i < userIDs.length; i++) {
                     userIntIDs[i] = Integer.parseInt(userIDs[i]);
-                
-                
+                }
+
                 int userRemovalStatus = DatabaseManager.deleteUsers(userIntIDs,
                         admin);
                 if (userRemovalStatus == userIntIDs.length) {
@@ -200,12 +199,13 @@ public class AdminServlet extends HttpServlet {
          */ else if (action.trim().equalsIgnoreCase("LockUser")) {
             try {
                 String userIDsTemp = request.getParameter("userLockIDs");
-                String [] userIDs = userIDsTemp.split(",");
-                
-                int [] userIntIDs = new int[userIDs.length];
-                for(int i = 0; i < userIDs.length; i++)
+                String[] userIDs = userIDsTemp.split(",");
+
+                int[] userIntIDs = new int[userIDs.length];
+                for (int i = 0; i < userIDs.length; i++) {
                     userIntIDs[i] = Integer.parseInt(userIDs[i]);
-                
+                }
+
                 int successfulLocks = DatabaseManager.lockUser(userIntIDs,
                         admin);
                 if (successfulLocks == userIntIDs.length) {
@@ -229,12 +229,13 @@ public class AdminServlet extends HttpServlet {
          */ else if (action.trim().equalsIgnoreCase("UnlockUser")) {
             try {
                 String userIDsTemp = request.getParameter("userUnlockIDs");
-                String [] userIDs = userIDsTemp.split(",");
-                
-                int [] userIntIDs = new int[userIDs.length];
-                for(int i = 0; i < userIDs.length; i++)
+                String[] userIDs = userIDsTemp.split(",");
+
+                int[] userIntIDs = new int[userIDs.length];
+                for (int i = 0; i < userIDs.length; i++) {
                     userIntIDs[i] = Integer.parseInt(userIDs[i]);
-                
+                }
+
                 int successfulUnlocks = DatabaseManager.unlockUser(userIntIDs,
                         admin);
                 if (successfulUnlocks == userIntIDs.length) {
@@ -390,7 +391,7 @@ public class AdminServlet extends HttpServlet {
                             })
                             .flatMap((JSONArray arr)
                                     -> DatabaseManager.parameterIdToName(gdv.getKey())
-//                                    .doOnNext(System.out::println)
+                                    //                                    .doOnNext(System.out::println)
                                     .map(name -> {
                                         JSONObject obj = new JSONObject();
                                         obj.put("dataValues", arr);
@@ -430,8 +431,7 @@ public class AdminServlet extends HttpServlet {
                 session.setAttribute("dateStatus", "Invalid Format on Lower or Upper Time Bound.");
             }
              */
-        }
-         else if (action.trim().equalsIgnoreCase("getDataDeletion")) {
+        } else if (action.trim().equalsIgnoreCase("getDataDeletion")) {
             String parameter = request.getParameter("parameter");
             long start = Long.parseLong(request.getParameter("start"));
             long end = Long.parseLong(request.getParameter("end"));
@@ -458,7 +458,7 @@ public class AdminServlet extends HttpServlet {
                             })
                             .flatMap((JSONArray arr)
                                     -> DatabaseManager.parameterIdToName(gdv.getKey())
-//                                    .doOnNext(System.out::println)
+                                    //                                    .doOnNext(System.out::println)
                                     .map(name -> {
                                         JSONObject obj = new JSONObject();
                                         obj.put("dataValues", arr);
@@ -498,7 +498,7 @@ public class AdminServlet extends HttpServlet {
                 session.setAttribute("dateStatus", "Invalid Format on Lower or Upper Time Bound.");
             }
              */
-        }else if (action.trim().equalsIgnoreCase("getParameters")) {
+        } else if (action.trim().equalsIgnoreCase("getParameters")) {
             long type = Long.parseLong(request.getParameter("data"));
 
             Observable.just(type)
@@ -557,30 +557,27 @@ public class AdminServlet extends HttpServlet {
                     });
 
         } else if (action.trim().equalsIgnoreCase("insertData")) {
-            
+
             Observable.just(request.getParameter("data"))
                     .map(req -> (JSONArray) new JSONParser().parse(req))
                     .flatMap(JSONUtils::flattenJSONArray)
-//                    .doOnNext(System.out::println)
+                    //                    .doOnNext(System.out::println)
                     .flatMap(obj -> Observable.just(obj)
-                            .map(o -> (JSONArray) o.get("values"))
-                            .flatMap(JSONUtils::flattenJSONArray)
-                            .filter(o -> o.get("timestamp") != null && o.get("value") != null)
-                            .flatMap(o -> DatabaseManager
-                                    .parameterNameToId((String) obj.get("name"))
-                                    .map(id -> new DataValue(id, Instant.ofEpochMilli((long) o.get("timestamp")), o.get("value") != null ? Double.parseDouble(o.get("value").toString()) : Double.NaN))
-                            )
+                    .map(o -> (JSONArray) o.get("values"))
+                    .flatMap(JSONUtils::flattenJSONArray)
+                    .filter(o -> o.get("timestamp") != null && o.get("value") != null)
+                    .flatMap(o -> DatabaseManager
+                    .parameterNameToId((String) obj.get("name"))
+                    .map(id -> new DataValue(id, Instant.ofEpochMilli((long) o.get("timestamp")), o.get("value") != null ? Double.parseDouble(o.get("value").toString()) : Double.NaN))
+                    )
                     )
                     .buffer(Integer.MAX_VALUE)
                     .doOnNext(System.out::println)
                     .flatMap(DatabaseManager::insertManualData)
                     .blockingSubscribe(updated -> System.out.println("Updated # of Rows: " + updated));
-                    
-        }
-        else if (action.trim().equalsIgnoreCase("deleteManualData")) 
-        {
-            try
-            {
+
+        } else if (action.trim().equalsIgnoreCase("deleteManualData")) {
+            try {
                 ArrayList<Integer> deletionIDs = (ArrayList) session.getAttribute("deletionIDs");
                 for (Integer i : deletionIDs) {
                     DatabaseManager.manualDeletionM(i.intValue(), admin);
@@ -636,8 +633,8 @@ public class AdminServlet extends HttpServlet {
             try {
                 response.getWriter()
                         .append(DatabaseManager
-                                .getErrorsInRange(Instant.ofEpochMilli(Long.parseLong(request.getParameter("start"))).toString().substring(0,19),
-                                        Instant.ofEpochMilli(Long.parseLong(request.getParameter("end"))).toString().substring(0,19))
+                                .getErrorsInRange(Instant.ofEpochMilli(Long.parseLong(request.getParameter("start"))).toString().substring(0, 19),
+                                        Instant.ofEpochMilli(Long.parseLong(request.getParameter("end"))).toString().substring(0, 19))
                                 .toJSONString());
             } catch (DateTimeParseException e) {
                 JSONObject obj = new JSONObject();
@@ -648,21 +645,14 @@ public class AdminServlet extends HttpServlet {
                 obj.put("status", "Error getting error list: " + e);
                 response.getWriter().append(obj.toJSONString());
             }
-        }
-        
-        else if (action.trim().equalsIgnoreCase("insertCSV"))
-        {
+        } else if (action.trim().equalsIgnoreCase("insertCSV")) {
             int count = 0;
             System.out.println("Received - c: " + count++);
-        }
-        
-        else if (action.trim().equalsIgnoreCase("getRoles"))
-        {
+        } else if (action.trim().equalsIgnoreCase("getRoles")) {
             response.getWriter().append(UserRole.getUserRoles().toJSONString());
-        }
-        else if (action.trim().equalsIgnoreCase("logout")) {
+        } else if (action.trim().equalsIgnoreCase("logout")) {
             session.removeAttribute("user");//logout on server
-            
+
             session.invalidate();//clear session
             //write the response as JSON. assume success.
             JSONObject obj = new JSONObject();
@@ -671,31 +661,25 @@ public class AdminServlet extends HttpServlet {
             jObjStatus.put("errorMsg", "Logout successful.");
             obj.put("status", jObjStatus);
             response.getWriter().append(obj.toJSONString());
-        }
-        else if(action.trim().equalsIgnoreCase("isUserLoggedIn"))
-        {
+        } else if (action.trim().equalsIgnoreCase("isUserLoggedIn")) {
             JSONObject obj = new JSONObject();
-            if(admin == null)
-            {
+            if (admin == null) {
                 obj.put("isLoggedIn", 0);
                 obj.put("isAdmin", 0);
-            }
-            else
-            {
+            } else {
                 obj.put("isLoggedIn", 1);
-                if(admin.getUserRole() == UserRole.SystemAdmin)
-                {
+                if (admin.getUserRole() == UserRole.SystemAdmin) {
                     obj.put("isAdmin", 1);
-                }
-                else
+                } else {
                     obj.put("isAdmin", 0);
+                }
             }
             response.getWriter().append(obj.toJSONString());
         } else if (action.trim().equalsIgnoreCase("getBayesianCSV")) {
             Long start = Long.parseLong(request.getParameter("startDate"));
             Long end = Long.parseLong(request.getParameter("endDate"));
             System.out.println("start: " + start + ", end: " + end);
-            
+
             long PAR = 637957793;
             long HDO = 1050296639;
             long Temp = 1050296629;
@@ -703,25 +687,63 @@ public class AdminServlet extends HttpServlet {
             long Depth = 1050296637;
 
             dataToCSV(DataReceiver
-                            .getRemoteData(
-                                    Instant
-                                            .ofEpochMilli(start)
-                                            .truncatedTo(ChronoUnit.DAYS), 
-                                    Instant.ofEpochMilli(end)
-                                            .truncatedTo(ChronoUnit.DAYS), 
-                                    PAR, HDO, Temp, Pressure, Depth
-                            ))
+                    .getRemoteData(
+                            Instant
+                                    .ofEpochMilli(start)
+                                    .truncatedTo(ChronoUnit.DAYS),
+                            Instant.ofEpochMilli(end)
+                                    .truncatedTo(ChronoUnit.DAYS),
+                            PAR, HDO, Temp, Pressure, Depth
+                    ))
                     .subscribeOn(Schedulers.computation())
-                    .blockingSubscribe(resp -> 
-                            response
+                    .blockingSubscribe(resp
+                            -> response
                             .getWriter()
                             .append(resp)
                     );
+        } else if (action.trim().equalsIgnoreCase("editNotes")) {
+
+            boolean editNotesStatus = DatabaseManager.modifyNote((String) request.getParameter("note"),
+                    admin);
+            if (editNotesStatus) {
+                JSONObject obj = new JSONObject();
+                obj.put("status", "Success");
+                response.getWriter().append(obj.toJSONString());
+            } else {
+                JSONObject obj = new JSONObject();
+                obj.put("status", "Failed");
+                response.getWriter().append(obj.toJSONString());
+            }
+
+        } else if (action.trim().equalsIgnoreCase("editNotes")) {
+
+            boolean editNotesStatus = DatabaseManager.modifyNote((String) request.getParameter("note"),
+                    admin);
+            if (editNotesStatus) {
+                JSONObject obj = new JSONObject();
+                obj.put("status", "Success");
+                response.getWriter().append(obj.toJSONString());
+            } else {
+                JSONObject obj = new JSONObject();
+                obj.put("status", "Failed");
+                response.getWriter().append(obj.toJSONString());
+            }
+
+        } else if (action.trim().equalsIgnoreCase("getNotes")) {
+
+            JSONObject note = DatabaseManager.getNote();
+            if (note != null) {
+                response.getWriter().append(note.toJSONString());
+            } else {
+                JSONObject obj = new JSONObject();
+                obj.put("status", "Failed");
+                response.getWriter().append(obj.toJSONString());
+            }
+
         }
-
     }
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
