@@ -17,7 +17,7 @@
         
         <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.js"></script>
         
-       
+        <link rel="stylesheet" href="styles/markdown.css" type="text/css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -48,11 +48,8 @@
         <title>Dashboard</title>
     </head>
     <div id="myNav" class="overlay">
-  <p class="overlay-content">
-    The server is still in early development! What you are seeing is liable to change and is not a final representation of the product!
-    <br>
-    Note: The sensor may or may not be down right now, as of 4/26/2017
-  </p>
+        <button style='float:right; margin-right: 1em; margin-top: 1em;' onclick="$('#myNav').slideUp('slow');" value="X"></button>
+  <p class="overlay-content" id="overlayNote"></p>
 </div>
     <!--<body id="loader" onload="checkUser(); startingData();">-->
         <body id="loader" onload="blockButtons(); startingData();">

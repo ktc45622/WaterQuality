@@ -23,7 +23,7 @@ Current bugs:
         <!--<script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
         <script src="https://cdn.datatables.net/1.10.14/js/jquery.dataTables.min.js"></script>
         <link rel="stylesheet" href="styles/datetimepicker.css" type="text/css">
-        
+        <link rel="stylesheet" href="styles/markdown.css" type="text/css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
         <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
         <script src="scripts/datetimepicker.js"></script>
@@ -256,9 +256,7 @@ Current bugs:
             for (i = 0; i < tablinks.length; i++) {
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
-            $('#' + tabName).show("slow", () => {
-                $('#' + tabName).css("display", "block");
-            });
+            $('#' + tabName).css("display", "block");
 //            document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
             //unchecks all of the checkboxes

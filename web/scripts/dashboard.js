@@ -351,7 +351,8 @@ function fetchData(json) {
                     $('#Graph_description', '#Table_description').html(marked(description));
                     $('#Graph_description', '#Table_description').fadeIn("slow");
                 });
-        document.getElementById("Graph_description").innerHTML = document.getElementById("Table_description").innerHTML = marked(description);
+        document.getElementById("Graph_description").innerHTML = document.getElementById("Table_description").innerHTML = 
+                "<div class='markdown-preview' data-use-github-style>" + marked(description) + "</div>";
     } else {
         var description = "";
         if (getCookie("id") == "Table") {
@@ -368,7 +369,7 @@ function fetchData(json) {
             }
             $('#Table_description')
                 .fadeOut("slow", () => {
-                    $('#Table_description').html(marked(description));
+                    $('#Table_description').html("<div class='markdown-preview' data-use-github-style>" + marked(description) + "</div>");
                     $('#Table_description').fadeIn("slow");
                 });
         }
@@ -402,7 +403,7 @@ function fetchData(json) {
             }
             $('#Graph_description')
                 .fadeOut("slow", () => {
-                    $('#Graph_description').html(marked(description));
+                    $('#Graph_description').html("<div class='markdown-preview' data-use-github-style>" + marked(description) + "</div>");
                     $('#Graph_description').fadeIn("slow");
                 });
         }
@@ -590,6 +591,15 @@ function startingData() {
         $("#myNav").height(($(window).height() / 2) + "px");
         $("#admin_notes").show();
     })
+    post("AdminServlet", {action: "getNotes"}, function (resp) {
+        if (resp.hasOwnProperty("status")) {
+            window.alert("Error getting notes");
+        }
+        else{
+            var respData = JSON.parse(resp);
+            $("#overlayNote").html(marked(respData["note"]));
+        }
+    });
     post("AdminServlet", {action: "getParameters", data: 3}, function (resp) {
 
 //        console.log(JSON.parse(resp));
