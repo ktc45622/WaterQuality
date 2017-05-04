@@ -48,7 +48,6 @@ public class HttpsRedirectFilter implements Filter {
         String uri = req.getRequestURI();
         String getProtocol = req.getScheme();
         String getDomain = req.getServerName();
-        String getPort = Integer.toString(req.getServerPort());
 
         if (getProtocol.toLowerCase().equals("http")) {
 
@@ -58,9 +57,8 @@ public class HttpsRedirectFilter implements Filter {
             // New location to be redirected
             String httpsPath = "https" + "://" + getDomain + uri;
 
-            String site = new String(httpsPath);
             res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-            res.setHeader("Location", site);
+            res.setHeader("Location", httpsPath);
         }
 
         // Pass request back down the filter chain

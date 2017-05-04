@@ -56,7 +56,7 @@
         <img id="backPhoto" src="images/Creek.jpeg">
         <header class="title_bar_container">
             <div id="HeaderText">Water Quality</div>
-            <button id="Login_Button" onclick="location.href='loginScreen.jsp'">Login</button>
+            <button id="Login_Button" onclick="location.href='LoginServlet'">Login</button>
             <button id="Admin_Button" onclick="location.href='admin.jsp'">Admin</button>
         </header>
             

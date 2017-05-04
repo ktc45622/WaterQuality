@@ -37,8 +37,15 @@ public class LoginFilter implements Filter {
             User user = (User)session.getAttribute("user");
             if (user == null || user.getUserRole() != UserRole.SystemAdmin) 
             {
-                request.getRequestDispatcher("/LoginServlet").forward(request, response);
-                return;
+                response.setContentType("text/html");
+                
+                String domain = req.getServerName();
+                String loginURL = "/LoginServlet";
+                String getProtocol = req.getScheme();
+                int port = req.getServerPort();
+                String site = getProtocol + "://" + domain + ":" + port + "/WaterQuality" +loginURL;
+                res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+                res.setHeader("Location", site);
             }
             chain.doFilter(req, res);
         }
