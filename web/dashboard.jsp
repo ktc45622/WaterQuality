@@ -152,12 +152,11 @@
                         <input class="dateselector" id="graph_end_date" type="text">
                         <input class="dateselector" id="graph_end_time" type="text">
                         <!--<input class="dateselector" id="graph_end_date" name="graph_end_date" type="datetime-local" min="" max="">-->
-                    </div><BR>
-                    <center>
-                    <div id="graph_parameters">
+                    </div>
+                    <center>Sensor Data - Last Updated: <span class="last_updated">temp val</span></center><br>
+                    <div id="graph_parameters" style="margin-left: 1em//0 auto;">
                         <div id="graph_sensor_parameters">
-                            <center>Sensor Data</center><BR>
-                            <table id="sensor_formatted_table" style="width: 100%;" class="parameter_table">
+                            <table id="sensor_formatted_table" style="width: 100%; margin: 0 auto;" class="parameter_table">
                                 <thead>
                                     <tr>
                                         <td>
@@ -167,7 +166,7 @@
                                             Unit
                                         </td>
                                         <td>
-                                            Last Updated
+                                            Most Recent Data
                                         </td>
                                     </tr>
                                 </thead>
@@ -212,16 +211,16 @@
                         End Date:
                         <input class="dateselector" id="table_end_date" type="text">
                         <input class="dateselector" id="table_end_time" type="text">
-                    </div><br>
-                    
-                    <center>
-                    <div id="table_parameters">
-                        <div id="select_all_div">
+                    </div>
+                    <center>Sensor Data - Last Updated: <span class="last_updated">temp val</span></center>
+                    <div id="select_all_div" style="padding-left:1em">
                         <input type="checkbox" onclick="toggle('Table_form',this); fetch();" class="select_all_box" value="select_all_data">
                         Select All Data
-                    </div><br>
+                    </div><br/>
+                    <div id="table_parameters">
                         <div id="table_sensor_parameters">
-                            <center>Sensor Data</center><br>
+                            <!--<center>Sensor Data - Last Updated: <span class="last_updated">temp val</span></center>-->
+                            <br>
                             <input type="checkbox" onclick="toggle('table_sensor_parameters',this); fetch();"class="select_all_box" value="select_all_data">
                             Select All Sensor Data<br>
                             
@@ -235,7 +234,7 @@
                                             Unit
                                         </td>
                                         <td>
-                                            Last Updated
+                                            Most Recent Data
                                         </td>
                                     </tr>
                                 </thead>
