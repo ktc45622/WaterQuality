@@ -609,12 +609,12 @@ function startingData() {
             // Cache parameter descriptors
             descriptions[data[i].id] = data[i].description;
             names[data[i].id] = data[i].name;
-            units[data[i].id] = [ { unit: data[i].unit, conversion: x} ];
+            units[data[i].id] = [ { unit: data[i].unit, conversion: function(x){return x;} }];
             
             if (data[i].name.includes("Temperature") || data[i].name === "Dewpoint") {
-                units[data[i].id].push({ unit: "F", conversion: x = x * 1.8 + 32 });
+                units[data[i].id].push({ unit: "F", conversion: function(x){return x * 1.8 + 32 }});
             } else if (data[i].name === "Depth") {
-                units[data[i].id].push({ unit: "ft", conversion: x = x * 3.28084 });
+                units[data[i].id].push({ unit: "ft", conversion: function(x){return x * 3.28084 }});
             }
             
             var tableRef = document.getElementById('sensor_formatted_table').getElementsByTagName('tbody')[0];
@@ -655,7 +655,7 @@ function startingData() {
         for (i = 0; i < data.length; i++) {
             descriptions[data[i].id] = data[i].description;
             names[data[i].id] = data[i].name;
-            units[data[i].id] = [ { unit: data[i].unit, conversion: x} ];
+            units[data[i].id] = [ { unit: data[i].unit, conversion: function(x){return x;} }];
             
             var tableRef = document.getElementById('manual_formatted_table').getElementsByTagName('tbody')[0];
             var table_tableRef = document.getElementById('table_manual_formatted_table').getElementsByTagName('tbody')[0];
