@@ -23,11 +23,14 @@ So it is also known as the deployment descriptor -->
     <filter-mapping>
         <filter-name>AdminLogin</filter-name>
         <url-pattern>/admin.jsp</url-pattern>
+        <url-pattern>/AdminServlet</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>HTTPS</filter-name>
         <url-pattern>/admin.jsp</url-pattern>
         <url-pattern>/loginScreen.jsp</url-pattern>
+        <url-pattern>/AdminServlet</url-pattern>
+        <url-pattern>/LoginServlet</url-pattern>
     </filter-mapping>
     <listener>
         <listener-class>servlets.listener.ContextListener</listener-class>

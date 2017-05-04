@@ -45,19 +45,20 @@ public class HttpsRedirectFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
+        String uri = req.getRequestURI();
         String getProtocol = req.getScheme();
-        String portNumber = Integer.toString(req.getServerPort());
-        StringBuffer url = req.getRequestURL();
+        String getDomain = req.getServerName();
+        String getPort = Integer.toString(req.getServerPort());
 
         if (getProtocol.toLowerCase().equals("http")) {
 
             // Set response content type
             response.setContentType("text/html");
 
-            url.replace(0, 4, "https");
-            int portStartIndex = url.indexOf(portNumber);
-            url.replace(portStartIndex, portStartIndex+4,PropertyManager.getProperty("HTTPSPort"));
-            String site = url.toString();
+            // New location to be redirected
+            String httpsPath = "https" + "://" + getDomain + uri;
+
+            String site = new String(httpsPath);
             res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             res.setHeader("Location", site);
         }
