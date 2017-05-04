@@ -163,8 +163,8 @@ function openTab(evt, tabName) {
         //form[i].style.display = "none";
     }
     $('#' + tabName + '_form').finish().show("slow",() => {
-                $('#' + tabName+'_form').css("display", "block");
-            });
+        $('#' + tabName+'_form').css("display", "block");
+    });
     //document.getElementById(current + "_form").style.display = "block";
 
     descriptions = document.getElementsByClassName("description");
@@ -569,6 +569,7 @@ function fillTable(dataResp) {
     });
 }
 
+var waypoint;
 //<code>load</code> makes sure that when the page is newly loaded it will do a
 //special action in the <code>fetchDataFunction</code> allowing it to generate
 //both the table and the graph
@@ -581,10 +582,7 @@ function startingData() {
         chart.redraw();
         chart.reflow();
     })
-    // Stickies the admin notes to top of screen...
-    new Waypoint.Sticky({
-        element: $("#myNav")
-    });
+    
     $("#admin_expand_button").click(() => {
         // Expand to about half page...
         $("#myNav").css("z-index", "1");
@@ -599,6 +597,10 @@ function startingData() {
             var respData = JSON.parse(resp);
             $("#overlayNote").html(marked(respData["note"]));
         }
+        // Stickies the admin notes to top of screen...
+        waypoint = new Waypoint.Sticky({
+            element: $("#myNav")
+        });
     });
     post("AdminServlet", {action: "getParameters", data: 3}, function (resp) {
 

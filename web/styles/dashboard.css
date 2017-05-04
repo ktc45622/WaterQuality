@@ -7,6 +7,18 @@ and open the template in the editor.
     Created on : Feb 9, 2017, 9:05:43 PM
     Author     : Kevin
 */
+#myNav{
+    position:absolute;
+    height:auto;
+    overflow:hidden;
+}
+
+.markdown-preview{
+    display:block;
+    height:100%;
+    overflow-y: scroll;
+}
+
 #HeaderText
 {   
     position:absolute;
