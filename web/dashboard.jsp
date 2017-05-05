@@ -48,7 +48,8 @@
         <title>Dashboard</title>
     </head>
     <div id="myNav" class="overlay">
-        <button style='float:right; margin-right: 1em; margin-top: 1em;' onclick="$('#myNav').slideUp('slow');" value="X"></button>
+        <!--<button style='float:right; margin-right: 1em; margin-top: 1em;' onclick="$('#myNav').slideUp('slow');">X</button>-->
+        <button style='float:right; margin-right: 1em; margin-top: 1em;' onclick="$('#myNav').hide('slow');">X</button>
   <p class="overlay-content" id="overlayNote"></p>
 </div>
     <!--<body id="loader" onload="checkUser(); startingData();">-->

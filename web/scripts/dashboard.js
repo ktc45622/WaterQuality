@@ -611,7 +611,7 @@ function startingData() {
             names[data[i].id] = data[i].name;
             units[data[i].id] = [ { unit: data[i].unit, conversion: function(x){return x;} }];
             
-            if (data[i].name.includes("Temperature") || data[i].name === "Dewpoint") {
+            if (data[i].name.indexOf("Temperature")>-1 || data[i].name === "Dewpoint") {
                 units[data[i].id].push({ unit: "F", conversion: function(x){return x * 1.8 + 32 }});
             } else if (data[i].name === "Depth") {
                 units[data[i].id].push({ unit: "ft", conversion: function(x){return x * 3.28084 }});
