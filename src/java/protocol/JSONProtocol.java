@@ -32,21 +32,16 @@ package protocol;
 
 import async.Data;
 import async.DataReceiver;
-import async.DataValue;
+import common.DataValue;
 import database.DatabaseManager;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.flowables.GroupedFlowable;
-import io.reactivex.observables.GroupedObservable;
-import io.reactivex.schedulers.Schedulers;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import utilities.JSONUtils;
 
 /**
  *

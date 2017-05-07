@@ -1,35 +1,13 @@
 package servlets;
 
-import async.DataReceiver;
-import bayesian.RunBayesianModel;
-import com.github.davidmoten.rx.util.Pair;
 import common.UserRole;
-import database.DatabaseManager;
-import io.reactivex.Observable;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.apache.log4j.BasicConfigurator;
-import org.javatuples.Triplet;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import protocol.JSONProtocol;
-import utilities.JSONUtils;
-import static utilities.TimestampUtils.toUTCInstant;
 
 /**
  * <code>ControlServlet</code> is the main servlet that processes most
@@ -57,7 +35,7 @@ public class ControlServlet extends HttpServlet {
 
         
         common.User admin = (common.User) request.getSession(true).getAttribute("user");
-        request.setAttribute("loggedIn", admin == null ? false : admin.getUserRole() == UserRole.SystemAdmin ? true : false);
+        request.setAttribute("loggedIn", admin == null ? false : admin.getUserRole() == UserRole.SystemAdmin);
         request.getServletContext()
                 .getRequestDispatcher("/dashboard.jsp")
                 .forward(request, response);
@@ -104,6 +82,9 @@ public class ControlServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
+        // Some libraries require us to configure Log4J to actually see input. This is needed
+        // in cases where a crash occurs and we need to debug. As on production the output is ignored
+        // anyway, its not that big of a deal.
         BasicConfigurator.configure();
         super.init();
     }
