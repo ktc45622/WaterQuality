@@ -47,38 +47,6 @@
         </noscript>
         <title>Dashboard</title>
     </head>
-    <div id="myNav" class="overlay">
-        <button style='float:left; margin-right: 1em; margin-top: 1em;' onclick="notesMinimizer();" value="X"></button>
-        <div id='expand' style='position:absolute; width:100%; display:none; top:5%; text-align:center; color:white;'>Notes - Expand</div>
-        <p class="markdown-preview" dont-use-github-style id="overlayNote"></p>
-    </div>
-    <script>
-        function notesMinimizer(){
-            if(document.getElementById("overlayNote").style.display!="none"){
-                waypoint.destroy();
-                $('#overlayNote').finish().slideDown("slow",() => {
-                    $('#overlayNote').css("display", "none");
-                    
-                });
-                document.getElementById("myNav").style.height='25px';
-                document.getElementById("expand").style.display="inline-block";
-                waypoint = new Waypoint.Sticky({
-                    element: $("#myNav")
-                });
-            }
-            else{
-                waypoint.destroy();
-                $('#overlayNote').finish().slideUp("slow",() => {
-                    $('#overlayNote').css("display", "block");
-                });
-                document.getElementById("myNav").style.height='auto';
-                document.getElementById("expand").style.display="none";
-                waypoint = new Waypoint.Sticky({
-                    element: $("#myNav")
-                });
-            }
-        }
-    </script>
     <!--<body id="loader" onload="checkUser(); startingData();">-->
         <body id="loader" onload="blockButtons(); startingData();">
         <img id="backPhoto" src="images/Creek.jpeg">
@@ -298,7 +266,7 @@
                     <br>
                 </form>
             </aside><br>
-
+            
             <!--The data description box is defined here. Sample text is shown-->
             <!--to provide an indication of the text-wrapping.-->
             <!--This will need to pull text from a file which Brandon already-->
@@ -320,6 +288,17 @@
                     <div class="description" id="Graph_description"></div>
                     <div class="description" id="Table_description"></div>
                 </div>
+            </section>
+            
+            <section id="notes_section" class="content_container2" style=''>
+                <header class = "content_title_bar" id = "notes_header">
+                    <div class = "title">
+                        Notes
+                        <button id='notes_button' onclick="notesMinimizer();">&minus;</button>
+                    </div>
+                </header>
+                <p class="markdown-preview" data-use-github-style id="overlayNote"
+                   style='background-color: #FFF2D7; color:black;'></p>
             </section>
             
         </section>

@@ -582,7 +582,10 @@ function startingData() {
         chart.redraw();
         chart.reflow();
     })
-    
+    // Stickies the admin notes to top of screen...
+//        waypoint = new Waypoint.Sticky({
+//            element: $("#myNav")
+//        });
     $("#admin_expand_button").click(() => {
         // Expand to about half page...
         $("#myNav").css("z-index", "1");
@@ -597,10 +600,6 @@ function startingData() {
             var respData = JSON.parse(resp);
             $("#overlayNote").html(marked(respData["note"]));
         }
-        // Stickies the admin notes to top of screen...
-        waypoint = new Waypoint.Sticky({
-            element: $("#myNav")
-        });
     });
     post("AdminServlet", {action: "getParameters", data: 3}, function (resp) {
 
@@ -777,4 +776,23 @@ function getMostRecent(){
             }
         }
     });
+}
+
+function notesMinimizer() {
+    if (document.getElementById("overlayNote").style.display != "none") {
+        $('#overlayNote').finish().slideDown("slow", () => {
+            $('#overlayNote').css("display", "none");
+
+        });
+        document.getElementById("notes_section").style.height = '25px';
+        document.getElementById("notes_section").style.borderRadius = '25px 25px 0px 0px';
+        document.getElementById("notes_button").innerHTML="&#43";
+    } else {
+        $('#overlayNote').finish().slideUp("slow", () => {
+            $('#overlayNote').css("display", "block");
+        });
+        document.getElementById("notes_section").style.height = 'auto';
+        document.getElementById("notes_section").style.borderRadius = '25px';
+        document.getElementById("notes_button").innerHTML="&minus;";
+    }
 }
