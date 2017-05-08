@@ -184,7 +184,8 @@ public class DataToCSV {
                         .map(DataValue::getId)
                         .sorted()
                         .distinct()
-                        .flatMap(id -> DatabaseManager.parameterIdToName(id).toObservable())
+                        // We use remote id for the Source passed, so we need to convert
+                        .flatMap(id -> DatabaseManager.remoteSourceToDatabaseId(id).flatMap(DatabaseManager::parameterIdToName).toObservable())
                         .buffer(Integer.MAX_VALUE)
                         .map(list -> list.stream().collect(Collectors.joining(",")))
                         .map(header -> "Timestamp," + header)
