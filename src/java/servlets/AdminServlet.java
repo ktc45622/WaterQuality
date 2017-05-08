@@ -613,6 +613,7 @@ public class AdminServlet extends HttpServlet {
                             PAR, HDO, Temp, Pressure, Depth
                     ))
                     .subscribeOn(Schedulers.computation())
+                    .doOnNext(System.out::println)
                     .blockingSubscribe(resp
                             -> response
                             .getWriter()

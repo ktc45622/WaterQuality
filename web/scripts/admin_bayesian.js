@@ -63,9 +63,10 @@ function bayesianButton() {
         endDate: new Date($("#bayesian_lastdate").val()).getTime()
     };
 
-    post("AdminServlet", request, function(){
+    post("AdminServlet", request, function(response){
+        console.log(response);
         var csvContent = "data:text/csv;charset=utf-8,";
-        var encodedUri = encodeURI(csvContent + request);
+        var encodedUri = encodeURI(csvContent + response);
         var link = document.createElement("a");
         link.setAttribute("href", encodedUri);
         link.setAttribute("download", "bayesian_csv.csv");
