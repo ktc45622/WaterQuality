@@ -767,7 +767,8 @@ function getMostRecent(){
         for(var i=0; i < data.length; i++){
             var sensorrecent=document.getElementsByClassName("recent_sensor_"+data[i].id);
 //            var html= formatDate(new Date(data[i].time));
-            var html = data[i].value;
+            var currentSelectedUnit = document.getElementById("graph_unit_selection_" + data[i].id).selectedIndex;
+            var html = units[data[i].id][currentSelectedUnit].conversion(data[i].value);
             if(html!=null){
                 for(var j=0; j < sensorrecent.length; j++){
                     sensorrecent[j].innerHTML=html;
