@@ -569,6 +569,7 @@ function fillTable(dataResp) {
     });
 }
 
+var waypoint;
 //<code>load</code> makes sure that when the page is newly loaded it will do a
 //special action in the <code>fetchDataFunction</code> allowing it to generate
 //both the table and the graph
@@ -580,17 +581,15 @@ function startingData() {
     $("#Graph").resize(function() {
         chart.redraw();
         chart.reflow();
-    })
-    // Stickies the admin notes to top of screen...
-    new Waypoint.Sticky({
-        element: $("#myNav")
     });
+    // Stickies the admin notes to top of screen...
+
     $("#admin_expand_button").click(function() {
         // Expand to about half page...
         $("#myNav").css("z-index", "1");
         $("#myNav").height(($(window).height() / 2) + "px");
         $("#admin_notes").show();
-    })
+    });
     post("AdminServlet", {action: "getNotes"}, function (resp) {
         if (resp.hasOwnProperty("status")) {
             window.alert("Error getting notes");
@@ -790,4 +789,22 @@ function getMostRecent(){
                 recentdate[j].innerHTML = formatDate(displayTime);
                 
     });
+}
+
+function notesMinimizer() {
+    if (document.getElementById("overlayNote").style.display != "none") {
+        $('#overlayNote').finish().slideDown("slow", () => {
+            $('#overlayNote').css("display", "none");
+        });
+        document.getElementById("notes_section").style.height = '25px';
+        document.getElementById("notes_section").style.borderRadius = '25px 25px 0px 0px';
+        document.getElementById("notes_button").innerHTML="&#43";
+    } else {
+        $('#overlayNote').finish().slideUp("slow", () => {
+            $('#overlayNote').css("display", "block");
+        });
+        document.getElementById("notes_section").style.height = 'auto';
+        document.getElementById("notes_section").style.borderRadius = '25px';
+        document.getElementById("notes_button").innerHTML="&minus;";
+    }
 }

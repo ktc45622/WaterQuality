@@ -47,11 +47,6 @@
         </noscript>
         <title>Dashboard</title>
     </head>
-    <div id="myNav" class="overlay">
-        <!--<button style='float:right; margin-right: 1em; margin-top: 1em;' onclick="$('#myNav').slideUp('slow');">X</button>-->
-        <button style='float:right; margin-right: 1em; margin-top: 1em;' onclick="$('#myNav').hide('slow');">X</button>
-  <p class="overlay-content" id="overlayNote"></p>
-</div>
     <!--<body id="loader" onload="checkUser(); startingData();">-->
         <body id="loader" onload="blockButtons(); startingData();">
         <img id="backPhoto" src="images/Creek.jpeg">
@@ -270,7 +265,7 @@
                     <br>
                 </form>
             </aside><br>
-
+            
             <!--The data description box is defined here. Sample text is shown-->
             <!--to provide an indication of the text-wrapping.-->
             <!--This will need to pull text from a file which Brandon already-->
@@ -292,6 +287,17 @@
                     <div class="description" id="Graph_description"></div>
                     <div class="description" id="Table_description"></div>
                 </div>
+            </section>
+            
+            <section id="notes_section" class="content_container2" style=''>
+                <header class = "content_title_bar" id = "notes_header">
+                    <div class = "title">
+                        Notes
+                        <button id='notes_button' onclick="notesMinimizer();">&minus;</button>
+                    </div>
+                </header>
+                <p class="markdown-preview" data-use-github-style id="overlayNote"
+                   style='background-color: #FFF2D7; color:black;'></p>
             </section>
             
         </section>

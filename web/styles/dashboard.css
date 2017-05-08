@@ -7,6 +7,13 @@ and open the template in the editor.
     Created on : Feb 9, 2017, 9:05:43 PM
     Author     : Kevin
 */
+
+.markdown-preview{
+    display:block;
+    height:100%;
+    overflow-y: scroll;
+}
+
 #HeaderText
 {   
     position:absolute;
@@ -122,10 +129,12 @@ table span{
 }
 .content_title_bar{
     background-color: #266B6B;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
+    border-radius: 20px 20px 0px 0px;
     text-align: center;
     height:25px;
+    position:sticky;
+    position: -webkit-sticky;
+    top:0;
 }
 
 .title{
@@ -175,14 +184,58 @@ description boxes */
 /* Styles the section with the data checboxes */
 #dashboard_data_container{
     float:right;
+    clear:right;
     margin-top:10px;
     margin-right:1%;
     margin-left:5px;
-    margin-bottom: 10px;;
+    margin-bottom: 10px;
+    min-width: 350px;
+    width:35%;
+    display:inline-block;
+    max-height:550px;
+    overflow:auto;
+}
+
+::-webkit-scrollbar-track{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+    background: rgba(0,0,0,0);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar{
+    width: 10px;
+    background: rgba(0,0,0,0);
+}
+
+::-webkit-scrollbar-thumb{
+    border-radius: 10px;
+    background-color: #266B6B;
+}
+
+
+#notes_section{
+    float:right;
+    clear:right;
+    margin-top:10px;
+    margin-right:1%;
+    margin-left:5px;
+    margin-bottom: 10px;
     min-width: 350px;
     width:35%;
     display:inline-block;
 }
+
+#notes_button{
+    float:right; 
+    font-size:20px; 
+     font-family: "Ariel", Helvetica, san-serif;
+    color:white; 
+    height:25px; 
+    background:#266B6B; 
+    margin-right:2.5%; 
+    border:0px;
+}
+
 .content_container2 h1, h2, h3, h4, h5, h6 {
     text-align: center;
 }
@@ -194,6 +247,7 @@ description boxes */
 /* Styles the section the graph is displayed in */
 #graph_container{
     float:left;
+    clear:left;
     margin-top: 10px;
     margin-left:1%;
     margin-right:5px;
@@ -204,10 +258,12 @@ description boxes */
 
 /* Styles the description box */
 #dashboard_data_description{
+    float:left;
+    clear:left;
     display:inline-block;
     margin-left:1%;
     margin-top:10px;
-    maring-bottom:10px;
+    margin-bottom:10px;
     padding-bottom:10px;
     min-width:600px;
     width:60%;
