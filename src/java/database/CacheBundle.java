@@ -28,45 +28,35 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package utilities;
+package database;
 
-import org.javatuples.Pair;
+import com.google.common.collect.ImmutableBiMap;
 
 /**
- *
+ * Implementation of an RCU in-memory cache for commonly-used database objects.
+ * 
+ * RCU is a synchronization strategy that significantly increases performance of reads while
+ * adding a harsh penalty to writes. Reads are essentially free (and provides a wait-free
+ * guarantee on accesses). RCU differs from Reader-Writer Locks by allowing concurrent writes
+ * to occur during reads. The algorithm is simple, and is composed of 3 stages:
+ * 
+ * 1) Read: Reading the current value
+ * 2) Copy: Cloning the original read value and modifying it
+ * 3) Update: Performing a CAS on the value with the new modified value.
+ * 
+ * Values for CacheBundle are immutable, as such provide some extremely high-performance
+ * optimizations and makes this possible. Modifying multiple values in the bundle is trivial,
+ * and reusing any unmodified values is possible as they are immutable.
  * @author Louis Jenkins
  */
-public class Either <A, B> {
-    private A a;
-    private B b;
-    
-    public static <A, B> Either<A, B> A(A a) {
-        return new Either(a, null);
-    }
-    
-    public static <A, B> Either<A, B> B(B b) {
-        return new Either(null, b);
-    }
-    
+public class CacheBundle {
+    /**
+    * Mappings of database parameter ids to their respective names.
+    */
+   ImmutableBiMap<Long, String> paramIdToName = ImmutableBiMap.of();
 
-    public Either(A a, B b) {
-        this.a = a;
-        this.b = b;
-    }
-    
-    public boolean isA() {
-        return a != null;
-    }
-    
-    public boolean isB() {
-        return b != null;
-    }
-    
-    public A getA() {
-        return a;
-    }
-    
-    public B getB() {
-        return b;
-    }
+   /**
+    * Mappings of remote database parameter ids to their respective remote sources.
+    */
+   ImmutableBiMap<Long, Long> paramIdToRemoteSource = ImmutableBiMap.of();
 }

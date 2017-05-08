@@ -1,15 +1,10 @@
 package utilities;
 
 import async.Data;
-import async.DataReceiver;
-import async.DataValue;
-import bayesian.RunBayesianModel;
+import common.DataValue;
 import database.DatabaseManager;
 import io.reactivex.Observable;
-import io.reactivex.Scheduler;
-import io.reactivex.internal.functions.Functions;
 import io.reactivex.observables.GroupedObservable;
-import io.reactivex.schedulers.Schedulers;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -18,9 +13,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /* BSD 3-Clause License
  *
@@ -57,9 +50,10 @@ import java.util.stream.IntStream;
  * @author Louis Jenkins
  */
 public class DataToCSV {
-    
+
     /**
      * Fills values that are absent for a day.
+     *
      * @param values DataValues
      * @return Modified stream that fills in all days.
      */
@@ -80,31 +74,29 @@ public class DataToCSV {
                             graphData.add(new DataValue(values.getKey(), time, value.getValue()));
                             time = time.plus(Duration.ofMinutes(15));
                         }
-                        
+
                         time = time.plus(Duration.ofMinutes(15));
                         graphData.add(value);
                     }
-                    
-                    List<DataValue> c = new ArrayList<>(graphData);
-                    c.removeAll(allDataValues);
 
                     return Observable.fromIterable(graphData);
                 });
-        
+
     }
-    
+
     /**
      * Fill days for the entire stream.
+     *
      * @param dataValues DataValues.
      * @return Modified stream with filled days.
      */
     private static Observable<DataValue> fillForDays(Observable<DataValue> dataValues) {
         return dataValues
                 .groupBy((DataValue dv) -> dv.getTimestamp().truncatedTo(ChronoUnit.DAYS))
-                .flatMap((GroupedObservable<Instant, DataValue> groupedByDay) -> 
-                        groupedByDay
-                                .groupBy(DataValue::getId)
-                                .flatMap(DataToCSV::fillForDay)
+                .flatMap((GroupedObservable<Instant, DataValue> groupedByDay)
+                        -> groupedByDay
+                        .groupBy(DataValue::getId)
+                        .flatMap(DataToCSV::fillForDay)
                 );
     }
 
@@ -128,12 +120,13 @@ public class DataToCSV {
                     return date + " " + time + "," + line;
                 });
     }
-    
+
     /**
-     * Ensures that, when the day is missing data for a day, the entire day is dropped. If the
-     * day is not empty,
+     * Ensures that, when the day is missing data for a day, the entire day is
+     * dropped. If the day is not empty,
+     *
      * @param dataValues DataValues
-     * @return 
+     * @return
      */
     private static Observable<DataValue> dropEmptyDays(Observable<DataValue> dataValues) {
         return dataValues
@@ -198,24 +191,4 @@ public class DataToCSV {
                         .map(header -> header + "\n" + values)
                 );
     }
-
-    public static void main(String[] args) {
-
-        long PAR = 637957793;
-        long HDO = 1050296639;
-        long Temp = 1050296629;
-        long Pressure = 639121405;
-        long Depth = 1050296637;
-
-        dataToCSV(
-                DataReceiver
-                        .getRemoteData(
-                                Instant.now().minus(Period.ofDays(3)).truncatedTo(ChronoUnit.DAYS), 
-                                Instant.now().truncatedTo(ChronoUnit.DAYS).minusSeconds(15 * 60), 
-                                PAR, HDO, Temp, Pressure, Depth
-                        )
-        )
-                .blockingSubscribe(System.out::println);
-    }
-
 }

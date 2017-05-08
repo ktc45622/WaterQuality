@@ -31,7 +31,7 @@
 package database;
 
 import async.DataReceiver;
-import async.DataValue;
+import common.DataValue;
 import com.github.davidmoten.rx.jdbc.Database;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -53,7 +53,8 @@ import org.apache.log4j.BasicConfigurator;
 import org.javatuples.Pair;
 
 /**
- *
+ * In-memory RCU data filter. See 'CacheBundle' javadoc for explanation for reasoning behind
+ * choosing RCU and how it works. 
  * @author Louis Jenkins
  */
 public class DataFilter {
@@ -74,6 +75,11 @@ public class DataFilter {
     public static void init() {
         Database db = Database.from(Web_MYSQL_Helper.getConnection());
         
+        /**
+         * L.J: If during initialization it ever fails to start, look here into replacing 
+         * with a normoal jdbc operation. Its the only place we have rxjava-jdbc still in use.
+         * Reminder: Initialization error occurs in {@literal <clinit> or <init>}
+         */
         db.select("select id from data_parameters")
                 .getAs(Long.class)
                 .flatMap(id -> db.select("select time from data_filter where parameter_id = " + id)

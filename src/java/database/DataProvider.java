@@ -30,8 +30,8 @@
  */
 package database;
 
-import async.DataParameter;
-import async.DataValue;
+import common.DataParameter;
+import common.DataValue;
 import java.time.Instant;
 import java.util.List;
 
