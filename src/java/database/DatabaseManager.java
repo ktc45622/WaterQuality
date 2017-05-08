@@ -154,7 +154,218 @@ public class DatabaseManager {
             }
         }
     }
-
+    
+    public static void createManualDataParametersTable()    
+    {
+        Statement createTable = null;
+        Connection conn = null;
+        try
+        {
+            conn = Web_MYSQL_Helper.getConnection();
+            createTable = conn.createStatement();
+            String createSQL = "CREATE TABLE manual_data_parameters ("
+                    + "parameter_id INT NOT NULL, "
+                    + "`source` INT NOT NULL, "
+                    + "PRIMARY KEY (parameter_id)"
+                    + ");";
+            createTable.execute(createSQL);
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            LogError("Error creating Data Value Table: " + ex);
+        }
+        finally
+        {
+            try
+            {
+                if(createTable != null)
+                    createTable.close();
+                if(conn != null)
+                    Web_MYSQL_Helper.returnConnection(conn);
+            }
+            catch(SQLException e)
+            {
+                LogError("Error closing statement:" + e);
+            }
+        }
+    }
+    
+    public static void createRemoteDataParametersTable()    
+    {
+        Statement createTable = null;
+        Connection conn = null;
+        try
+        {
+            conn = Web_MYSQL_Helper.getConnection();
+            createTable = conn.createStatement();
+            String createSQL = "CREATE TABLE remote_data_parameters ("
+                    + "parameter_id INT NOT NULL,"
+                    + " PRIMARY KEY (parameter_id)"
+                    + ");";
+            createTable.execute(createSQL);
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            LogError("Error creating Data Value Table: " + ex);
+        }
+        finally
+        {
+            try
+            {
+                if(createTable != null)
+                    createTable.close();
+                if(conn != null)
+                    Web_MYSQL_Helper.returnConnection(conn);
+            }
+            catch(SQLException e)
+            {
+                LogError("Error closing statement:" + e);
+            }
+        }
+    }
+    
+    public static void createDataParametersTable()    
+    {
+        Statement createTable = null;
+        Connection conn = null;
+        try
+        {
+            conn = Web_MYSQL_Helper.getConnection();
+            createTable = conn.createStatement();
+            String createSQL = "CREATE TABLE data_parameters ("
+                    + "id INT NOT NULL AUTO_INCREMENT, "
+                    + "`name` VARCHAR(255) NOT NULL, "
+                    + "unit VARCHAR(255), "
+                    + "PRIMARY KEY (id)"
+                    + ");";
+            createTable.execute(createSQL);
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            LogError("Error creating Data Value Table: " + ex);
+        }
+        finally
+        {
+            try
+            {
+                if(createTable != null)
+                    createTable.close();
+                if(conn != null)
+                    Web_MYSQL_Helper.returnConnection(conn);
+            }
+            catch(SQLException e)
+            {
+                LogError("Error closing statement:" + e);
+            }
+        }
+    }
+    
+    public static void createDataDescriptionsTable()    
+    {
+        Statement createTable = null;
+        Connection conn = null;
+        try
+        {
+            conn = Web_MYSQL_Helper.getConnection();
+            createTable = conn.createStatement();
+            String createSQL = "CREATE TABLE data_descriptions ("
+                    + "id INT NOT NULL AUTO_INCREMENT, "
+                    + "parameter_id INT NOT NULL, "
+                    + "description VARCHAR(2048) NOT NULL, "
+                    + "PRIMARY KEY (id, parameter_id)"
+                    + ");";
+            createTable.execute(createSQL);
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            LogError("Error creating Data Value Table: " + ex);
+        }
+        finally
+        {
+            try
+            {
+                if(createTable != null)
+                    createTable.close();
+                if(conn != null)
+                    Web_MYSQL_Helper.returnConnection(conn);
+            }
+            catch(SQLException e)
+            {
+                LogError("Error closing statement:" + e);
+            }
+        }
+    }
+    
+    public static void createDataFilterTable()    
+    {
+        Statement createTable = null;
+        Connection conn = null;
+        try
+        {
+            conn = Web_MYSQL_Helper.getConnection();
+            createTable = conn.createStatement();
+            String createSQL = "CREATE TABLE data_filter ("
+                    + "`time` TIMESTAMP DEFAULT 0000-00-00 00:00:00  NOT NULL, "
+                    + "parameter_id INT NOT NULL, "
+                    + "PRIMARY KEY (parameter_id, `time`)"
+                    + ");";
+            createTable.execute(createSQL);
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            LogError("Error creating Data Value Table: " + ex);
+        }
+        finally
+        {
+            try
+            {
+                if(createTable != null)
+                    createTable.close();
+                if(conn != null)
+                    Web_MYSQL_Helper.returnConnection(conn);
+            }
+            catch(SQLException e)
+            {
+                LogError("Error closing statement:" + e);
+            }
+        }
+    }
+    
+    public static void createDataValuesTable()    
+    {
+        Statement createTable = null;
+        Connection conn = null;
+        try
+        {
+            conn = Web_MYSQL_Helper.getConnection();
+            createTable = conn.createStatement();
+            String createSQL = "CREATE TABLE data_values ("
+                    + "`time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP  NOT NULL, "
+                    + "`value` DOUBLE NOT NULL, "
+                    + "parameter_id INT NOT NULL, "
+                    + "PRIMARY KEY (parameter_id, `time`)"
+                    + ");";
+            createTable.execute(createSQL);
+        }
+        catch (Exception ex)//SQLException ex 
+        {
+            LogError("Error creating Data Value Table: " + ex);
+        }
+        finally
+        {
+            try
+            {
+                if(createTable != null)
+                    createTable.close();
+                if(conn != null)
+                    Web_MYSQL_Helper.returnConnection(conn);
+            }
+            catch(SQLException e)
+            {
+                LogError("Error closing statement:" + e);
+            }
+        }
+    }
 
     /*
         Creates a table to log the errors that may occur
