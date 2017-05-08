@@ -63,7 +63,7 @@ function bayesianButton() {
         endDate: new Date($("#bayesian_lastdate").val()).getTime()
     };
 
-    post("AdminServlet", request, request => {
+    post("AdminServlet", request, function(){
         var csvContent = "data:text/csv;charset=utf-8,";
         var encodedUri = encodeURI(csvContent + request);
         var link = document.createElement("a");
