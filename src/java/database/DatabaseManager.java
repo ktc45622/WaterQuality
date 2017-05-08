@@ -3,9 +3,8 @@
  */
 package database;
 
-import async.DataParameter;
 import async.DataReceiver;
-import async.DataValue;
+import common.DataValue;
 import common.User;
 import common.UserRole;
 import java.sql.Connection;
@@ -14,29 +13,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import org.javatuples.Pair;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import security.SecurityCode;
@@ -49,25 +38,8 @@ import security.SecurityCode;
  * @author Tyler Mutzek & Louis Jenkins
  */
 public class DatabaseManager {
-
-    /*
-        Below, we cache some commonly-used values in memory here, of which is used atomically. 
-        We utilize a RCU (Read-Copy-Update) strategy, as it greatly improves read performance, 
-        especially with writes being very seldom.
-     */
     
-    /**
-     * An atomic read-friendly cached mapping of database id of a parameter to it's name.
-     * 
-     */
-    public static volatile AtomicReference<ImmutableBiMap<Long, String>> atomicParameterMappings = new AtomicReference<>(ImmutableBiMap.of());
-    
-    /**
-     * An atomic read-friendly cached mapping of remote database parameter id to it's remote source.
-     * 
-     * Developer Note: If you plan to allow adding/removing remote parameters, you should likely wrap all cached maps into a single bundle.
-     */
-    public static volatile AtomicReference<ImmutableBiMap<Long, Long>> atomicRemoteIdMappings = new AtomicReference<>(ImmutableBiMap.of());
+    public static final AtomicReference<CacheBundle> CACHE = new AtomicReference<>(new CacheBundle());
 
     static {
         updateParameterMappings();
@@ -457,25 +429,29 @@ public class DatabaseManager {
     }
 
     public static Maybe<Long> parameterNameToId(String name) {
-        ImmutableBiMap<String, Long> currentMapping = atomicParameterMappings.get().inverse();
+        CacheBundle bundle = CACHE.get();
+        ImmutableBiMap<String, Long> currentMapping = bundle.paramIdToName.inverse();
         Long id = currentMapping.get(name);
         return id == null ? Maybe.empty() : Maybe.just(id);
     }
 
     public static Maybe<String> parameterIdToName(Long id) {
-        ImmutableBiMap<Long, String> currentMapping = atomicParameterMappings.get();
+        CacheBundle bundle = CACHE.get();
+        ImmutableBiMap<Long, String> currentMapping = bundle.paramIdToName;
         String name = currentMapping.get(id);
         return name == null ? Maybe.empty() : Maybe.just(name);
     }
     
     public static Maybe<Long> remoteSourceToDatabaseId(Long source) {
-        ImmutableBiMap<Long, Long> currentMapping = atomicRemoteIdMappings.get().inverse();
+        CacheBundle bundle = CACHE.get();
+        ImmutableBiMap<Long, Long> currentMapping = bundle.paramIdToRemoteSource.inverse();
         Long databaseId = currentMapping.get(source);
         return databaseId == null ? Maybe.empty() : Maybe.just(databaseId);
     }
     
     public static Maybe<Long> databaseIdToRemoteSource(Long databaseId) {
-        ImmutableBiMap<Long, Long> currentMapping = atomicRemoteIdMappings.get();
+        CacheBundle bundle = CACHE.get();
+        ImmutableBiMap<Long, Long> currentMapping = bundle.paramIdToRemoteSource;
         Long source = currentMapping.get(databaseId);
         return source == null ? Maybe.empty() : Maybe.just(source);
     }
@@ -554,9 +530,22 @@ public class DatabaseManager {
             while (mappingResults.next()) {
                 mappings.put(mappingResults.getLong(1), mappingResults.getString(2));
             }
-
-            DatabaseManager.atomicParameterMappings.set(ImmutableBiMap.copyOf(mappings));
-            System.out.println("Set: " + mappings);
+            
+            // RCU...
+            while (true) {
+                // Read
+                CacheBundle bundle = CACHE.get();
+                
+                // Copy (and Modify)
+                CacheBundle newBundle = new CacheBundle();
+                newBundle.paramIdToRemoteSource = bundle.paramIdToRemoteSource;
+                newBundle.paramIdToName = ImmutableBiMap.copyOf(mappings);
+                
+                // Update
+                if (CACHE.compareAndSet(bundle, newBundle)) {
+                    break;
+                }
+            }
         } catch (Exception ex)//SQLException ex 
         {
             LogError("Error Updating Parameter Mappings: " + ex);
@@ -600,8 +589,21 @@ public class DatabaseManager {
                 mappings.put(mappingResults.getLong(1), mappingResults.getLong(2));
             }
 
-            DatabaseManager.atomicRemoteIdMappings.set(ImmutableBiMap.copyOf(mappings));
-            System.out.println("Set: " + mappings);
+            // RCU...
+            while (true) {
+                // Read
+                CacheBundle bundle = CACHE.get();
+                
+                // Copy (and Modify)
+                CacheBundle newBundle = new CacheBundle();
+                newBundle.paramIdToRemoteSource = ImmutableBiMap.copyOf(mappings);
+                newBundle.paramIdToName = bundle.paramIdToName;
+                
+                // Update
+                if (CACHE.compareAndSet(bundle, newBundle)) {
+                    break;
+                }
+            }
         } catch (Exception ex)//SQLException ex 
         {
             LogError("Error Updating Parameter Mappings: " + ex);
@@ -623,13 +625,14 @@ public class DatabaseManager {
     }
 
     public static Flowable<DataValue> getDataValues(Instant start, Instant end, String name) {
-        Long id = atomicParameterMappings.get().inverse().get(name);
+        CacheBundle bundle = CACHE.get();
+        Long id = bundle.paramIdToName.inverse().get(name);
         if (id == null) {
             return Flowable.error(new IllegalArgumentException("Name: " + name + " is not a valid mapping to an identifier..."));
         }
         
         //  If we are remote, we can just return it as is.
-        Long remoteId = atomicRemoteIdMappings.get().get(id);
+        Long remoteId = bundle.paramIdToRemoteSource.get(id);
         if (remoteId != null) {
             return DataReceiver
                     .getRemoteData(start, end, remoteId)
@@ -1352,10 +1355,15 @@ public class DatabaseManager {
         }
         return errorListFinal;
     }
-
+    
+    /**
+     * Obtains a stream of all manual parameter names.
+     * @return Stream of manual parameter names.
+     */
     public static io.reactivex.Observable<String> getManualParameterNames() {
-        ImmutableBiMap<Long, String> currentParameterMappings = atomicParameterMappings.get();
-        ImmutableBiMap<Long, Long> currentRemoteIdMappings = atomicRemoteIdMappings.get();
+        CacheBundle bundle = CACHE.get();
+        ImmutableBiMap<Long, String> currentParameterMappings = bundle.paramIdToName;
+        ImmutableBiMap<Long, Long> currentRemoteIdMappings = bundle.paramIdToRemoteSource;
         
         return Observable.fromIterable(
                 currentParameterMappings.keySet()
@@ -1365,10 +1373,15 @@ public class DatabaseManager {
                         .collect(Collectors.toList())
         );
     }
-
+    
+    /**
+     * Obtains a stream of all remote parameter names.
+     * @return Stream of remote parameter names.
+     */
     public static Observable<String> getRemoteParameterNames() {
-        ImmutableBiMap<Long, String> currentParameterMappings = atomicParameterMappings.get();
-        ImmutableBiMap<Long, Long> currentRemoteIdMappings = atomicRemoteIdMappings.get();
+        CacheBundle bundle = CACHE.get();
+        ImmutableBiMap<Long, String> currentParameterMappings = bundle.paramIdToName;
+        ImmutableBiMap<Long, Long> currentRemoteIdMappings = bundle.paramIdToRemoteSource;
         
         return Observable.fromIterable(
                 currentParameterMappings.keySet()
@@ -1378,57 +1391,6 @@ public class DatabaseManager {
                         .collect(Collectors.toList())
         );
     }
-
-//    public static void insertManualParameter(DataParameter parameter) {
-//        Database db = Database.from(Web_MYSQL_Helper.getConnection());
-//
-//        db.update("INSERT IGNORE INTO `WaterQuality`.`data_parameters` (`name`, `unit`) values (?, ?);")
-//                .dependsOn(db.beginTransaction())
-//                .parameter(parameter.getName())
-//                .parameter("".equals(parameter.getUnit()) ? null : parameter.getUnit())
-//                .returnGeneratedKeys()
-//                .getAs(Long.class)
-//                .flatMap(key -> Observable.just(key)
-//                        .compose(db.update("INSERT IGNORE INTO `WaterQuality`.`data_descriptions` (`parameter_id`, `description`) values (?, ?);")
-//                                .parameter(key)
-//                                .parameter(parameter.getDescription())
-//                                .dependsOnTransformer()
-//                        )
-//                        .compose(db.update("INSERT IGNORE INTO `WaterQuality`.`manual_data_parameters` (`parameter_id`, `source`) values (?, ?);")
-//                                .parameter(key)
-//                                .parameter(parameter.getId())
-//                                .dependsOnTransformer()
-//                        )
-//                )
-//                .compose(db.commitOnComplete_())
-//                .subscribe();
-//    }
-//
-//    public static void insertRemoteParameter(DataParameter parameter) {
-//        Database db = Database.from(Web_MYSQL_Helper.getConnection());
-//
-//        db.update("INSERT IGNORE INTO `WaterQuality`.`data_parameters` (`name`, `unit`) values (?, ?);")
-//                .dependsOn(db.beginTransaction())
-//                .parameter(parameter.getName())
-//                .parameter("".equals(parameter.getUnit()) ? null : parameter.getUnit())
-//                .returnGeneratedKeys()
-//                .getAs(Long.class)
-//                .flatMap(key -> Observable.just(key)
-//                        .compose(db.update("INSERT IGNORE INTO `WaterQuality`.`data_descriptions` (`parameter_id`, `description`) values (?, ?);")
-//                                .parameter(key)
-//                                .parameter(parameter.getDescription())
-//                                .dependsOnTransformer()
-//                        )
-//                        .compose(db.update("INSERT IGNORE INTO `WaterQuality`.`remote_data_parameters` (`parameter_id`, `source`, `remote_name`) values (?, ?, ?);")
-//                                .parameter(key)
-//                                .parameter(parameter.getId())
-//                                .parameter(parameter.getSensor())
-//                                .dependsOnTransformer()
-//                        )
-//                )
-//                .compose(db.commitOnComplete_())
-//                .subscribe();
-//    }
 
     private static boolean usernameExists(String username) {
         PreparedStatement getUserByLogin = null;
@@ -1536,41 +1498,6 @@ public class DatabaseManager {
         return;
     }
 
-    /*
-    public static boolean undoDatabaseFunction()
-    {
-        Statement undo = null;
-        Connection conn = null;
-        String undoSQL = null;
-        try
-        {
-            conn = Web_MYSQL_Helper.getConnection();
-            undoSQL = UNDOLIST.pop();
-            undo = conn.createStatement();
-            undo.executeUpdate(undoSQL);
-            return true;
-        }
-        catch(SQLException e)
-        {
-            LogError("Error undoing command: " + undoSQL);
-            return false;
-        }
-        finally
-        {
-            try
-            {
-                if(conn != null)
-                    Web_MYSQL_Helper.returnConnection(conn);
-                if(undo != null)
-                    undo.close();
-            }
-            catch(Exception excep)
-            {
-                LogError("Error closing statement or result set: " + excep);
-            }
-        }
-    }
-     */
     public static void main(String[] args) {
         User u = new User();
         u.setUserRole(UserRole.SystemAdmin);

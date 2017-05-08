@@ -34,6 +34,11 @@ public class Web_MYSQL_Helper {
     private static  String userName;
     private static  String password;
     
+    /*
+        L.J: I didn't have time to fix this, although I'm sure its fairly easy. A lot of
+        work to do too little time. It is a minor and easy fix to make, and it still works so
+        its not that huge of an issue.
+    */
     public static void initialize(){
       initialized = true;
 //      String dir = null;
