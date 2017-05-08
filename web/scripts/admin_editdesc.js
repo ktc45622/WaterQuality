@@ -242,7 +242,7 @@ function showPreview() {
     $(document.getElementById('descr_textarea_preview')).html(marked($(document.getElementById('textarea_desc')).val()));
     $(document).mouseup(closeOnOutsideClick_descr);
     
-    $(document.getElementById("descr_modal_preview")).show("slow", () => {
+    $(document.getElementById("descr_modal_preview")).show("slow", function() {
         var preview = $(document.getElementById('descr_textarea_preview'));
         var textarea = $(document.getElementById('textarea_descr_preview'));
         var previewPaddTop = parseInt(preview.css('padding-top').substring(0, 2));
@@ -258,7 +258,7 @@ function showPreview() {
     });
     
     
-    $('#textarea_descr_preview').on('input propertychange paste', () => {
+    $('#textarea_descr_preview').on('input propertychange paste', function() {
             $('#descr_textarea_preview').html(marked($('#textarea_descr_preview').val()));
     });
 }

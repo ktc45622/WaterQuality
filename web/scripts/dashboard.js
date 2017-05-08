@@ -132,14 +132,14 @@ function openTab(evt, tabName) {
     }
     $('#' + tabName).finish().show({
         duration: "slow",
-        complete: () =>
-            $('#' + tabName).css("display", "block").promise().done(() => {
+        complete: function(){
+            $('#' + tabName).css("display", "block").promise().done(function() {
                 if (tabName === "Graph") {
                     chart.redraw();
                     chart.reflow();
                 } 
-            }),
-        step: (n, tween) => {
+            })},
+        step: function(n, tween){
                 if ((n % 25) === 0) {
                     chart.redraw();
                     chart.reflow();
@@ -162,7 +162,7 @@ function openTab(evt, tabName) {
         $(form[i]).hide("slow");
         //form[i].style.display = "none";
     }
-    $('#' + tabName + '_form').finish().show("slow",() => {
+    $('#' + tabName + '_form').finish().show("slow",function() {
                 $('#' + tabName+'_form').css("display", "block");
             });
     //document.getElementById(current + "_form").style.display = "block";
@@ -347,7 +347,7 @@ function fetchData(json) {
 //            document.getElementById("Table_description").innerHTML += descriptions[data.data[i].id];
         }
         $('#Graph_description', '#Table_description')
-                .fadeOut("slow", () => {
+                .fadeOut("slow", function() {
                     $('#Graph_description', '#Table_description').html(marked(description));
                     $('#Graph_description', '#Table_description').fadeIn("slow");
                 });
@@ -368,7 +368,7 @@ function fetchData(json) {
 //                document.getElementById("Table_description").innerHTML += descriptions[data.data[i].id];
             }
             $('#Table_description')
-                .fadeOut("slow", () => {
+                .fadeOut("slow", function() {
                     $('#Table_description').html("<div class='markdown-preview' data-use-github-style>" + marked(description) + "</div>");
                     $('#Table_description').fadeIn("slow");
                 });
@@ -402,7 +402,7 @@ function fetchData(json) {
 //                document.getElementById("Graph_description").innerHTML += descriptions[data.data[i].id];
             }
             $('#Graph_description')
-                .fadeOut("slow", () => {
+                .fadeOut("slow", function() {
                     $('#Graph_description').html("<div class='markdown-preview' data-use-github-style>" + marked(description) + "</div>");
                     $('#Graph_description').fadeIn("slow");
                 });
@@ -569,6 +569,7 @@ function fillTable(dataResp) {
     });
 }
 
+var waypoint;
 //<code>load</code> makes sure that when the page is newly loaded it will do a
 //special action in the <code>fetchDataFunction</code> allowing it to generate
 //both the table and the graph
@@ -577,20 +578,18 @@ var load = true;
  * on load/refresh of a page by using setting them to Dewpoint
  */
 function startingData() {
-    $("#Graph").resize(() => {
+    $("#Graph").resize(function() {
         chart.redraw();
         chart.reflow();
-    })
-    // Stickies the admin notes to top of screen...
-    new Waypoint.Sticky({
-        element: $("#myNav")
     });
-    $("#admin_expand_button").click(() => {
+    // Stickies the admin notes to top of screen...
+
+    $("#admin_expand_button").click(function() {
         // Expand to about half page...
         $("#myNav").css("z-index", "1");
         $("#myNav").height(($(window).height() / 2) + "px");
         $("#admin_notes").show();
-    })
+    });
     post("AdminServlet", {action: "getNotes"}, function (resp) {
         if (resp.hasOwnProperty("status")) {
             window.alert("Error getting notes");
@@ -609,12 +608,12 @@ function startingData() {
             // Cache parameter descriptors
             descriptions[data[i].id] = data[i].description;
             names[data[i].id] = data[i].name;
-            units[data[i].id] = [ { unit: data[i].unit, conversion: x => x } ];
+            units[data[i].id] = [ { unit: data[i].unit, conversion: function(x){return x;} }];
             
-            if (data[i].name.includes("Temperature") || data[i].name === "Dewpoint") {
-                units[data[i].id].push({ unit: "F", conversion: x => x * 1.8 + 32 });
+            if (data[i].name.indexOf("Temperature")>-1 || data[i].name === "Dewpoint") {
+                units[data[i].id].push({ unit: "F", conversion: function(x){return x * 1.8 + 32 }});
             } else if (data[i].name === "Depth") {
-                units[data[i].id].push({ unit: "ft", conversion: x => x * 3.28084 });
+                units[data[i].id].push({ unit: "ft", conversion: function(x){return x * 3.28084 }});
             }
             
             var tableRef = document.getElementById('sensor_formatted_table').getElementsByTagName('tbody')[0];
@@ -655,7 +654,7 @@ function startingData() {
         for (i = 0; i < data.length; i++) {
             descriptions[data[i].id] = data[i].description;
             names[data[i].id] = data[i].name;
-            units[data[i].id] = [ { unit: data[i].unit, conversion: x => x } ];
+            units[data[i].id] = [ { unit: data[i].unit, conversion: function(x){return x;} }];
             
             var tableRef = document.getElementById('manual_formatted_table').getElementsByTagName('tbody')[0];
             var table_tableRef = document.getElementById('table_manual_formatted_table').getElementsByTagName('tbody')[0];
@@ -790,4 +789,22 @@ function getMostRecent(){
                 recentdate[j].innerHTML = formatDate(displayTime);
                 
     });
+}
+
+function notesMinimizer() {
+    if (document.getElementById("overlayNote").style.display != "none") {
+        $('#overlayNote').finish().slideDown("slow", () => {
+            $('#overlayNote').css("display", "none");
+        });
+        document.getElementById("notes_section").style.height = '25px';
+        document.getElementById("notes_section").style.borderRadius = '25px 25px 0px 0px';
+        document.getElementById("notes_button").innerHTML="&#43";
+    } else {
+        $('#overlayNote').finish().slideUp("slow", () => {
+            $('#overlayNote').css("display", "block");
+        });
+        document.getElementById("notes_section").style.height = 'auto';
+        document.getElementById("notes_section").style.borderRadius = '25px';
+        document.getElementById("notes_button").innerHTML="&minus;";
+    }
 }

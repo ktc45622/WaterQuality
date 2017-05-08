@@ -69,7 +69,7 @@ function closeOnOutsideClick_notes(e) {
 function showNotesPreview(){
     $(document.getElementById('textarea_notes_preview')).val($(document.getElementById('textarea_notes')).val());
     $(document.getElementById('notes_textarea_preview')).html(marked($(document.getElementById('textarea_notes')).val()));
-    $(document.getElementById("notes_modal_preview")).show("slow", () => {
+    $(document.getElementById("notes_modal_preview")).show("slow", function() {
         var modal = $(document.getElementById('notes_modal_preview'));
         var preview = $(document.getElementById('notes_textarea_preview'));
         var textarea = $(document.getElementById('textarea_notes_preview'));
@@ -86,7 +86,7 @@ function showNotesPreview(){
     });
     
     
-    $('#textarea_notes_preview').on('input propertychange paste', () => {
+    $('#textarea_notes_preview').on('input propertychange paste', function() {
             $('#notes_textarea_preview').html(marked($('#textarea_notes_preview').val()));
     });
     
