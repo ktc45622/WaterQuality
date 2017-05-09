@@ -53,9 +53,8 @@ public class HttpsRedirectFilter implements Filter {
 
             // Set response content type
             response.setContentType("text/html");
-
             // New location to be redirected
-            String httpsPath = "https" + "://" + getDomain + uri;
+            String httpsPath = "https" + "://" + getDomain + ":" + 8443 + uri;
 
             res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             res.setHeader("Location", httpsPath);
