@@ -16,9 +16,17 @@ So it is also known as the deployment descriptor -->
         <exception-type>java.lang.Throwable</exception-type>
         <location>/jsp/error_java.jsp</location>
     </error-page>
+    <filter>
+        <filter-name>HTTPS</filter-name>
+        <filter-class>servlets.filter.HttpsRedirectFilter</filter-class>
+    </filter>
     <filter-mapping>
         <filter-name>AdminLogin</filter-name>
         <url-pattern>/admin.jsp</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>HTTPS</filter-name>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
     <listener>
         <listener-class>servlets.listener.ContextListener</listener-class>
@@ -71,4 +79,12 @@ So it is also known as the deployment descriptor -->
         <res-auth>Container</res-auth>
         <res-sharing-scope>Shareable</res-sharing-scope>
     </resource-ref>-->
+    <security-constraint>
+        <display-name>Secure login and admin pages</display-name>
+        <web-resource-collection>
+            <web-resource-name>Secure Login</web-resource-name>
+            <description>Secure login and admin</description>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+    </security-constraint>
 </web-app>
