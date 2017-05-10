@@ -1,7 +1,7 @@
 # Water Quality
 
 A collaborative project for a Software Engineering course
-between @LouisJenkinsCS, @bmeglathery, @TylerMutzekCS, @ktc45622, and @dan0x19b.
+between [Louis Jenkins](https://github.com/LouisJenkinsCS), [Brandon Meglathery](https://github.com/bmeglathery), [Tyler Mutzek](https://github.com/TylerMutzekCS), [Kevin Cummins](https://github.com/ktc45622), and [Dan Latovich](https://github.com/dan0x19b).
 The project is currently, as of this posting, deployed on Bloomsburg University's
 web server, seen [here](https://cswebserver.bloomu.edu:8443/WaterQuality/).
 
