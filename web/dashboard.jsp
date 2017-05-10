@@ -17,7 +17,7 @@
         
         <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.js"></script>
         
-       
+        <link rel="stylesheet" href="styles/markdown.css" type="text/css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -47,24 +47,13 @@
         </noscript>
         <title>Dashboard</title>
     </head>
-    <div id="myNav" class="overlay">
-  <p class="overlay-content">
-    The server is still in early development! What you are seeing is liable to change and is not a final representation of the product!
-    <br>
-    Note: The sensor may or may not be down right now, as of 4/26/2017
-  </p>
-</div>
     <!--<body id="loader" onload="checkUser(); startingData();">-->
         <body id="loader" onload="blockButtons(); startingData();">
         <img id="backPhoto" src="images/Creek.jpeg">
         <header class="title_bar_container">
-            <div id="HeaderText">Water Quality</div>
-            <a href="loginScreen.jsp">
-            <button id="Login_Button">Login</button>
-            </a>
-            <a href="admin.jsp">
-                <button id="Admin_Button">Admin</button>
-            </a>
+            <div id="HeaderText">Bloomsburg Fishing Creek</div>
+            <button id="Login_Button" onclick="location.href='LoginServlet'">Login</button>
+            <button id="Admin_Button" onclick="location.href='admin.jsp'">Admin</button>
         </header>
             
             <script>
@@ -107,7 +96,7 @@
         <!--The <code>dashboard_container</code> sections holds all of other 
             sections on the dashboard page-->
         <section class = "content_container1" id = "dashboard_container">
-            <header class = "content_title_bar" id="login_header">
+            <header class = "content_title_bar" id="dashboard_header">
                 <div class = "title" >
                     Dashboard
                 </div>
@@ -121,16 +110,16 @@
                 <ul class="tab">
                     <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Graph');"
                            id="GraphTab">Graph</a></li>
-                    <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Table');
-                           "id="TableTab">Table</a></li>
+                    <li><a href="javascript:void(0)" class="tablinks" onclick="openTab(event, 'Table');" 
+                           id="TableTab">Table</a></li>
                 </ul>
                 <!--The contents of the Graph tab-->
                 <div id="Graph" class="tabcontent" style="width:auto; height:auto;">
                 </div>
                 <!--The contents of the table tab-->
                 <div id="Table" class="tabcontent">
-                    <h4 align="center">Excel and PDF downloads require Adobe Flash</h4>
-                    <table align="center" id="data_table" onclick="">
+                    <h4>Excel and PDF downloads require Adobe Flash</h4>
+                    <table id="data_table">
                         <thead><tr><th></th></tr></thead>
                     </table>
                 </div>
@@ -139,7 +128,7 @@
             <!--This contains the forms for selecting date range and parameters
                 for each of the tabs in the <code>graph_container</code> section-->
             <aside class = "content_container2" id = "dashboard_data_container">
-                <header class = "content_title_bar" id="login_header">
+                <header class = "content_title_bar" id="parameters_header">
                     <div class = "title" >
                         Data Type
                     </div>
@@ -148,21 +137,21 @@
                     range and parameters for the graph tab-->
                 <form class="data_type_form" id="Graph_form" action="ControlServlet" method = "POST">
                     <!--Allows the user to select a range of dates for data viewing-->
-                    </br>
+                    <BR>
                     <div id="dateselectordiv" onclick="dateLimits();">
                         Start Date:
                         <input class="dateselector" id="graph_start_date" type="text">
                         <input class="dateselector" id="graph_start_time" type="text">
                         <!--<input class="dateselector" id="graph_start_date" name="graph_start_date"type="datetime-local" min="" max="">-->
-                        </BR>to</BR>
+                        <BR>to<BR>
                         End Date:
                         <input class="dateselector" id="graph_end_date" type="text">
                         <input class="dateselector" id="graph_end_time" type="text">
                         <!--<input class="dateselector" id="graph_end_date" name="graph_end_date" type="datetime-local" min="" max="">-->
                     </div>
-                    <div id="graph_parameters" style="margin: 0 auto;">
+                    <center>Sensor Data - Last Updated: <span class="last_updated">temp val</span></center><br>
+                    <div id="graph_parameters" style="margin-left: 1em//0 auto;">
                         <div id="graph_sensor_parameters">
-                            <center>Sensor Data</center><BR>
                             <table id="sensor_formatted_table" style="width: 100%; margin: 0 auto;" class="parameter_table">
                                 <thead>
                                     <tr>
@@ -173,7 +162,7 @@
                                             Unit
                                         </td>
                                         <td>
-                                            Last Updated
+                                            Most Recent Data
                                         </td>
                                     </tr>
                                 </thead>
@@ -202,29 +191,32 @@
                             </table>
                         </div>
                     </div>
+                    </center>
                     <br>
                 </form>
                 <!--The <code>Table_form</code> is the form for selecting date 
                     range and parameters for the table tab-->
                 <form class="data_type_form" id="Table_form" action="ControlServlet" method = "POST">
                     <!--Allows the user to select a range of dates for data viewing-->
-                    </br>
+                    <br>
                     <div id="dateselectordiv" onclick="dateLimits();">
                         Start Date:
                         <input class="dateselector" id="table_start_date" type="text">
                         <input class="dateselector" id="table_start_time" type="text">
-                        </BR>to</BR>
+                        <BR>to<BR>
                         End Date:
                         <input class="dateselector" id="table_end_date" type="text">
                         <input class="dateselector" id="table_end_time" type="text">
                     </div>
-                    <div id="select_all_div">
+                    <center>Sensor Data - Last Updated: <span class="last_updated">temp val</span></center>
+                    <div id="select_all_div" style="padding-left:1em">
                         <input type="checkbox" onclick="toggle('Table_form',this); fetch();" class="select_all_box" value="select_all_data">
                         Select All Data
-                    </div>
+                    </div><br/>
                     <div id="table_parameters">
                         <div id="table_sensor_parameters">
-                            <center>Sensor Data</center><br>
+                            <!--<center>Sensor Data - Last Updated: <span class="last_updated">temp val</span></center>-->
+                            <br>
                             <input type="checkbox" onclick="toggle('table_sensor_parameters',this); fetch();"class="select_all_box" value="select_all_data">
                             Select All Sensor Data<br>
                             
@@ -238,7 +230,7 @@
                                             Unit
                                         </td>
                                         <td>
-                                            Last Updated
+                                            Most Recent Data
                                         </td>
                                     </tr>
                                 </thead>
@@ -247,7 +239,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <br>
+                        <BR>
                         <div id="table_manual_parameters">
                             <center>Manual Data</center><br>
                             <input type="checkbox" onclick="toggle('table_manual_parameters',this); fetch();"class="select_all_box" value="select_all_data">
@@ -269,16 +261,17 @@
                             </table>
                         </div> 
                     </div>
+                    </center>
                     <br>
                 </form>
             </aside><br>
-
+            
             <!--The data description box is defined here. Sample text is shown-->
             <!--to provide an indication of the text-wrapping.-->
             <!--This will need to pull text from a file which Brandon already-->
             <!--typed and had Dr. Rier edit.-->
             <section class = "content_container2" id = "dashboard_data_description">
-                <header class = "content_title_bar" id = "login_header">
+                <header class = "content_title_bar" id = "description_header">
                     <div class = "title">
                         Description
                     </div>
@@ -296,8 +289,19 @@
                 </div>
             </section>
             
+            <section id="notes_section" class="content_container2" style=''>
+                <header class = "content_title_bar" id = "notes_header">
+                    <div class = "title">
+                        Notes
+                        <button id='notes_button' onclick="notesMinimizer();">&minus;</button>
+                    </div>
+                </header>
+                <p class="markdown-preview" data-use-github-style id="overlayNote"
+                   style='background-color: #FFF2D7; color:black;'></p>
+            </section>
+            
         </section>
-                     
+        
         <script>
             // Custom this to set theme, see: http://www.highcharts.com/docs/chart-design-and-style/design-and-style
             Highcharts.theme = {
@@ -439,15 +443,4 @@
                 series: []
             });
         </script>
-        <script>            
-        </script>
-        
-        
-
-
-
-
-
-
-
     </body>

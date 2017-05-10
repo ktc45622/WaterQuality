@@ -6,7 +6,7 @@
 package servlets;
 
 import async.DataReceiver;
-import async.DataValue;
+import common.DataValue;
 import common.UserRole;
 import database.DataFilter;
 import database.DatabaseManager;
@@ -107,22 +107,6 @@ public class AdminServlet extends HttpServlet {
                                         .add((Set<Long>) allTimes)
                                 )
                         );
-                /*
-                String tempIDs = request.getParameter("deletionIDs");
-                String [] dataDeletionTimes = tempIDs.split(",");
-                
-                int successfulDeletions = DatabaseManager.manualDeletion(dataDeletionTimes, Integer.parseInt((String)request.getParameter("parameter")),
-                        admin);
-                if (successfulDeletions == dataDeletionTimes.length) {
-                    JSONObject obj = new JSONObject();
-                    obj.put("status", "Data Deletion Successful");
-                    response.getWriter().append(obj.toJSONString());
-                } else {
-                    JSONObject obj = new JSONObject();
-                    obj.put("status", dataDeletionTimes.length - successfulDeletions + " deletions failed, check the error logs");
-                    response.getWriter().append(obj.toJSONString());
-                }
-                 */
             } catch (Exception e) {
                 request.setAttribute("status", "Error: " + e);
             }
@@ -256,26 +240,6 @@ public class AdminServlet extends HttpServlet {
                 request.setAttribute("status", "Error: " + e);
             }
         } /*
-            Gets the description of the parameter selected on the page
-            and returns it
-        
-        else if (action.trim().equalsIgnoreCase("getParamDesc")) 
-        {
-            try
-            {
-                response.getWriter()
-                        .append(DatabaseManager
-                                .getDescription(request.getParameter("name"))
-                                .toJSONString());
-            }
-            catch(Exception e)
-            {
-                JSONObject obj = new JSONObject();
-                obj.put("status","Error editing description: " + e);
-                response.getWriter().append(obj.toJSONString());
-            }
-        }
-         */ /*
             Admin is editing the description of a certain data value
             
             If editing the description succeeded or failed without error,
@@ -326,13 +290,7 @@ public class AdminServlet extends HttpServlet {
                     .defaultIfEmpty(EMPTY_RESULT)
                     .blockingSubscribe((JSONObject resp) -> {
                         response.getWriter().append(resp.toJSONString());
-//                        System.out.println("Sent response...");
                     });
-
-            /*
-            //We'll change to use this next group meeting
-            session.setAttribute("manualItems", DatabaseManager.getRemoteParameterNames());
-             */
         } else if (action.trim().equalsIgnoreCase("getSensorItems")) {
             Observable.just(0)
                     .flatMap(_ignored -> DatabaseManager.getRemoteParameterNames())
@@ -356,13 +314,7 @@ public class AdminServlet extends HttpServlet {
                     .defaultIfEmpty(EMPTY_RESULT)
                     .blockingSubscribe((JSONObject resp) -> {
                         response.getWriter().append(resp.toJSONString());
-//                        System.out.println("Sent response...");
                     });
-
-            /*
-            //We'll change to use this next group meeting
-            session.setAttribute("manualItems", DatabaseManager.getRemoteParameterNames());
-             */
         } /*
             Gets a list of data from the ManualDataValues table within a time range
             
@@ -418,23 +370,7 @@ public class AdminServlet extends HttpServlet {
                     .defaultIfEmpty(empty)
                     .blockingSubscribe(resp -> {
                         response.getWriter().append(resp.toJSONString());
-//                        System.out.println("Sent response...");
                     });
-            /*
-            //We'll change to use this next group meeting
-            //Gets a list of data values within a time range for display on a chart so the user can select which ones to delete
-            String dataName = (String) request.getParameter("filterDataName"); //name of the data type to be filtered
-            String lower = (String) request.getParameter("filterLower"); //lower time bound in LocalDateTime format of the data
-            String upper = (String) request.getParameter("filterUpper"); //upper time bound in LocalDateTime format of the data
-            try
-            {
-                session.setAttribute("filteredData", DatabaseManager.getManualData(dataName,LocalDateTime.parse(lower),LocalDateTime.parse(upper)));
-            }
-            catch(DateTimeParseException e)
-            {
-                session.setAttribute("dateStatus", "Invalid Format on Lower or Upper Time Bound.");
-            }
-             */
         } else if (action.trim().equalsIgnoreCase("getDataDeletion")) {
             String parameter = request.getParameter("parameter");
             long start = Long.parseLong(request.getParameter("start"));
@@ -484,23 +420,7 @@ public class AdminServlet extends HttpServlet {
                     .defaultIfEmpty(EMPTY_RESULT)
                     .blockingSubscribe(resp -> {
                         response.getWriter().append(resp.toJSONString());
-//                        System.out.println("Sent response...");
                     });
-            /*
-            //We'll change to use this next group meeting
-            //Gets a list of data values within a time range for display on a chart so the user can select which ones to delete
-            String dataName = (String) request.getParameter("filterDataName"); //name of the data type to be filtered
-            String lower = (String) request.getParameter("filterLower"); //lower time bound in LocalDateTime format of the data
-            String upper = (String) request.getParameter("filterUpper"); //upper time bound in LocalDateTime format of the data
-            try
-            {
-                session.setAttribute("filteredData", DatabaseManager.getManualData(dataName,LocalDateTime.parse(lower),LocalDateTime.parse(upper)));
-            }
-            catch(DateTimeParseException e)
-            {
-                session.setAttribute("dateStatus", "Invalid Format on Lower or Upper Time Bound.");
-            }
-             */
         } else if (action.trim().equalsIgnoreCase("getParameters")) {
             long type = Long.parseLong(request.getParameter("data"));
 
@@ -560,11 +480,9 @@ public class AdminServlet extends HttpServlet {
                     // Send response.
                     .blockingSubscribe(resp -> {
                         response.getWriter().append(resp.toJSONString());
-//                        System.out.println("Sent response...");
                     });
 
         } else if (action.trim().equalsIgnoreCase("insertData")) {
-
             Observable.just(request.getParameter("data"))
                     .map(req -> (JSONArray) new JSONParser().parse(req))
                     .flatMap(JSONUtils::flattenJSONArray)
@@ -584,16 +502,7 @@ public class AdminServlet extends HttpServlet {
                     .map(DatabaseManager::insertData)
                     .blockingSubscribe(updated -> System.out.println("Updated # of Rows: " + updated));
 
-        } else if (action.trim().equalsIgnoreCase("deleteManualData")) {
-            try {
-                ArrayList<Integer> deletionIDs = (ArrayList) session.getAttribute("deletionIDs");
-                for (Integer i : deletionIDs) {
-//                    DatabaseManager.manualDeletionM(i.intValue(), admin);
-                }
-            } catch (Exception e) {
-                request.setAttribute("status", "Error: Did you not select anything for deletion?");
-            }
-        } /*
+        }/*
             Retrieves a list of all Users
         
             If it succeeds, errorList is set with an ArrayList of ErrorMessages
@@ -704,13 +613,38 @@ public class AdminServlet extends HttpServlet {
                             PAR, HDO, Temp, Pressure, Depth
                     ))
                     .subscribeOn(Schedulers.computation())
+                    .doOnNext(System.out::println)
                     .blockingSubscribe(resp
                             -> response
                             .getWriter()
                             .append(resp)
                     );
-        }
+        } else if (action.trim().equalsIgnoreCase("editNotes")) {
 
+            boolean editNotesStatus = DatabaseManager.modifyNote((String) request.getParameter("note"),
+                    admin);
+            if (editNotesStatus) {
+                JSONObject obj = new JSONObject();
+                obj.put("status", "Success");
+                response.getWriter().append(obj.toJSONString());
+            } else {
+                JSONObject obj = new JSONObject();
+                obj.put("status", "Failed");
+                response.getWriter().append(obj.toJSONString());
+            }
+
+        } else if (action.trim().equalsIgnoreCase("getNotes")) {
+
+            JSONObject note = DatabaseManager.getNote();
+            if (note != null) {
+                response.getWriter().append(note.toJSONString());
+            } else {
+                JSONObject obj = new JSONObject();
+                obj.put("status", "Failed");
+                response.getWriter().append(obj.toJSONString());
+            }
+
+        }
     }
 
     @Override
